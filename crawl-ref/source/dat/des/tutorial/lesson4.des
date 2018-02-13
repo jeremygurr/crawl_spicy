@@ -1,0 +1,153 @@
+##############################################
+# Tutorial map 4: Magic and Spellcasting     #
+##############################################
+#
+# TODO:
+#  * trigger when trying to walk into a cloud
+#  * trigger on "might hit yourself" prompt
+#  * potion of experience gives too much skills - find another way for Meph?
+#
+{{
+require("dlua/tutorial.lua")
+
+tutorial4 = {}
+
+function tutorial4.msg(text)
+    return tutorial_msg("tutorial4 " .. text)
+end
+
+function tutorial4.exit()
+    crawl.tutorial_msg("tutorial4 exit", true)
+end
+
+function tutorial4.win()
+    crawl.mark_game_won()
+    return tutorial4.exit()
+end
+}}
+
+NAME:    tutorial_lesson4
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial
+DESC:    "Lesson 4: Magic and Spellcasting"
+ORDER:   4
+ORIENT:  encompass
+KFEAT:   ABCDEF = .
+COLOUR:  ABCDEFdefg = lightblue
+FTILE:   ABCDEFdefg = tutorial_pad
+ITEM:    randbook numspells:2 spells:magic_dart&mephitic_cloud title:Introduction_to_Spellcasting owner:player
+ITEM:    ring of magical power not_cursed
+ITEM:    staff of wizardry not_cursed
+ITEM:    ration
+MONS:    training dummy ; stone q:20
+MONS:    bat skeleton, goblin skeleton
+MONS:    rat, goblin
+KMONS:   8 = training dummy hd:3 hp:7
+MARKER:  d = lua:tutorial4.msg("spellbook")
+MARKER:  B = lua:tutorial4.msg("spellcasting")
+MARKER:  e = lua:tutorial4.msg("ring_power")
+MARKER:  C = lua:tutorial4.msg("undead")
+MARKER:  f = lua:tutorial4.msg("spell_success")
+MARKER:  D = lua:tutorial4.msg("mephitic_cloud")
+MARKER:  E = lua:tutorial4.msg("meph_reminder")
+MARKER:  F = lua:tutorial4.msg("aiming_clouds")
+MARKER:  g = lua:tutorial4.msg("spell_hunger")
+MARKER:  { = lua:one_way_stair { dst  = "tutorial_lesson4", \
+                                 onclimb = "tutorial4.exit" }
+epilogue{{
+  crawl.tutorial_hint("HINT_NEW_LEVEL")
+  crawl.clear_messages(true)
+  crawl.tutorial_msg("tutorial4 start")
+  tutorial_intro()
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx...xxxxxxx...xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx.d.........{.xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx...xxxxxxx...xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxx.xxxxxxxxxxxx...x.2.xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxx.xxxxxxxxxxx.....xxx..f.xxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxBxxxxxxxxxxx.2..xxxxxxxx.....xxxxxxxxxx
+xxxxxxxxxxxxx..wwwxxxxxxxx....xxxxxxxxxxxxx.3...xxxxx
+xxxxxxxxxxxxx..ww1xxxxxxx.xxxxxxxxxxxxxxxx.......xxxx
+xxxxxxxxxxxxx..wwwxxxxx..xxxxxxxxxxxxxxxxx.2...xxxxxx
+xxxxxxxxxxxxx..wwwxxx.Cxxxxxxxxxxxxxxxxxxxxx..xxxxxxx
+xxxxxxxxxxxxx......e.xxxxxxxxxxxxxxxxxxxxxxxxxDxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.8.xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.8.xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxExxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx}xxxxxxx4...xxxFxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx).....5g...4...xxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx]xxxxxx..4...xxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+##########################################################
+# Level 2: Forgetting spells, allies.
+##########################################################
+NAME:    tutorial_lesson4_level2
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson4
+PLACE:   D:2
+ORIENT:  encompass
+KFEAT:   ABCDE = .
+COLOUR:  dABCDEe = lightblue
+FTILE:   dABCDEe = tutorial_pad
+ITEM:    scroll of amnesia ident:type
+ITEM:    randbook numspells:1 spells:animate_skeleton title:Necromancy_for_Newbies owner:player
+ITEM:    never_decay bat skeleton / never_decay goblin; nothing skeleton
+ITEM:    never_decay ball python skeleton / never_decay jackal skeleton
+ITEM:    shield not_cursed
+ITEM:    ring mail not_cursed
+MONS:    hobgoblin
+MONS:    rat
+MONS:    goblin
+MONS:    gnoll; nothing
+MARKER:  d = lua:tutorial4.msg("forget_spell")
+MARKER:  e = lua:tutorial4.msg("memorise2")
+MARKER:  B = lua:tutorial4.msg("displace_allies")
+MARKER:  C = lua:tutorial4.msg("order_allies")
+MARKER:  D = lua:tutorial4.msg("heavy_armour")
+MARKER:  E = lua:tutorial4.msg("resting_reminder")
+MARKER:  } = lua:tutorial4.msg("tutorial_end")
+MARKER:  ) = lua:tutorial4.msg("tutorial_end")
+MARKER:  ] = lua:tutorial4.msg("tutorial_end")
+MARKER:  } = lua:one_way_stair { dst  = "tutorial_lesson4", \
+                                 desc = "exit from the tutorial", \
+                                 onclimb = "tutorial4.win" }
+MARKER:  ) = lua:one_way_stair { dst  = "tutorial_lesson4", \
+                                 desc = "exit from the tutorial", \
+                                 onclimb = "tutorial4.win" }
+MARKER:  ] = lua:one_way_stair { dst  = "tutorial_lesson4", \
+                                 desc = "exit from the tutorial", \
+                                 onclimb = "tutorial4.win" }
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx..xxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx......B.xxxx.T..xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx......B...x.fgf.xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxCCCxxxx...+.geg.....xxxxxxxxxxxxxxx
+xxxxxxxxxxx+++xxxxx..x.fgf.xxxx..xxxxxxxxxxxxx
+xxxxxxxxxx.....xxxxxxxx.T..xxxxxx.xxxxxxxxxxxx
+xxxxxxxxxx.....xxxxxxxxx..xxxxxxxxdxxxxxxxxxxx
+xxxxxxxxxx.....xxxxxxxxxxxxxxxxxxx.xxxxxxxxxxx
+xxxxxxxxxx.....xxxxxxxxxxxxxxxxxx...xxxxxxxxxx
+xxxxxxxxxx.....xxxxxxxxxxxxxxxxxx{([xxxxxxxxxx
+xxxxxxxxxx..1..xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxx.xxxx...xxxxxxxxxxxx.2..xxxxxxxxxx
+xxxxxxxxxxxx.xxx..h..xxxxxxxxGx.....4]xxxxxxxx
+xxxxxxxxxxxx.xxx.....xxxxxxxGf+...2....xxxxxxx
+xxxxxxxxxxxx......D........Efg+......3.)xxxxxx
+xxxxxxxxxxxxxxxx.....xxxxxxxGg+...3....xxxxxxx
+xxxxxxxxxxxxxxxx..i..xxxxxxxxGx.....2}xxxxxxxx
+xxxxxxxxxxxxxxxxx...xxxxxxxxxxxx2...xxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP

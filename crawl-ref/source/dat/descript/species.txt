@@ -1,0 +1,133 @@
+%%%%
+Barachi
+
+Barachim are amphibious humanoids who rebelled against the gods. They're fast
+learners and can hop long distances, but are otherwise slow and easily seen.
+%%%%
+Centaur
+
+Swift, strong and bulky, Centaurs are particularly skilled with ranged
+weaponry.
+%%%%
+Deep Dwarf
+
+Deep Dwarves live underground and cannot regenerate health naturally, but they
+are very resilient to damage, and have a limited ability to heal at will.
+%%%%
+Deep Elf
+
+Deep Elves have a strong affinity for all kinds of magic, but are very fragile.
+%%%%
+Demigod
+
+Demigods refuse to worship any god, but make up for this with divine attributes
+and high reserves of health and magic.
+%%%%
+Demonspawn
+
+Demonspawn are half human, half demon. They acquire strong demonic mutations as
+they grow.
+%%%%
+Draconian
+
+Draconians are versatile hybrids. They mature when reaching level 7 and develop
+a colour.
+%%%%
+Formicid
+
+Formicids are humanoid ants adept at digging. Their limbs are exceptionally
+strong and they live in a state of permanent stasis.
+%%%%
+Felid
+
+Felids are many-lived cats possessing sentience. They are incapable of advanced
+item manipulation or the use of armour or weapons.
+%%%%
+Ghoul
+
+Ghouls are undead creatures, damned to rot eternally. They have sharp claws,
+and they feed on decaying flesh to sustain themselves.
+%%%%
+Gargoyle
+
+Made of living stone, Gargoyles have a preternatural affinity for the earth.
+They have low health, but their stone bodies are incredibly tough.
+%%%%
+Gnoll
+
+Gnolls are canine-like humanoids. They have incredible proficiency and
+excellent physical attributes, but must learn all skills at once.
+%%%%
+Halfling
+
+Small but hardy, Halflings excel with slings. They have an increased resistance
+to mutagenic effects.
+%%%%
+Hill Orc
+
+Orcs are skilled in close combat, and often dabble in offensive magic. Hated by
+most, orcs are very proud and many of them feel superior.
+%%%%
+Human
+
+Humans advance quickly in levels and have equal abilities in most skills.
+%%%%
+Tengu
+
+Tengu are bird-people who love to fight, both with weapons and spells. They are
+quite fragile, but they learn to fly swiftly later on.
+%%%%
+Kobold
+
+Kobolds are small, mischievous and a little fragile, but multi-talented.
+%%%%
+Merfolk
+
+Half fish, half human, Merfolk are citizens of both water and land. They are
+strong combatants, and adept at using magic to assist in battle.
+%%%%
+Minotaur
+
+Minotaurs are large muscular humans with bovine heads. They excel at all forms
+of close and ranged combat.
+%%%%
+Mummy
+
+Compelled to walk by an ancient curse, Mummies are adept at Necromancy but
+learn other skills very slowly. They are unable to consume any food or potions.
+%%%%
+Naga
+
+Nagas are hybrids; human from the chest up, with a scaly, muscular torso
+trailing off like that of a snake. They move slowly but are naturally resilient.
+%%%%
+Octopode
+
+Octopodes are a species of amphibious cephalopods. They can wear eight rings,
+but almost no armour fits them.
+%%%%
+Ogre
+
+Large, strong, and extremely robust, Ogres are competent at all forms of melee.
+They are not merely brutes, as they are comfortable with spellcasting.
+%%%%
+Spriggan
+
+Very small, very frail and very fast, Spriggans make highly competent stabbers
+and spellcasters.
+%%%%
+Troll
+
+Trolls are monstrous creatures with powerful claws, always hungering for raw
+meat. They regenerate health rapidly.
+%%%%
+Vampire
+
+Shifting between the states of life and undeath, Vampires are accomplished
+stabbers and casters.
+%%%%
+Vine Stalker
+
+Frail symbionts, Vine Stalkers cannot regain health from devices or potions.
+Their magical reserves absorb damage, and they pack a magic-restoring bite.
+%%%%

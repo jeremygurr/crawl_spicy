@@ -1,0 +1,165 @@
+#########################################
+# Tutorial map 2: Monsters and combat   #
+#########################################
+
+{{
+require("dlua/tutorial.lua")
+
+tutorial2 = {}
+
+function tutorial2.msg(text)
+    return tutorial_msg("tutorial2 " .. text)
+end
+
+function tutorial2.exit ()
+    crawl.tutorial_msg("tutorial2 exit", true)
+end
+
+function tutorial2.win()
+    crawl.mark_game_won()
+    return tutorial2.exit()
+end
+}}
+
+NAME:    tutorial_lesson2
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial
+DESC:    "Lesson 2: Monsters and Combat"
+ORDER:   2
+ORIENT:  encompass
+KFEAT:   BCDFG = .
+KFEAT:   AE = +
+KFEAT:   n = iron_grate
+COLOUR:  deBCDFG = lightblue
+RTILE:   c = wall_vines
+FTILE:   dBCDFG = tutorial_pad
+ITEM:    quarterstaff mundane not_cursed
+SHUFFLE: 34
+MONS:    training dummy hp:10 ; whip mundane not_cursed
+MONS:    rat always_corpse
+MONS:    wyvern
+MONS:    ooze hp:10
+MARKER:  d = lua:tutorial2.msg("pickup_weapon")
+MARKER:  A = lua:tutorial2.msg("melee")
+MARKER:  B = lua:tutorial2.msg("resting")
+MARKER:  C = lua:tutorial2.msg("chop_corpses")
+MARKER:  D = lua:tutorial2.msg("rest_and_chop_reminder")
+MARKER:  E = lua:tutorial2.msg("wait")
+MARKER:  F = lua:tutorial2.msg("compare_monster_desc")
+MARKER:  G = lua:tutorial2.msg("resting_reminder")
+MARKER:  } = lua:tutorial2.msg("downstairs")
+MARKER:  { = lua:one_way_stair { dst  = "tutorial_lesson2", \
+                                 onclimb = "tutorial2.exit" }
+epilogue{{
+  -- Make the tutoree hungry for the chopping tutorial.
+  crawl.tutorial_hunger(2700)
+  crawl.tutorial_hint("HINT_NEW_LEVEL")
+  crawl.clear_messages(true)
+  crawl.tutorial_msg("tutorial2 start")
+  tutorial_intro()
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxx...xxxxxxxxxxxxx...xxx
+xxxxxx.2...xxxxxxxxxxx.....xx
+xxxxxx2.....E..2..C.+B.....xx
+xxxxxx.....xxxxxxxxxxx.....xx
+xxxxxxx2..xxxxxxxxxxxxx...xxx
+xxxxxxxxDxxxxxxxxxxxxxxx1xxxx
+xxxxxxxx.xxxxxxxxxxxxxxx.xxxx
+xcccccccFcccccccxxxxxxxx.xxxx
+xc3..n.....n..4cxxxxxxxxAxxxx
+xc...n.....n...cxxxxxxxx.xxxx
+xc...+.....+...cxxxxxxxxdxxxx
+xc+nnnnnnnnnnn+cxxxxxccc.cccx
+xc.............cxxxxxc.....cx
+xc.............cxxxxxc..{..cx
+xcccccccGcccccccxxxxxc.....cx
+xxxxxc.....cxxxxxxxxxcccccccx
+xxxxxc..}..cxxxxxxxxxxxxxxxxx
+xxxxxc.....cxxxxxxxxxxxxxxxxx
+xxxxxcccccccxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+
+##########################################################
+# Level 2: Ranged combat
+##########################################################
+NAME:    tutorial_lesson2_level2
+TAGS:    no_rotate no_monster_gen no_item_gen no_hmirror no_vmirror no_trap_gen no_pool_fixup tutorial_lesson2
+PLACE:   D:2
+ORIENT:  encompass
+RTILE:   x = wall_lair, c = wall_vines
+COLOUR:  .123f = brown
+FTILE:   .123f = floor_swamp, t = floor_grass
+KFEAT:   ,ABCDEF = .
+COLOUR:  deABCDEF = lightblue
+FTILE:   deABCDEF = tutorial_pad
+MONS:    training dummy hp:2 ; stone q:10
+MONS:    rat always_corpse
+MONS:    worm
+ITEM:    tomahawk mundane q:10
+ITEM:    shortbow mundane not_cursed
+ITEM:    arrow mundane q:30
+MARKER:  d = lua:tutorial2.msg("tomahawks")
+MARKER:  A = lua:tutorial2.msg("throwing")
+MARKER:  B = lua:tutorial2.msg("resting_reminder")
+MARKER:  e = lua:tutorial2.msg("wield_bow")
+MARKER:  C = lua:tutorial2.msg("travel_reminder")
+MARKER:  D = lua:tutorial2.msg("firing")
+MARKER:  E = lua:tutorial2.msg("explore")
+MARKER:  F = lua:tutorial2.msg("eat_reminder")
+# This is just for atmosphere.
+MARKER:  F = lua:fog_machine { cloud_type = "thin mist", pow_min = 10, \
+             pow_max = 10, delay = 10, start_clouds = 1, size_min = 2, \
+             size_max = 3, spread_rate = -1 }
+MARKER:  } = lua:tutorial2.msg("tutorial_end")
+MARKER:  ) = lua:tutorial2.msg("tutorial_end")
+MARKER:  ] = lua:tutorial2.msg("tutorial_end")
+MARKER:  } = lua:one_way_stair { dst  = "tutorial_lesson2", \
+                                 desc = "exit from the tutorial", \
+                                 onclimb = "tutorial2.win" }
+MARKER:  ) = lua:one_way_stair { dst  = "tutorial_lesson2", \
+                                 desc = "exit from the tutorial", \
+                                 onclimb = "tutorial2.win" }
+MARKER:  ] = lua:one_way_stair { dst  = "tutorial_lesson2", \
+                                 desc = "exit from the tutorial", \
+                                 onclimb = "tutorial2.win" }
+epilogue{{
+  crawl.clear_messages(true)
+  crawl.tutorial_msg("tutorial2 newlevel")
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxx..xxxxx.xx..}xxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxx.......x.xx.xxx.).xxxxxxxxxxxxxxxxxxxxxx
+xxxx.....2..x.x..xxxxxxx]xxxxxxxxxxxxxxxxxxxxx
+xxx.2..x......x....xxxxx.xxxxxxxxxxxxxxxxxxxxx
+xx.........xx.......xxx.xxxxxxxxxxxxxxxxxxxxxx
+xxx.F.......x...2.xxxx...xxxxxxxxxxxxxxxxxxxxx
+x.......tt........xxx....xxxxxxxxxxxxxxxxxxxxx
+xx....ttt..........x....xxxxxxxxxxxxxxxxxxxxxx
+xxx...tt.........xx.2.xxxxxxxxxxxxxxxxxxxxxxxx
+x............F......xxxxxxxxxxxxxxxxxxxxxxxxxx
+xx...x..........xxxxxxcccccccccxxxxxxxxxxxxxxx
+x............xxxxxxxxxc,,,,,,,cccccxxxxxxxxxxx
+xxx.....xxxxxxxxxxxxxxc,,{,d,,,,A,cxxxxxxxxxxx
+xxxxxExxxxxxxxxxxxxxxxc,,,,,,,ccc,cxxxxxxxxxxx
+xxxxxx..xxxxxxxxxxxxxxcccccccccxc,cxxxxxxxxxxx
+xxxxxxxx..B...xxxxxxxxxxxxxxxxxxc,cxxxxxxxxxxx
+xxxxxxxxxxxx....xxxxxxxxxxxxxxx.....xxxxxxxxxx
+xxxxxxxxxxxll...wwwxxxxxxxxxxx..WWW..xxxxxxxxx
+xxxxxxxxxxxlll.Ww1wwxxxxxxxxxx.WwwwW.xxxxxxxxx
+xxxxxxxxxxxl3l..wwwxxxxxxxxxxx.Ww1wW.xxxxxxxxx
+xxxxxxxxxxxlll.Wwxxxxxxxxxxxxx.WwwwW.xxxxxxxxx
+xxxxxxxxxxxxlx.xxxxxxxxxxxxxxx..WWW..xxxxxxxxx
+xxxxxxxxxxxxxxDxxxxxxxxxxxxxxxx.....xxxxxxxxxx
+xxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxxxBxxxxxxxxxxxx
+xxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxx.xxxxxxxxxxxx
+xxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxx.xxxxxxxxxxxx
+xxxxxxxxxxxxxxxx.xxxxxxxxxxxxxxxxCxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx..xxxxxxxxxxxxx.xxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxx..f.e..xxx...xxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP

@@ -1,0 +1,13 @@
+%%%%
+the Stairs card
+
+这张卡牌可以让楼梯靠近你或者远离你。（如果你遇到这张卡牌，说明你遇到 Bug了。）
+%%%%
+a buggy card
+
+Bug（如果你看到这条信息，说明你遇到Bug了。）
+%%%%
+a very buggy card
+
+Bug（如果你看到这条信息，说明你遇到Bug了。）
+%%%%

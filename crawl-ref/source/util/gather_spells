@@ -1,0 +1,15 @@
+#!/usr/bin/env perl
+
+use warnings;
+
+undef $/;
+open IN, "util/cpp_version spl-data.h|" or die "Can't read spl-data.h\n";
+$_ = <IN>;
+close IN;
+
+for (/\{\s*SPELL_\w+,\s*"([^"\n"]+)"/sg)
+{
+    next if /^[a-z]/; # dummy spells start with lowercase
+    next if $_ eq "Random Effects"; # wand-only spell
+    print "$_\n";
+}

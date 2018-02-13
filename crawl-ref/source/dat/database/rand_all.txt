@@ -1,0 +1,634 @@
+######################################################
+# Randart Names
+# -------------
+# rand_all.txt: keywords for randart JEWELLERY and
+#               those used for ALL randart types
+#
+# This file contains the lists of keywords (and their
+# weights) for keywords specific to randart jewellery
+# as well as those used for all three types of
+# randarts (weapons, armour, jewellery). You will find
+# other ones in rand_wpn.txt and rand_arm.txt.
+# See the explanation in the main file, randname.txt,
+# for more details.
+######################################################
+%%%%
+######################################################
+# Library of keywords used (mostly) for randart jewellery.
+######################################################
+_jewellery_animal_
+
+Firefly
+
+Scarab
+
+Death Scarab
+
+w:5
+Magpie
+
+w:5
+Raven
+%%%%
+_jewellery_special_name_
+
+Disaster
+
+Ephemeral Luck
+
+Wishful Thinking
+
+Moodiness
+
+Reimbursement
+
+the Tempest
+
+Finality
+
+Attitude
+
+Lady Luck
+
+Temptation
+
+False Pretenses
+
+# FIXME: should appear on amulets only
+Yendor
+%%%%
+_suspicion_name_
+
+Secrets
+
+Suspicion
+
+Mistrust
+
+Jealousy
+
+Incredulity
+
+Doubts
+
+Suspected Treachery
+
+Scepticism
+
+Trepidation
+
+w:20
+@_conflict_name_@
+%%%%
+######################################################
+# Library of keywords used for all randart types.
+######################################################
+# Used for god gifts from C++ side, as "of $GOD's @divine_esteem@".
+divine_esteem
+
+# good
+Esteem
+
+Favour
+
+Hope
+
+Regard
+
+Approval
+
+Delight
+
+Pride
+
+Generosity
+
+Supremacy
+
+Benevolence
+
+Whim
+
+# bad
+Displeasure
+
+Envy
+
+Castigation
+
+Condemnation
+
+Reproof
+
+w:70
+@_anger_name_@
+%%%%
+_xom_esteem_
+
+# chosen 20% of the time
+w:40
+@divine_esteem@
+
+Entertainment
+
+Best Wishes
+
+Amusement
+
+Ringing Laughter
+
+Bemusement
+
+Passing Interest
+
+Full Attention
+
+Whimsicality
+
+Capriciousness
+
+Sleight of Hands
+
+Flight of Fancy
+
+Absentmindedness
+
+Malicious Joy
+
+Fair Game
+
+Wantonness
+
+Recklessness
+%%%%
+_time_name_
+
+Day
+
+Midnight
+
+Twilight
+
+Dawn
+
+w:5
+Spring
+
+w:5
+Springtime
+
+w:5
+Summer
+
+w:5
+Summertime
+
+Autumn
+
+Winter
+
+Midsummer
+
+Midwinter
+
+the Solstice
+
+the Harvest
+
+Eternal Night
+
+Eternity
+
+Noon
+
+the Present
+
+the Morning
+
+the Evening
+
+the Equinox
+
+the Everdark
+
+the Distant Future
+
+the Past
+
+Yesterday
+
+Tomorrow
+%%%%
+_sky_colour_name_
+
+Black
+
+Blue
+
+Grey
+
+Orange
+
+Purple
+
+Red
+%%%%
+_sky_or_light_
+
+the Sun
+
+the Moon
+
+Light
+
+Darkness
+
+Dim Light
+
+the Shining Light
+
+Sunlight
+
+Starshine
+
+the Sky
+
+the Gloaming
+
+the Heavens
+
+the Skies Above
+
+the Endless Expanse
+
+the @_sky_colour_name_@ Skies
+%%%%
+_virtue_or_vice_
+
+w:5
+@_virtue_name_@
+
+@_valour_name_@
+
+@_vice_name_@
+%%%%
+_virtue_name_
+
+Virtue
+
+Truth
+
+Honesty
+
+Benevolence
+
+Devotion
+
+Generosity
+
+Grace
+
+Temperance
+
+Hospitality
+
+Charity
+
+Patience
+
+Modesty
+
+Discretion
+
+Wisdom
+
+Wariness
+
+Thoughtfulness
+
+Kindness
+
+Generosity
+
+Compassion
+
+Understanding
+%%%%
+_vice_name_
+
+# some of the deadly sins
+Sloth
+
+Vanity
+
+Gluttony
+
+Pride
+
+Greed
+
+# general immorality
+Sin
+
+the Original Sin
+
+Lies
+
+Dishonesty
+
+Cowardice
+
+Dishonour
+
+Impatience
+
+Immorality
+
+Amorality
+
+Untruth
+
+Spite
+
+Youthful Indiscretion
+
+Foolhardiness
+
+Recklessness
+
+Past Mistakes
+
+Moral Flaws
+%%%%
+_destiny_name_
+
+Causality
+
+Destiny
+
+Fate
+
+Karma
+
+Kismet
+
+Wyrd
+
+Doom
+
+%%%%
+_number_or_qualifier_
+
+# exact numbers
+the Three
+
+the Four
+
+the Five
+
+the Six
+
+the Seven
+
+the Eight
+
+the Nine
+
+the Ten
+
+the Eleven
+
+w:5
+the Twelve
+
+w:5
+the Dozen
+
+the Thirteen
+
+w:5
+the Twenty
+
+the Fifty
+
+w:5
+the Sixty-Six
+
+w:5
+the Seventy-Seven
+
+w:5
+the Ninety-Nine
+
+w:5
+a Hundred
+
+w:5
+the Hundredfold
+
+a Thousand
+
+a Million
+
+a Billion
+
+# vague numbers
+the
+
+the Many
+
+the Countless
+
+the Assorted
+
+the Manifold
+
+the Several
+
+# other qualifiers
+the Lost
+
+the Forgotten
+
+the Forsaken
+
+the Hidden
+
+the Last
+
+the Lonely
+
+the Jolly
+
+the Ancient
+
+the Exiled
+
+the Illusory
+
+the Pure
+
+the Peculiar
+
+the Special
+
+the First
+
+the Neverending
+
+the Endless
+
+the Lumpy
+
+the Disturbing
+
+the Secret
+
+the Wary
+
+the Crushed
+
+the Battered
+
+the Bruised
+
+the Unstoppable
+
+the Immovable
+
+the Foremost
+
+the Curious
+
+the Insatiable
+
+the Bouncing
+
+the Thirsty
+
+the Tired
+
+the Ageless
+
+the Aged
+
+the Inquisitive
+
+the Thoughtful
+
+the Well-Known
+
+the Sneaky
+
+the Final
+
+the Modern
+
+the Postmodern
+
+the Invisible
+
+the Vanishing
+
+%%%%
+_thing_names_
+
+Suns
+
+Moons
+
+Stars
+
+Planets
+
+Hells
+
+Lives
+
+Deaths
+
+Curses
+
+Blessings
+
+Gods
+
+Spirits
+
+Ghosts
+
+Demons
+
+Wars
+
+Mice
+
+Eyes
+
+Nights
+
+Orbs
+
+Runes
+
+Seas
+
+Places
+
+Realms
+
+Wishes
+
+Wonders
+
+Beds
+
+Beggars
+
+Cities
+
+Dances
+
+Lies
+
+Ships
+
+Songs
+
+Souls
+
+Tales
+
+Friends
+
+Allies
+
+People
+
+Lovers
+
+Dreams
+
+Scars
+
+Coins
+
+Continents
+
+Princes
+
+Queens
+
+Emperors
+
+Yaks
+
+Shrikes
+
+Stories
+
+Tables
+
+w:5
+Spreadsheets
+%%%%

@@ -1,0 +1,210 @@
+%%%%
+welcome
+
+<white>Welcome to Dungeon Crawl!</white>
+
+Your objective is to lead your <w>{{ return you.race() }} {{ return you.class()
+}}</w> safely through the depths of the dungeon, retrieving the fabled Orb of
+Zot and returning it to the surface. In the beginning, however, let discovery
+be your main goal. Try to delve as deeply as possible but beware; death lurks
+around every corner.
+
+For the moment, just remember the following keys and their functions:
+  <input>$cmd[CMD_DISPLAY_COMMANDS]?</input> — shows the items and the commands
+  <input>$cmd[CMD_SAVE_GAME]</input>  — saves the game, to be resumed later
+(but note that death is permanent)
+  <input>$cmd[CMD_LOOK_AROUND]</input>  — examines something in your vicinity
+
+The hint mode will help you play Crawl without reading any documentation. If
+you haven't yet, you might want to try out the tutorial. Also, if you feel
+intrigued, there is more information available in the following files from the
+docs/ directory (all of which can also be read in-game):
+  <lightblue>quickstart.txt</lightblue>     — A very short guide to Crawl.
+  <lightblue>crawl_manual.txt</lightblue>   — This contains all details on
+species, magic, skills, etc.
+  <lightblue>options_guide.txt</lightblue>  — Crawl's interface is highly
+configurable. This document explains all the options.
+
+Happy Crawling!
+%%%%
+death
+
+Condolences! Your character's premature death is a sad, but common occurrence
+in Crawl. Rest assured that with diligence and playing experience your
+characters will last longer.
+
+Perhaps the following advice can improve your playing style:
+%%%%
+death conjurer melee
+
+As a Conjurer your main weapon should be offensive magic. Cast spells more
+often! Remember to rest when your Magic is low.
+%%%%
+death berserker unberserked
+
+Don't forget to go berserk when fighting particularly difficult foes. It's
+risky, but makes you faster and beefier.
+{{
+    if you.hunger() < 3 then
+        return "Berserking is impossible while very hungry or worse, so " ..
+               "make sure to stay fed at all times, just in case you need " ..
+               "to berserk."
+    end
+}}
+%%%%
+death ranger melee
+
+Your bow and arrows are extremely powerful against distant monsters. Be sure to
+collect all arrows lying around in the dungeon.
+%%%%
+death random 0
+
+Always consider using projectiles, wands or spells before engaging monsters in
+close combat.
+%%%%
+death random 1
+
+Learn when to run away from things you can't handle — this is important! It is
+often wise to skip a particularly dangerous level. But don't overdo this as
+monsters will only get harder the deeper you delve.
+%%%%
+death random 2
+
+Rest between encounters, if possible in an area already explored and cleared of
+monsters. Pressing <input>$cmd[CMD_REST]</input><localtiles>, or
+<input>clicking on the 'rest' button in the command bar'</input></localtiles>
+will rest for 100 turns, or until fully healed.
+%%%%
+death random 3
+
+Remember to use those scrolls, potions or wands you've found. Learn to
+improvise: identify your items by using them.
+%%%%
+death random 4
+
+If a particular encounter feels overwhelming, don't forget to use emergency
+items early on. A scroll of teleportation or a potion of haste can really save
+your bacon.
+%%%%
+death random 5
+
+Never fight more than one monster, if you can help it. Always back into a
+corridor so that they are forced to fight you one on one.
+%%%%
+finished
+
+Congrats! You survived until the end of the hint mode — be sure to try the
+other ones as well. Note that the command help screen
+(<input>$cmd[CMD_DISPLAY_COMMANDS]?</input>) will look very different from now
+on. Here's a last playing hint:
+%%%%
+finished explored
+
+Walking around and exploring levels gets easier by using auto-explore
+(<input>$cmd[CMD_EXPLORE]</input>). Crawl will let you automatically move to
+and pick up interesting items.<localtiles>
+
+Autoexploration can also be started by <input>Ctrl-Leftclick</input> on the
+minimap.</localtiles>
+%%%%
+finished travel
+
+There is a convenient way to travel between distant dungeon levels: press
+<input>$cmd[CMD_INTERLEVEL_TRAVEL]</input> and enter the desired destination.
+If your travel gets interrupted, issuing <input>$cmd[CMD_INTERLEVEL_TRAVEL]
+Enter</input> will continue it.
+%%%%
+finished stashes
+
+You can search among all items existing in the dungeon with the
+<input>$cmd[CMD_SEARCH_STASHES]</input> command. For example,
+<input>$cmd[CMD_SEARCH_STASHES]</input> <w>“dagger”</w> will list all daggers,
+and allow you to travel to them. You can even search for dungeon features, like
+<w>“shop”</w> or <w>“altar”</w>.
+%%%%
+finished random 0
+
+The game keeps an automated log for your characters. Use
+<input>$cmd[CMD_DISPLAY_COMMANDS]:</input> to read it. Once your character
+perishes, two morgue files are left in the <w>morgue/</w> directory. The one
+ending in .txt contains a copy of your log. During play, you can create a dump
+file with <input>$cmd[CMD_CHARACTER_DUMP]</input>.
+%%%%
+finished random 1
+
+Crawl has a macro function built in: press <input>~m</input> to define a macro
+by first specifying a trigger key (say, <input>F1</input>) and a command
+sequence, for example <input>za.</input>. The latter will make the
+<input>F1</input> key always zap the spell in slot a at the nearest monster.
+For more information on macros, type
+<input>$cmd[CMD_DISPLAY_COMMANDS]~</input>.
+%%%%
+finished random 2
+
+The interface can be greatly customised. All options are explained in the file
+<w>options_guide.txt</w> which can be found in the <w>docs</w> directory. The
+options themselves are set in <w>init.txt</w> or <w>.crawlrc</w>. Crawl will
+complain if it can't find either file.
+%%%%
+finished random 3
+
+You can ask other Crawl players for advice and help on the <w>##crawl</w> IRC
+(Internet Relay Chat) channel on freenode (<w>irc.freenode.net</w>).
+%%%%
+dissection reminder
+
+Don't forget that you can butcher corpses with <input>$cmd[CMD_BUTCHER]</input>
+<localtiles>, or by clicking on corspes in the floor part of your inventory
+with the <input>left mouse button</input></localtiles>.
+%%%%
+HINT_CONVERT Xom
+
+You've just converted to worshipping <w>Xom</w>. You can keep Xom happy by
+keeping him amused; you absolutely do not want this god to grow bored with you!
+
+If you keep Xom amused he'll treat you like a plaything, randomly helping and
+harming you for his own amusement; otherwise he'll treat you like a disfavoured
+plaything.
+%%%%
+HINT_CONVERT Gozag
+
+You've just converted to worshipping <w>Gozag</w>. Unlike other gods, Gozag only
+cares about gold; each divine power costs gold, and they grow more expensive
+with use. Still, that gold won't do you any good if you're dead, and Gozag's
+Potion Petition can be a huge help in combat! If you run short on food, you can
+use Call Merchant to buy a food shop.
+%%%%
+HINT_CONVERT Ru
+
+You've just converted to worshipping <w>Ru</w>. Unlike other gods, Ru grants
+piety (divine favour) in exchange for personal sacrifices, like giving up your
+ability to drink potions while endangered; the more piety you have, the more
+abilities Ru will grant, and the more powerful those abilities will become.
+Ru will offer sacrifices as you explore the depths of the dungeon.
+%%%%
+HINT_CONVERT
+
+You've just converted to worshipping <w>{{ return you.god() }}</w>. Your piety
+(divine favour) will increase as you do things to please your new god, and will
+gradually decrease over time.
+
+You can check your god's likes and dislikes, as well as your current standing
+and divine abilities, by typing
+<input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>, or by pressing
+<input>Shift-right-click</input> on your avatar</localtiles>.
+%%%%
+HINT_SEEN_FIRST_OBJECT
+
+That <console>$1 </console>is an item. If you move there and press
+<input>$cmd[CMD_PICKUP]</input><tiles>, or <input>left-click</input> on it in
+your inventory</tiles>, you will pick it up.<console> Generally, items
+are shown by non-letter symbols like <w>%?!"=()[</w>.</console> Some
+objects<tiles>, marked with a green frame,</tiles> will be picked up
+automatically.
+
+Once it is in your inventory, you can drop it again with <tiles>a
+<input>Shift-left-click</input>. Whenever you <input>right-click</input> on an
+item</tiles><console><input>$cmd[CMD_DROP]</input>. Any time you look at an
+item in your inventory (<input>$cmd[CMD_DISPLAY_INVENTORY]</input>)</console>,
+you can read about its properties and its description.
+%%%%

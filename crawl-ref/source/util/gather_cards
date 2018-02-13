@@ -1,0 +1,10 @@
+#!/usr/bin/env perl
+
+use warnings;
+
+undef $/;
+open IN, "util/cpp_version decks.cc|" or die "Can't read decks.cc\n";
+$_ = <IN>;
+close IN;
+
+print "$_\n" for /CARD_[A-Z_]+: *return "([^"]+)";/g;

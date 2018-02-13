@@ -1,0 +1,61 @@
+This document explains how to build DCSS for Android, and some of the
+technical details.
+
+
+Introduction
+------------
+DCSS for Android employs SDL2's native support for Android applications;
+it is currently built against a distribution of  SDL2 v2.0.3 with some
+homegrown patches to allow it to interact with high resolution screens
+correctly. As with most Android applications, the build process is
+somewhat different from the traditional "./configure; make; make install"
+that you might expect.
+
+The Android port is known to build with the NDK's GCC 4.8 toolchain and
+clang toolchains.
+
+
+Build Process
+-------------
+
+ * Get the latest Android SDK from http://developer.android.com/sdk/index.html
+ * Run "android" and fetch the files for the android-12 platform
+ * Get the latest Android NDK, r10c at time of writing:
+   http://developer.android.com/sdk/ndk/index.html
+ * Configure your PATH. Assuming you've installed the SDK in $SDK and the
+   NDK in $NDK: export PATH=$SDK/tools:$SDK/platform-tools:$NDK:$PATH
+ * Ensure that you have all of the dependent host libraries required to
+   use the SDK, NDK and build crawl's host tools. For a recent Ubuntu host
+   these are:
+     - ia32-libs
+     - build-essential
+     - libpng-dev
+ * If you don't have them already, you need Oracle's JDK and ant installed.
+ * Run "NDK_TOOLCHAIN_VERSION=<version> make ANDROID=1 android", where
+   <version> is either a gcc version or clang (or clang-<version>).
+
+
+Project Structure
+-----------------
+At a high level, the SDL library and DCSS are laid out on disk as
+follows:
+
+crawl-ref/source/android-project
+  bin/                # Where the final .apk is generated.
+  src/                # Java code that wraps the native game and libs
+  jni/                # Where contrib libraries live, including SDL.
+
+Technical Notes
+---------------
+ * The external libraries that Crawl needs to build against are pulled from
+   the same "contrib" repositories that Win32 and OS X builds of Crawl
+   use.
+ * There are lots of Android specifics in the Makefile, because (a) the
+   custom toolchain needs lots of CFLAGS and LDFLAGS to work properly
+   and (b) the target paths for the data directory are completely
+   different to where the "executable" lives on Android, and also
+   completely different to the host OS.
+ * The majority of the changes to the DCSS code are changing GLES calls
+   so that they work correctly with Android's GLES implementation and
+   integrate properly with the Java-side SDL.
+ * The rltiles/ tools get compiled using native tools, not the NDK ones.

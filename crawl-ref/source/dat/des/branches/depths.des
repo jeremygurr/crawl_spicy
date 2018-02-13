@@ -1,0 +1,203 @@
+##############################################################################
+# depths.des: Depths entry vaults.
+#             At time of writing, Depths vaults are shared with D and
+#             tend to go in variable/*.des.
+##############################################################################
+
+##########################################################################
+# Depths entries.
+# U:1 is intended to be a considerable change of pace from earlier;
+# there is a single point of entry / exit between the two levels.
+# These vaults hold the stair to U:1 and some threats representative of
+# later in the dungeon to make it clear what to expect.
+##########################################################################
+
+{{
+function depths_entry(e)
+   e.tags("depths_entry uniq_depths_entry chance_depths_entry no_monster_gen")
+   e.place("D:$")
+   e.weight("20")
+   e.kfeat("O = enter_depths")
+   e.orient("float")
+end
+}}
+
+NAME: grunt_enter_depths_snipers
+TAGS: no_pool_fixup
+MONS: centaur warrior, yaktaur / cyclops w:2
+KMONS: O = yaktaur captain / frost giant w:4
+SUBST: - = ++c
+: depths_entry(_G)
+MAP
+ccccccccc
+c1+...+2c
+c.c.O.c.c
+c.c...c.c
+c.cc-cc.c
+c.w...w.c
+c.w...w.c
+c.w.w.w.c
+c.c.c.c.c
+cw..c..wc
+cww...wwc
+cccc+cccc
+ENDMAP
+
+# The idea here is to keep the stone giant on the island until the player is
+# ready to deal with it, and therefore proceed to the Depths.
+# XXX: Fire giant doesn't run out of ammo and thus encourage scumming.
+NAME: grunt_enter_depths_giant_problem
+SHUFFLE: JKLMN
+SUBST: J = l, K : ll., L : l., M : l.., N = .
+KMONS: O = patrolling fire giant
+: depths_entry(_G)
+WEIGHT: 12
+MAP
+  ....@....
+ ..LJLJLJL..
+..KKllxllKK..
+.LKxlllllxKL.
+.JlllMNMlllJ.
+..l.l...MllL.
+@l.l..O.NlxJ@
+..lll...MllL.
+.JlllMNMlllJ.
+.LKxlllllxKL.
+..KKllxllKK..
+ ..LJLJLJL..
+  ....@....
+ENDMAP
+
+NAME:    grunt_enter_depths_hoard
+MONS:    fire dragon, ice dragon
+ITEM:    $ no_pickup
+SHUFFLE: 12 / 12 / 11 / 22
+: depths_entry(_G)
+MAP
+  ccccccc
+ ccdddd.cc
+cc...1...ccccc
+cO.ccccc.....cc
+cc...2...cc...cc
+ ccdddd.ccc.G..cc
+  cccccccc.@.@..c
+ENDMAP
+
+NAME: grunt_enter_depths_magical_seal
+KMONS: O = ogre mage band / necromancer band
+MONS: wizard / deep elf mage / orc sorcerer / naga mage
+: depths_entry(_G)
+MAP
+  bbbbbbb
+ bb..1..bb
+bb.......bb
+b..bb+bb..b
+b..b...b..b
+b.1b.O.b1.b
+b..b...b..b
+b..bbbbb..b
+bb...1...bb
+ bb.....bb
+  bbb+bbb
+ENDMAP
+
+NAME: gammafunk_enter_depths_forms
+MONS: ugly thing w:8 / shapeshifter / rakshasa w:2
+MONS: glowing orange brain / boggart band w:6, slime creature band
+MONS: glowing shapeshifter
+NSUBST: . = 4:1 / *:., 3 = 1:2 / 1:3
+: depths_entry(_G)
+MAP
+ xxxxxx
+xx.x..x bbbb
+x.3...xbb..bb
+xx.xx..b....bb
+x..xxx...1...+
+x....xxb....bb
+xxbb.bbbb..bb
+ bb...bbbbbb
+bb.....bb
+b4.....3b
+bb.....bb
+ bbbObbb
+   bbb
+ENDMAP
+
+NAME: gammafunk_depths_entry_grave
+TAGS: patrolling
+KMONS: t = withered plant
+MONS: place:Depths:1 skeleton / place:Depths:1 zombie w:20, necromancer
+MONS: skeletal warrior / guardian mummy w:2
+KMONS: O = vampire mage w:15 / flayed ghost / phantasmal warrior
+NSUBST: . = 4:1 / 1:2 / 2:3 / *:.
+SUBST: . = .....--__tG
+TILE: G = dngn_gravestone
+FTILE: - = floor_pebble_brown
+FTILE: _ = floor_pebble_darkgray
+: set_feature_name("granite_statue", "a gravestone")
+: depths_entry(_G)
+MAP
+  ....@....
+ ...........
+.............
+.............
+.............
+.............
+@.....O.....@
+.............
+.............
+.............
+.............
+ ...........
+  ....@....
+ENDMAP
+
+NAME:    hangedman_depths_entry_try_elsewhere_first
+TAGS:    no_pool_fixup
+MONS:    hydra / ugly thing w:2, salamander / naga mage w:2
+MONS:    wolf spider / emperor scorpion w:2, manticore / merfolk w:2
+MONS:    large slime creature / great orb of eyes w:2
+KMONS:   O = dire elephant / glowing shapeshifter w:4
+SHUFFLE: 12345, +'X / XX'
+SUBST:   XY = x, '" = .
+: depths_entry(_G)
+MAP
+xxxx'''x..@
+x1.x.w.X.w.
+x..X...x...
+xxx'Xxx+xXx
+ xxx..2x..'
+ xxx.w.x.w'
+ xcc...X..'
+ xcOcxx'Xxx
+ xcccxxx..x
+ xxxxxxx.3x
+       xxxx
+ENDMAP
+
+NAME:    hangedman_depths_entry_civil_slaughter
+MONS:    two-headed ogre w:14 / yaktaur w:4 / tengu warrior w:8 / deep elf mage w:2
+MONS:    ogre mage w:14 / tengu conjurer w:6 / deep elf knight w:5 /\
+         deep elf archer w:5 / centaur warrior
+MONS:    deep troll w:14 / hell knight w:8 / orc sorcerer / shapeshifter w:4
+KMONS:   O = ettin w:14 / yaktaur captain w:2 / glowing shapeshifter w:2
+SUBST:   c : c:9 v:2 b:1
+SHUFFLE: 12 / 12 / 21
+: depths_entry(_G)
+MAP
+          .x...
+          ...1.
+      .....x...
+      .cccc.ccc
+      .cO..x...
+ xxxxx.c.....x
+ x2....c...x.x
+ x..x.x.x.x..x
+ x.x...c....2x
+ x...3.c.xxxxx
+...x..Tc.
+ccc.cccc.
+...x.....
+.1...
+...x.
+ENDMAP

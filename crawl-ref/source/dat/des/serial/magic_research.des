@@ -1,0 +1,260 @@
+################################################################################
+# Magic Research serial vault by HangedMan.
+# With reality being manipulated, warped, and adapted to random whims regularly,
+# the study of some specific rather magically-attuned monsters
+# might be of interest for further comprehension, or at least spellbook-writing.
+#
+# No dedicated casters, and almost no demons or dragons.
+# The former already possess significant understanding of specific subjects,
+# while the latter are mostly not particularly elementally attuned.
+#
+# Bring rEverything!
+#
+# Note:
+# Schools covered: Fire, Ice, Air, Earth, Poison, Necromancy,
+# Transmutations, Translocations, Summonings, Hexes.
+# Schools not covered: Charms, Conjurations. Too little to work with right now.
+# Other magic concepts might be interesting; additions are always welcome!
+
+default-depth: Depths, Vaults:1-4, Elf:1-2
+
+{{
+function init_research(e, disc)
+  e.tags('serial_research')
+  e.tags('no_monster_gen')
+  e.tags('patrolling')
+  e.weight('1')
+  if you.in_branch("Elf") then
+     e.kmons('0 = deep elf mage w:20 / deep elf knight w:5 / deep elf archer w:5')
+  else
+     e.kmons('0 = wizard / ogre mage / naga mage w:8 / deep elf mage')
+  end
+  e.kmask('@, = !no_monster_gen')
+  e.shuffle('abcdefghi')
+  e.subst('abcd = c')
+  e.subst('efg = v')
+  e.subst('hi = b')
+  e.colour('v = white')
+  e.tile('n = DNGN_TRANSPARENT_STONE_WHITE')
+  e.kitem('D = randbook disc:' .. disc .. ' numspells:' ..
+               5 + crawl.random2(2) .. ', star_item')
+end
+}}
+
+NAME:   serial_hangedman_research
+TAGS:   extra luniq_serial nolayout_encompass
+CHANCE: 0.5%
+{{
+  local c = 4 + crawl.random2(3)
+  hook("post_place", function()
+    dgn.place_maps{tag="serial_research", count=c}
+  end)
+}}
+
+################################################################################
+NAME:    hangedman_research_pyrotechnics
+MONS:    molten gargoyle, fire elemental, lava snake, lindwurm
+KMONS:   D = fire crab
+COLOUR:  .01234D = red
+FTILE:   .+01234D = floor_volcanic
+SHUFFLE: 34
+: init_research(_G, 'fire')
+MAP
+@'''@'''@
+abcd+dcba
+bllll..1b
+c2..lll1c
+d2l....ld
+a.llll00a
+b...4lllb
+cl33...Dc
+dcbadabcd
+ENDMAP
+
+NAME:   hangedman_research_thermodynamics
+TAGS:   no_pool_fixup
+MONS:   troll simulacrum / elephant simulacrum / \
+        black mamba simulacrum / naga simulacrum
+MONS:   hydra simulacrum / fire dragon simulacrum / \
+        harpy simulacrum / anaconda simulacrum
+MONS:   azure jelly
+KMONS:  4D = ice statue
+COLOUR: .01234D = white
+FTILE:  .w+01234D = floor_ice
+: init_research(_G, 'ice')
+MAP
+@'''@'''@
+abcd+dcba
+b01w.w10b
+c2w1w1w2c
+dw.w1w.wd
+a.w.w.w.a
+bwww2wwwb
+cD3.w.34c
+dcbadabcd
+ENDMAP
+
+NAME:   hangedman_research_electronics
+MONS:   air elemental / raiju / sky beast
+MONS:   lightning spire, ball lightning / shock serpent
+COLOUR: .v0123D = cyan
+FTILE:  .+v0123D = floor_rough_cyan
+TILE:   v = dngn_metal_wall_cyan
+: init_research(_G, 'air')
+MAP
+@'''@'''@
+abcd+dcba
+b3vv.vv3b
+c21v.v12c
+d.......d
+a...v...a
+b21...12b
+c3v0D0v3c
+dcbadabcd
+ENDMAP
+
+NAME:    hangedman_research_geology
+MONS:    basilisk, earth elemental, gargoyle / catoblepas
+KMONS:   D = iron dragon
+COLOUR:  .x012345D = brown
+FTILE:   .+x012345D = floor_pebble_brown
+TILE:    x = wall_pebble_brown
+: init_research(_G, 'earth')
+MAP
+@'''@'''@
+abcd+dcba
+b...x...b
+c0x1.1x0c
+d.2xxx2.d
+a.xxDxx.a
+b.x3.3x.b
+cx..x..xc
+dcbadabcd
+ENDMAP
+
+NAME:    hangedman_research_toxicology
+MONS:    spiny frog / black mamba, redback
+MONS:    sea snake / redback, hornet
+MONS:    mana viper / tarantella
+KMONS:   D = death drake
+KITEM:   E = potion of degeneration ident:type / \
+             potion of mutation ident:type
+COLOUR:  .012345DE = lightgreen
+FTILE:   .+n012345DE = floor_moss
+SHUFFLE: 12, 34
+: init_research(_G, 'poison')
+MAP
+@'''@'''@
+abcd+dcba
+b1n...n2b
+c1n...n2c
+dn+...+nd
+a0nEEEn0a
+b3nn+nn4b
+c3n5D5n4c
+dcbadabcd
+ENDMAP
+
+NAME:    hangedman_research_thanatology
+MONS:    macabre mass hd:4 / small abomination
+MONS:    place:Depths:$ skeleton, ghost crab, place:Depths:$ simulacrum
+KMONS:   D = bone dragon
+MARKER:  % = lua:fog_machine { cloud_type = "black smoke", pow_min = 10, \
+                pow_max = 20, delay = 40, size = 1, walk_dist = 0 }
+COLOUR:  .012345D% = w:20 lightgrey / w:5 darkgrey
+FTILE:   .+n012345D% = floor_tomb
+SHUFFLE: 1234
+: dgn.delayed_decay(_G, '%', 'ugly thing skeleton')
+: init_research(_G, 'necromancy')
+MAP
+@'''@'''@
+abcd+dcba
+b11n.n22b
+c1.n.n.2c
+d0n...n0d
+a.n.%.n.a
+b3.n.n.4b
+c33nDn44c
+dcbadabcd
+ENDMAP
+
+NAME:    hangedman_research_metamorphosis
+MONS:    wolf spider, ice beast, vampire bat, hog
+MONS:    insubstantial wisp, porcupine
+KMONS:   D = fire dragon
+COLOUR:  .0123456D = lightmagenta
+FTILE:   .n+0123456D = floor_nerves
+SHUFFLE: 1234, 56
+: init_research(_G, 'transmutation')
+MAP
+@'''@'''@
+abcd+dcba
+b.n...n.b
+c1n...n2c
+d3nn.nn4d
+a.0.5.0.a
+b.nnnnn.b
+c.6.D.6.c
+dcbadacbd
+ENDMAP
+
+NAME:   hangedman_research_quantum
+MONS:   insubstantial wisp w:7 / blink frog / jumping spider w:7, spatial vortex
+KMONS:  D = eldritch tentacle
+MARKER: D = lua:fog_machine { cloud_type = "translocational energy", \
+            pow_min = 3, pow_max = 10, delay = 50, size = 1, walk_dist = 1 }
+COLOUR: .012D = magenta
+FTILE:  .n+012D = floor_demonic_red
+: init_research(_G, 'translocation')
+MAP
+@'''@'''@
+abcd+dcba
+b.......b
+c.......c
+d.0nnn0.d
+a.nn2nn.a
+b+n121n+b
+c.11D11.c
+dcbadabcd
+ENDMAP
+
+NAME:    hangedman_research_convocations
+MONS:    boggart, worldbinder
+KMONS:   D = glowing orange brain
+MARKER:  ' = lua:fog_machine { cloud_type = "purple smoke", pow_min = 4, \
+                pow_max = 10, delay = 40, size = 2, walk_dist = 1 }
+# Note: these colours are to match the Hellbinder wizlab.
+COLOUR:  .'0123D = yellow
+FTILE:   .'n+0123D = floor_pebble_lightred
+SHUFFLE: 12
+: init_research(_G, 'summoning')
+MAP
+@'''@'''@
+abcd+dcba
+b0.....0b
+c+nnnnn+c
+d...'...d
+a'.1.1.'a
+b..nnn..b
+c2..D..2c
+dcbadabcd
+ENDMAP
+
+NAME:   hangedman_research_probablistics
+MONS:   eidolon, golden eye, great orb of eyes, sphinx
+MARKER: V = lua:fog_machine { cloud_type = "seething chaos", pow_min = 3, \
+                pow_max = 10, delay = 50, size = 1, walk_dist = 1 }
+COLOUR: .01234D = blue
+FTILE:  .Vn+01234D = floor_marble
+: init_research(_G, 'hexes')
+MAP
+@'''@'''@
+abcd+dcba
+b....n4Db
+c.V..n23c
+d....n12d
+a....n..a
+b.V..n..b
+c.....00c
+dcbadabcd
+ENDMAP

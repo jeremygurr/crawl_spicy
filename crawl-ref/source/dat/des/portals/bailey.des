@@ -1,0 +1,1197 @@
+##############################################################################
+#
+# Bailey! (Zaba and dpeg)
+#
+# A small portal vault fixated on nasty weapons. (Axes and polearms by now.)
+# Castle like layout, with inner bailey and moat. Medieval warfare themed.
+#
+# Currently, the depth is fixed at D:7-14 and Orc. It would be nice if the
+# portal vault could also appear deeper, with a harder monster set. For
+# example, draconians would be an option.
+#
+##############################################################################
+
+{{
+function bailey_portal(e, ptype)
+  local timeout_turns = crawl.random_range(600, 800)
+
+  local messager =
+    timed_msg {
+      initmsg = { "You hear the roar of battle.",
+                  "There is an entrance to a bailey on this level. "
+                  .. "Hurry and find it before the portal closes forever!" },
+      finalmsg = "$F{The} has been lowered almost to the ground.",
+
+      verb = 'creaking',
+      noisemaker = 'portcullis',
+        ranges = {
+          { 5000, 'faint ' },  { 4000, '' },
+          { 2500, 'steady ' }, { 1500, 'quick ' },
+          { 0, 'loud ' }
+      }
+    }
+
+  dgn.persist.bailey_type = "bailey_" .. ptype
+
+  e.lua_marker('O',
+      timed_marker {
+        disappear = "The portal closes with a thud.",
+        entity = 'portcullis',
+        bailey_type = ptype,
+        turns = timeout_turns,
+        single_timed = true,
+        floor = "stone_arch",
+        feat_tile = "dngn_portal_bailey_gone",
+        msg = messager })
+  e.tags("uniq_bailey chance_bailey")
+  e.chance(500)
+
+  e.kfeat("O = enter_bailey")
+  e.tile("c = wall_stone_smooth")
+end
+
+function bailey_portal_axe(e)
+  bailey_portal(e, 'axe')
+end
+
+function bailey_portal_polearm(e)
+  bailey_portal(e, 'polearm')
+end
+
+-- colours
+function bailey_setup(e)
+  e.kfeat("< = exit_bailey")
+end
+
+-- In order to avoid repeating the lengthy monster definitions:
+
+-- Axes.
+function axe_returning(e)
+  e.mons("generate_awake kobold ; tomahawk ego:returning ident:type q:4 | \
+                                  tomahawk ego:returning ident:type q:3 / \
+          generate_awake hobgoblin ; tomahawk ego:returning ident:type q:4 | \
+                                     tomahawk ego:returning ident:type q:3")
+end
+
+function kobold_axe_returning(e)
+  e.mons("generate_awake kobold ; tomahawk ego:returning ident:type q:4 | \
+                                  tomahawk ego:returning ident:type q:3")
+end
+
+function easy_axe_fighter(e)
+  e.mons("w:3 orc warrior ; hand axe w:60 | war axe . ring mail / \
+          w:7 gnoll ; hand axe w:60 | war axe . leather armour / \
+          w:10 hobgoblin ; hand axe w:60 | war axe . leather armour / \
+          w:10 orc ; hand axe w:60 | war axe . leather armour / \
+          w:12 goblin ; hand axe w:60 | war axe . leather armour")
+end
+
+function hard_axe_fighter(e)
+  e.mons("w:8 orc warrior ; war axe | broad axe w:2 | battleaxe w:1 . \
+                            ring mail | scale mail | chain mail | plate armour / \
+          w:2 orc knight ; war axe | broad axe w:2 | battleaxe w:1 . \
+                           ring mail | scale mail | chain mail | plate armour")
+end
+
+-- Polearms.
+function orc_with_polearm(e)
+  e.mons("orc ; \
+          spear | trident | halberd . \
+          ring mail | scale mail | chain mail")
+end
+
+function orc_warrior_with_polearm(e)
+  e.mons("orc warrior ; \
+          spear w:5 | trident w:5 | halberd | glaive | bardiche w:1 . \
+          ring mail | scale mail | chain mail | plate armour |\
+          crystal plate armour w:1")
+end
+
+function orc_knight_with_polearm(e)
+  e.mons("orc knight ; \
+          trident w:5 | halberd | glaive | bardiche w:1 . \
+          ring mail | scale mail | chain mail | plate armour | \
+          crystal plate armour w:1")
+end
+
+-- defined but not used, since the depth for the current entry vaults is 7-14
+function orc_warlord_with_polearm(e)
+  e.mons("orc warlord ; \
+          halberd | glaive | bardiche w:1 . \
+          chain mail w:20 | plate armour | crystal plate armour w:1")
+end
+
+}}
+
+# Basic bailey entries ##########################################
+default-depth: D:7-14, Orc, !Orc:$
+
+NAME: enter_bailey_1
+TAGS: transparent
+WEIGHT: 1
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+:   bailey_portal_polearm(_G)
+: end
+MAP
+O
+ENDMAP
+
+NAME: enter_bailey_2
+TAGS: transparent
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+ITEM: hand axe
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+ITEM: halberd / spear
+:   bailey_portal_polearm(_G)
+: end
+MAP
+.....
+..d..
+.dOd.
+..d..
+.....
+ENDMAP
+
+NAME: enter_bailey_3
+TAGS: transparent
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+MONS: goblin ; hand axe
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+MONS: goblin ; spear
+:   bailey_portal_polearm(_G)
+: end
+KMASK: wW = no_monster_gen
+MAP
+.........
+.wwwwwww.
+.wcccccw.
+.wc.1.cw.
+.wc1O1cw.
+.wc.1.cw.
+.wcc.ccw.
+.wwwWwww.
+.........
+ENDMAP
+
+NAME:   enter_bailey_4
+TAGS:   transparent
+WEIGHT: 5
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+MONS:   goblin ; hand axe / hobgoblin ; hand axe / orc ; hand axe
+MONS:   goblin ; tomahawk ego:returning ident:type q:4 | \
+                 tomahawk ego:returning ident:type q:3 / \
+        hobgoblin ; tomahawk ego:returning ident:type q:4 | \
+                    tomahawk ego:returning ident:type q:3 / \
+        orc ; tomahawk ego:returning ident:type q:4 | \
+              tomahawk ego:returning ident:type q:3
+SUBST: 1 = 122
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+MONS:   goblin ; spear / hobgoblin ; spear / orc ; spear
+:   bailey_portal_polearm(_G)
+: end
+KMASK: wW = no_monster_gen
+MAP
+...........
+.wwwwwwwww.
+.wcccccccw.
+.wc>...Ocw.
+.wc11111cw.
+.wcc+++ccw.
+.wwwwwwwww.
+.wwwwwwwww.
+...........
+ENDMAP
+
+NAME: enter_bailey_5
+TAGS: transparent
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+MONS: goblin ; tomahawk ego:returning ident:type q:4 | \
+               tomahawk ego:returning ident:type q:3
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+MONS: goblin ; spear
+:   bailey_portal_polearm(_G)
+: end
+KMASK: wW = no_monster_gen
+MAP
+.......
+.wwwww.
+.w1>1w.
+.w.O.w.
+.w1.1w.
+.wwwww.
+.......
+ENDMAP
+
+NAME:   enter_bailey_6
+TAGS:   transparent
+WEIGHT: 3
+COLOUR: ; : red / lightred
+SUBST:  ; = .
+KMASK:  d = no_item_gen
+KMASK:  d = no_monster_gen
+KPROP:  d = no_tele_into
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+KITEM:  d = unobtainable war axe / unobtainable battleaxe
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+KITEM:  d = unobtainable glaive / unobtainable bardiche
+:   bailey_portal_polearm(_G)
+: end
+MAP
+.......ooo.......
+..ooo..odo..ooo..
+..odo..ooo..odo..
+..ooo.......ooo..
+.................
+ooo....;;;....ooo
+odo....;O;....odo
+ooo....;;;....ooo
+.................
+..ooo.......ooo..
+..odo..ooo..odo..
+..ooo..odo..ooo..
+.......ooo.......
+ENDMAP
+
+# They were just having a party.
+NAME:   enter_bailey_7
+WEIGHT: 3
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+MONS:   gnoll ; hand axe / goblin ; hand axe
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+MONS:   gnoll ; spear / goblin ; spear
+:   bailey_portal_polearm(_G)
+: end
+SUBST:  . = ...;!
+COLOUR: ; = red
+KITEM:  ! = potion of degeneration q:2 ident:type
+KFEAT:  ! = floor
+SUBST:  ; = .
+MAP
+x@x  xxxxxxx
+x.x  x...1.x
+x.xxxx.1...x
+x....+..O..x
+x.xxxx...1.x
+x.x  x.1...x
+x@x  xxxxxxx
+ENDMAP
+
+NAME:   enter_bailey_8
+WEIGHT: 3
+COLOUR: n = red
+KMASK:  d = no_item_gen
+KMASK:  d = no_monster_gen
+KPROP:  d = no_tele_into
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+KITEM:  d = unobtainable war axe / unobtainable battleaxe
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+KITEM:  d = unobtainable glaive / unobtainable bardiche
+:   bailey_portal_polearm(_G)
+: end
+MAP
+ xxxxxxxxxxxxxxxxxxx
+ x.................@
+ ccccccooocccccooocc
+ c.....odo.....odoOc
+ c.ooo.ooo.ooo.ooo.c
+@+.odo.....odo.....c
+ ccooocccccooocccccc
+ x.................@
+ xxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+NAME: lightli_bailey_entry_fortress
+TAGS: transparent
+WEIGHT: 1
+: local rnd = crawl.random2(2)
+: if rnd == 0 then
+MONS: orc ; tomahawk ego:returning ident:type q:3 | \
+            tomahawk ego:returning ident:type q:4 . hand axe
+MONS: gnoll ; hand axe / goblin ; hand axe
+:   bailey_portal_axe(_G)
+: elseif rnd == 1 then
+MONS: orc ; spear, gnoll ; spear / goblin ; spear
+:   bailey_portal_polearm(_G)
+: end
+KMASK: W = no_monster_gen
+MAP
+WWWWWWWWWWWWWWW
+Wccc.2.1.2.cccW
+WcccccccccccccW
+WcccccccccccccW
+W.ccccccccccc.W
+W2ccccccccccc2W
+W.ccccccccccc.W
+W1ccccccccccc1W
+W.ccccccccccc.W
+W2ccccccccccc2W
+W.ccccccccccc.W
+WcccccccccccccW
+WcccccvOvcccccW
+Wccc.2.1.2.cccW
+WWWWWWWWWWWWWWW
+ENDMAP
+
+# The actual portal vaults #####################################
+default-depth:
+
+NAME:   bailey
+TAGS:   allow_dup
+PLACE:  Bailey
+ORIENT: encompass
+{{
+  local btype = dgn.persist.bailey_type
+  if not btype then -- Wizmode
+    if crawl.coinflip() then
+      btype = "bailey_axe"
+    else
+      btype = "bailey_polearm"
+    end
+  end
+  if crawl.game_started() then
+    local map = dgn.map_by_tag(btype)
+    assert(map, "Couldn't find a map for " .. btype)
+    dgn.place_map(map, false, false)
+  end
+}}
+MAP
+ENDMAP
+
+##########
+#        #
+#  AXES  #
+#        #
+##########
+
+############################################################################
+# A bailey.
+#
+# It's not human and it's got an axe.
+#                 -- The Prey (1981)
+#
+# Loot consists of approximately six good items.
+NAME:   bailey_axe_1
+ORIENT: encompass
+TAGS:   bailey_axe no_rotate no_item_gen no_monster_gen no_pool_fixup
+#
+ITEM:   any good_item w:10 / nothing w:5
+#
+: kobold_axe_returning(_G)
+: easy_axe_fighter(_G)
+: hard_axe_fighter(_G)
+#
+# Starting room flavour. You cannot actually get the axes.
+SHUFFLE: BC/BC/oF
+SHUFFLE: DE/DE/oF
+SUBST:   B = X, C = X, D = X, E = X
+KMASK:   F = no_item_gen
+KPROP:   F = no_tele_into
+KITEM:   F = unobtainable good_item broad axe w:5 / unobtainable broad axe /\
+             unobtainable war axe / unobtainable good_item war axe w:5 /\
+             unobtainable good_item executioner's axe w:1
+#
+# Yes, I want everyone to wake up.
+KFEAT: ~ : known alarm trap / floor
+#
+# There is only one way up. You have to pass near the axe-throwing kobolds
+# twice. This is intended. Teleportation traps ensure you won't get
+# stranded.
+NSUBST: s = T / .
+NSUBST: t = T / .
+KFEAT:  T = known permanent teleport trap
+: bailey_setup(_G)
+MAP
+  XXXXXXXXX
+  XXXXEXXXX
+  XXXXDXXXX
+  XXX.A.XXX
+  XCB~~~BCX
+  XXX.<.XXX
+cccccc+cccccc
+c<1..w.w..1<c
+c+cccw.wccc+c
+ct1..w.w..1sc
+c+cccw.wccc+c
+ct1..w.w..1sc
+c+cccw.wccc+c
+ct1..w.w..1sc
+c+cccw.wccc+c
+ct1..w.w..1sc
+c+cccw.wccc+c
+ct1..w.w..1sc
+c+cccw.wccc+c
+ct1..w.w..1sc
+c+cccw.wccc+c
+ct1..w.w..1sc
+cccccc+cccccc
+    c...c
+    c.3.c
+    c222c
+cccccc+cccccc
+cd.2c...c2.dc
+cd.23.I.32.dc
+cd.2c...c2.dc
+cccccc3cccccc
+    c222c
+    c...c
+    cdddc
+    ccccc
+ENDMAP
+
+############################################################################
+# Bailey 2.
+#
+# Apart from weapons and armours left by the monsters, there are about 10
+# potions useful in battle. If those monsters drink them first, of course...
+# Plus, there is always one stack of very good potions.
+NAME:   bailey_axe_2
+ORIENT: encompass
+TAGS:   bailey_axe no_rotate
+: axe_returning(_G)
+MONS:   gnoll ; mundane halberd | halberd ego:electrocution ident:type
+MONS:   orc warrior / orc knight
+NSUBST: e = 1:e / *:d
+ITEM:   potion of curing / potion of heal wounds / potion of magic / potion of mutation /\
+        potion of might w:5 / potion of haste w:2 / potion of berserk rage w:3
+ITEM:   potion of experience q:1 / scroll of acquirement q:1
+: bailey_setup(_G)
+MAP
+ccc ccc ccccc ccc ccc
+cAccc1ccc2+2ccc1ccc1c
+cc+cc+cc+ccc+cc+cc+cc
+ cc.....cc cc.....cc
+ccc.....ccccc.....ccc
+c1+..<..+1c1+..T..+1c
+ccc.....ccccc.....ccc
+ cc....dcc ccd....cc
+cc+cc+cc+ccc+cc+cc+cc
+c1ccc1ccc2c2ccc1ccc2c
+ccc ccc ccncc ccc c+c
+c1ccc1ccc2c2ccc1ccc2c
+cc+cc+cc+ccc+cc+cc+cc
+ cce.e.ecc ccd....cc
+ccc.e2e.ccccc.....ccc
+c1+e2U3e+1c1+..Y..+1c
+ccc.e2e.ccccc.....ccc
+ cce.e.ecc cc.....cc
+cc+cc+cc+ccc+cc+cc+cc
+c<ccc1ccc2+2ccc1ccc1c
+ccc ccc ccccc ccc ccc
+ENDMAP
+
+############################################################################
+# Another actual bailey. Six good items.
+NAME:   bailey_axe_3
+ORIENT: encompass
+TAGS:   bailey_axe no_rotate no_item_gen no_monster_gen no_pool_fixup
+SUBST:  v : ccv
+ITEM:   any good_item
+KFEAT:  _ = altar_trog / altar_okawaru / altar_makhleb
+KFEAT:  T = known permanent teleport trap
+#
+# Monsters defined in the header. Do not change order!
+: kobold_axe_returning(_G)
+: easy_axe_fighter(_G)
+: hard_axe_fighter(_G)
+#
+: bailey_setup(_G)
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx.....xxxxxxxxxxx
+xxxxxxxxxx...A...xxxxxxxxxx
+xxxxxxxxxx.......xxxxxxxxxx
+xxxxxxxxxxx..<..xxxxxxxxxxx
+xxxxxxxxxxxc+++cxxxxxxxxxxx
+xxxxxxxxxxxc...cxxxxxxxxxxx
+xxxxxxxxcccc...ccccxxxxxxxx
+xxxxxxxccw.......wccxxxxxxx
+xxxcccccww.......wwcccccxxx
+xxxc<+1+ww.......ww+1+<cxxx
+xxxc.cccww.......wwccc.cxxx
+xxxc.+1+ww.......ww+1+.cxxx
+xxxc.cccww.......wwccc.cxxx
+xxxc.+1+ww.......ww+1+.cxxx
+xxxc.cccww.......wwccc.cxxx
+xxxc.+1+ww.......ww+1+.cxxx
+xxxc.cccww.......wwccc.cxxx
+xxxcT+1+ww.......ww+1+Tcxxx
+xxxcccccww.......wwcccccxxx
+xxxxxxxccw.......wccxxxxxxx
+xxxxxxxxcccc+++ccccxxxxxxxx
+xxxxxxxxxcc.....ccxxxxxxxxx
+xxxxxxxxxc<d.3.d<cxxxxxxxxx
+xxxxxxxxxc...G...cxxxxxxxxx
+xxxxxxxxxcc.....ccxxxxxxxxx
+xxxxxxxxxxcvv+vvcxxxxxxxxxx
+xxxxxxxxvvvv...vvvvxxxxxxxx
+xxxxxxvvv.........vvvxxxxxx
+xxxxxvv.............vvxxxxx
+xxxxxv....2..2..2....vxxxxx
+xxxxxv...............vxxxxx
+xxxxxvv.............vvxxxxx
+xxxxxxvvv.dd...dd.vvvxxxxxx
+xxxxxxxxvvvv3_3vvvvxxxxxxxx
+xxxxxxxxxxxvvvvvxxxxxxxxxxx
+ENDMAP
+
+############################################################################
+# River.
+#
+# There will be either a ring of flight or three potions.
+# Loots consists of six good items.
+#
+NAME:    bailey_axe_4
+ORIENT:  encompass
+TAGS:    bailey_axe no_rotate no_item_gen no_monster_gen no_pool_fixup
+#
+ITEM:    any good_item
+ITEM:    potion of flight ident:type
+ITEM:    ring of flight ident:type
+SUBST:   e : eeef
+NSUBST:  f = 1:f / *:.
+SHUFFLE: EB / XY / XY / XY
+SUBST:   X = c, Y = +
+NSUBST:  E = 1:+ / *:c
+SUBST:   B = c
+SHUFFLE: CD / XY / XY / XY
+SUBST:   X = c, Y = +
+NSUBST:  C = 1:+ / *:c
+SUBST:   D = c
+#
+KFEAT:   ^ = known alarm trap
+SUBST:   W = w:2 .:1 W:1
+SUBST:   ? = c.
+SUBST:   N = nc
+SUBST:   H = W.
+# the following KMONS duplicates monster 1 from kobold_axe_returning
+KFEAT:   ( = exit_bailey
+KMONS:   ( = generate_awake kobold ; tomahawk ego:returning ident:type q:4 | \
+                                     tomahawk ego:returning ident:type q:3
+#
+: kobold_axe_returning(_G)
+: easy_axe_fighter(_G)
+: hard_axe_fighter(_G)
+SUBST:   2 = 223
+#
+: bailey_setup(_G)
+MAP
+ccccccccccccccccccccccccccccccccccccccccccccccccccc
+cccccccccccccccccccccccccc..??.d.??d<cccccccccccccc
+ccccccccccccccccccccccccc.??..???..?ccccccccccccccc
+ccccccccccccccccccccccccc.ccccccccccccccccccccccccc
+ccccccccccccc.......................ccccccccccccccc
+cccccccccc...........ccccccccc.......cccccccccccccc
+ccccccccc....2....c+cc...3...ccccCc..cccccccccccccc
+cccccccc....2T2...c..c.2.d.2.c.1CdC...ccccccccccccc
+ccccccccc....2..cEc..c.2...2.c..cDc...1cwwwwcccwwwc
+ccccccccccc.....EdB..cccc+cccc..+dc..Wwwwwwwwwwwwwx
+cccwwwwwwc1.1...cEc...^.....^...ccc1Wwwwwwwwwwwwxxx
+cwwwwwwwwwwwW1.1..c1.cccc+cccc.1c1Hwwwwwwwxxxxxxxxx
+xwwwxxxwwwwwwwwwW1cncc..2.2..ccncwwwwwwxxxxxxxxxxxx
+xxxxxxxxx....Wwwwwww(c.2.2.2.c(wwwwwxxxxxxxxxxxxxxx
+xxxxxxxxxx......Wwwwwccncncnccwwwwxxxxxxxxxxxxxxxxx
+xxxxxxxxxxx.......Wwwwwwwwwwwwwwxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx........WwwwwwwwWxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx...e.........xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxx...e..<..xxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxx....e..xxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxx.......xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx.........xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx....A....xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx.........xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxx.......xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+NAME:   bailey_axe_minmay_hex_keep
+ORIENT: encompass
+TAGS:   bailey_axe no_item_gen no_monster_gen
+# Loot consists of 8 good potions and scrolls in the last outer room, with a
+# lot of gold and especially good items in the (very dangerous) center room.
+#
+# I believe that loot is a bit much, but other baileys suffer from that as
+# well... added the warlord in an attempt to make it more even.  --dpeg
+ITEM:   potion of curing / potion of heal wounds / potion of resistance w:5 / \
+        potion of might w:5 / potion of brilliance w:5 / potion of agility w:5 / \
+        potion of magic w:5 / potion of haste w:5 / \
+        scroll of teleportation / scroll of blinking / scroll of identify / \
+        scroll of enchant weapon w:5 / scroll of enchant armour w:5
+ITEM:   potion of experience q:1 / scroll of acquirement q:1
+: easy_axe_fighter(_G)
+: hard_axe_fighter(_G)
+MONS:   orc warlord
+: bailey_setup(_G)
+SUBST:  I = t.
+MAP
+ttttttttttttttttttttttttttttttttttttt
+ttttttttttttttttttttttttttttttttttttt
+tttttttttttttttcccccccttttttttttttttt
+ttttttttttttttccdd<ddcctttttttttttttt
+ttttttttttttttcdd...ddctttttttttttttt
+tttttttttttttcc.......ccttttttttttttt
+tttttttttttttc.........cttttttttttttt
+ttttttttttttcc.1.....1.cctttttttttttt
+ttttttccccccc2...1T1...2ccccccctttttt
+tttttcc1...1cc.1.....1.cc1...1ccttttt
+tttttc.......+....2....+.......cttttt
+ttttcc.......cc.1...1.cc.......cctttt
+ttttc.........c.......c.........ctttt
+tttcc...1.1...ccGG.GGcc...1.1...ccttt
+tttc1....T....1ccc+ccc1....T....1cttt
+tttcc...1.1...ccc...ccc...1.1...ccttt
+ttttc.........c1.....1c.........ctttt
+ttttcc.......cc..1.1..cc.......cctttt
+tttttc.......c2.......2c.......cttttt
+tttttcc1...1cc..1...1..cc1...1ccttttt
+ttttttcc+cccc2....3....2cccc+cctttttt
+tttttcc.....cc..1...1..cc.....ccttttt
+tttttc1.....1c2.......2c1.....1cttttt
+ttttcc.......cc.......cc.......cctttt
+ttttc1.......1c|$$$$$|c1.......1ctttt
+tttcc.........cc$e$e$cc.........ccttt
+tttc1....T....1ccccccc1....T....1cttt
+tttcc.........cc1.1.1cc.........ccttt
+ttttc1.......1c.......c1.......1ctttt
+ttttcc.......cc1.....1cc.......cctttt
+tttttc1......+.........+......1cttttt
+tttttcc.....cc.........cc.....ccttttt
+ttttttccccccc.....T.....ccccccctttttt
+ttttttttttttcc.........cctttttttttttt
+tttttttttttttc.........cttttttttttttt
+tttttttttttttcc.......ccttttttttttttt
+ttttttttttttttc.......ctttttttttttttt
+ttttttttttttttcc.....cctttttttttttttt
+tttttttttttttttcc+++ccttttttttttttttt
+ttttttttttttttI.......Itttttttttttttt
+ttttttttttttttI.......Itttttttttttttt
+tttttttttttttI....<....Ittttttttttttt
+tttttttttttttI.........Ittttttttttttt
+tttttttttttttI....A....Ittttttttttttt
+tttttttttttttI.........Ittttttttttttt
+ttttttttttttttII.....IItttttttttttttt
+ttttttttttttttttIIIIItttttttttttttttt
+ttttttttttttttttttttttttttttttttttttt
+ttttttttttttttttttttttttttttttttttttt
+ENDMAP
+
+##############
+#            #
+#  POLEARMS  #
+#            #
+##############
+
+############################################################################
+# A polearm bailey.
+#
+# Loot consists of three items, among them one piece of good heavy body
+# armour and another piece of good additional armour. Apart from what the
+# orcs leave lying around.
+#
+NAME:   bailey_polearm_1
+ORIENT: encompass
+TAGS:   bailey_polearm no_rotate no_pool_fixup no_monster_gen
+NSUBST: D = 1:+ / *:c
+NSUBST: E = 1:+ / *:c
+: orc_with_polearm(_G)
+: orc_warrior_with_polearm(_G)
+: orc_knight_with_polearm(_G)
+SUBST:  2 = 223.
+SUBST:  1 = 1 2:1 .
+ITEM:   good_item crystal plate armour / good_item plate armour /\
+        good_item gold dragon scales w:5 / good_item ice dragon scales w:5 /\
+        good_item fire dragon scales w:5 / good_item steam dragon scales w:5
+ITEM:   good_item cloak / good_item pair of gloves /\
+        good_item helmet / good_item pair of boots /\
+        good_item large shield / good_item shield
+: bailey_setup(_G)
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xAxxxxxxxxxxx.........xxxxxxxxxxxxx
+xx<..xxxxxxx..wwwwwww..xxxxxxxxxxxx
+xxxxx...xx...ww.....ww..xxxxxxxxxxx
+xxxxxxxx.xx..w..ccc..ww..xxxxxxxxxx
+x.........xx...cc.cc..ww..........x
+x.wwwwwwwxxxxxccd|ecc..wwwwwwwwww.x
+x.w..xxxxxxxxcc.....cc1..1..1..1w.x
+x.w.ccncccccccccc+ccccccccccncc.w.x
+x.w1cc.$$$.cc.........cE....2cc1w.x
+x.w..nc.$.cc..lllllll..EE...cn..w.x
+x.ww1.cc.cc..ll..2..ll..Ec.cc.1ww.x
+x<.ww..c+c..ll2..T..2ll..c+c..ww.xx
+xx.ww..c+c..ll..T<T..ll..c+c..ww.<x
+x.ww1.cc.cD..ll2...2ll..cc.cc.1ww.x
+x.w..cc...DD..lllllll..cc.$.cc..w.x
+x.w1cc2....Dc.........cc.$$$.cc1w.x
+x.w.ccccccccccccc+ccc+ccccccccc.w.x
+x.w1..1..1..1cc.....cc1..1..1..1w.x
+x.wwwwwwwwww..cc.<.cc..wwwwwwwwww.x
+x..........ww.1nc.cn1.ww..........x
+xxxxxxxxxx..ww..ccc..ww..xxxxxxxxxx
+xxxxxxxxxxx..ww.1.1.ww..xxxxxxxxxxx
+xxxxxxxxxxxx..wwwwwww..xxxxxxxxxxxx
+xxxxxxxxxxxxx.........xxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+############################################################################
+# Donjon.
+#
+# Loot is only three items, which have a good chance of being selected by
+# hand, including useful manuals.
+#
+NAME:   bailey_polearm_2
+ORIENT: encompass
+TAGS:   bailey_polearm no_rotate no_pool_fixup no_monster_gen
+MONS:   orc warrior w:5 ; arbalest . bolt . ring mail | scale mail / \
+        orc ; arbalest . bolt . ring mail | scale mail
+: orc_with_polearm(_G)
+: orc_warrior_with_polearm(_G)
+: orc_knight_with_polearm(_G)
+MONS:   orc knight
+SUBST:  2 = 23
+NSUBST: 4 = 1:4 / *:3
+SUBST:  W : W..
+KFEAT:  T = known permanent teleport trap
+SUBST:  X = I G C
+KFEAT:  C = altar_beogh
+ITEM:   manual of armour / manual of fighting / manual of shields /\
+        good_item bardiche / good_item executioner's axe
+ITEM:   potion of experience q:1 / scroll of acquirement q:1 /\
+        scroll of enchant armour q:2 / scroll of enchant weapon q:3
+NSUBST: d = 1:e / *:d|
+: bailey_setup(_G)
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x<.......................................<x
+x.A.......................................x
+x.........................................x
+x.........................................x
+x.........................................x
+x.........................................x
+x......WwwwwwWWWWWWWWWWWWWWWWWwwwwwW......x
+x......wwc1cwwWWWWWWWWWWWWWWWwwc1cww......x
+x......wcc.ccwWWWWWWWWWWWWWWWwcc.ccw......x
+x......w1.T.1wWWWWWWWWWWWWWWWw1.T.1w......x
+x......wcc.<cwWWWWWWWWWWWWWWWwc<.ccw......x
+x......wwc1cwwWWWWWWcccWWWWWWwwc1cww......x
+x......WwwwwwWWWWcccccccccWWWWwwwwwW......x
+x......WWWWWWWWWccWWWWWWWccWWWWWWWWW......x
+x......WWWWWWWWccWWc+c+cWWccWWWWWWWW......x
+x......WWWWWWWWcWWcc2c2ccWWcWWWWWWWW......x
+x......WWWWWWWccWccvvvvvccWccWWWWWWW......x
+x......WWWWWWWccW+2vd4dv2+WccWWWWWWW......x
+x......WWWWWWWccWccv4X4vccWccWWWWWWW......x
+x......WWWWWWWccW+2v.4.v2+WccWWWWWWW......x
+x......WWWWWWWccWccvv+vvccWccWWWWWWW......x
+x......WWWWWWWccWWcc<d<ccWWcWWWWWWWW......x
+x......WWWWWWWWWWWcc+++cWWccWWWWWWWW......x
+x......WWWWWWWWWWWccWWWWWccWWWWWWWWW......x
+x......WwwwwwWWWWWccWWWWccWWWWwwwwwW......x
+x......wwc1cwwWWWWcccccccWWWWwwc1cww......x
+x......wcc.<cwWWWWWWWWWWWWWWWwc<.ccw......x
+x......w1.T.1wWWWWWWWWWWWWWWWw1.T.1w......x
+x......wcc.ccwWWWWWWWWWWWWWWWwcc.ccw......x
+x......wwc1cwwWWWWWWWWWWWWWWWwwc1cww......x
+x......WwwwwwWWWWWWWWWWWWWWWWWwwwwwW......x
+x.........................................x
+x.........................................x
+x.........................................x
+x.........................................x
+x.........................................x
+x<.......................................<x
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+############################################################################
+# Fourteen circles.  (I'm very creative.)
+#
+# Loot consists of good scrolls or books.
+#
+NAME:    bailey_polearm_3
+ORIENT:  encompass
+WEIGHT:  5
+TAGS:    bailey_polearm no_rotate
+SHUFFLE: DF/EG
+SUBST:   D : d, E = 1.., F : 2, G : .
+NSUBST:  d = 3:d / *:$
+ITEM:    scroll of enchant armour q:2 / scroll of enchant weapon q:3 /\
+         scroll of acquirement q:1 w:5 / scroll of silence q:3 /\
+         scroll of fog q:3 / scroll of vulnerability q:3 /\
+         scroll of immolation q:3 / any good_item book w:30 /\
+         book of annihilations w:1 / grand grimoire w:1 / necronomicon w:1
+MONS:    deep elf mage
+MONS:    deep elf knight ; short sword . leather armour /\
+         deep elf archer ; shortbow . arrow . leather armour
+: bailey_setup(_G)
+MAP
+         ccccc
+    cccccc...cccccc
+   cc..cc..A..cc..cc
+   c.1..c.....c..1.c
+   c....cc...cc....c
+   cc..cc+cccccc..cc
+ cccccc...ccc...cc+ccc
+ccEEcc.....c.....cc..cc
+c.EE.c..<..c.....c....c
+c.EE.c.....c.1...c..F.c
+cc..ccc....c....ccc..cc
+ccc+ccccccc+ccccccc+ccc
+cc..ccc....c....ccc..cc
+c.G..c...1.c.1...c.DD.c
+c....c.....c.....c.DD.c
+cc..cc.....c.....ccDDcc
+ ccc+cc...ccc...cccccc
+   cc..ccccc+ccc..cc
+   c....cc...cc....c
+   c.1..c.....c..1.c
+   cc..cc..<..cc..cc
+    cccccc...cccccc
+         ccccc
+ENDMAP
+
+############################################################################
+# Surrounded.
+# This one uses both missiles and polearms, with more emphasis on the
+# latter.  Loot is approximately seven good items.
+#
+NAME:   bailey_polearm_4
+ORIENT: encompass
+TAGS:   bailey_polearm no_rotate no_item_gen no_monster_gen no_pool_fixup
+ITEM:   any good_item
+MONS:   orc warrior ; arbalest . bolt . ring mail | scale mail | chain mail / \
+        orc warrior ; halberd . ring mail | scale mail | chain mail
+: orc_with_polearm(_G)
+: orc_warrior_with_polearm(_G)
+: orc_knight_with_polearm(_G)
+NSUBST: d = 4:d / 2:. / * = d., D = 2:1 / *:.1
+SUBST:  1 = 112, 2 = 23, 3 = 34
+: bailey_setup(_G)
+MAP
+ccccccccccccccccccccccccccccccc
+ccxxxcccccccccxxxcccccccccxxxcc
+cxx1xxcccccccxx<xxcccccccxx1xxc
+cxd..xc..D..cx.A.xc..D..cx..dxc
+cxd..x..www..x...x..www..x..dxc
+cxd..c.ww1ww.......ww1ww.c..dxc
+cx2..+.w2<2w.......w2<2w.+..2xc
+cxd..c.ww1ww.......ww1ww.c..dxc
+cxd..x..www..x...x..www..x..dxc
+cxd..xc..D..cx...xc..D..cx..dxc
+cxx1xxcccccccxx<xxcccccccxx1xxc
+ccxxxcccccccccxxxcccccccccxxxcc
+ccccccccccccccccccccccccccccccc
+ENDMAP
+
+############################################################################
+# Infantry
+#
+# You will have to battle some battalions where the monsters in the back
+# will generally have polearms.
+# Loot comes in three stages: money, potions, scrolls. No special weapons and
+# armours.
+#
+NAME:   bailey_polearm_5
+ORIENT: encompass
+TAGS:   bailey_polearm no_item_gen no_monster_gen
+ITEM:   scroll of acquirement q:1 / potion of experience q:1
+ITEM:   potion of curing / potion of heal wounds / potion of might w:5 /\
+        potion of berserk rage w:3 / potion of haste w:2 /\
+        potion of invisibility w:3 / potion of resistance w:2
+ITEM:   scroll of brand weapon w:5 / scroll of acquirement q:1 w:5 /\
+        scroll of enchant weapon q:2
+ITEM:   scroll of enchant weapon / scroll of enchant armour /\
+        scroll of summoning
+SUBST:  2 = 2   3:1
+SUBST:  3 = 2   3
+SUBST:  4 = 2:5 3   4:5
+SUBST:  5 = 3:5 4
+NSUBST: ! = 1:ddde / *:e
+NSUBST: ? = 1:fffg / *:g
+MONS:   orc warrior ; spear w:5 | trident w:5 | halberd | hand axe | war axe /\
+        orc w:110   ; spear w:5 | trident w:5 | halberd | hand axe | war axe
+: orc_with_polearm(_G)
+: orc_warrior_with_polearm(_G)
+: orc_knight_with_polearm(_G)
+: bailey_setup(_G)
+MAP
+cccccccccccccccccccccccccccccccccccccccccccccccccccccc
+cc.<.......1cccccccc....1ccccccccc....1ccc..........cc
+c..........12cccccc.....13c.....c.....14+....5......5c
+c..........12c.$$.c.....13+.!!!.+.....14+.......???..c
+cA.........12+.$$.+.....13+.!!!.+.....14+.......???.<c
+c..........12c.$$.c.....13+.!!!.+.....14+.......???..c
+c..........12cccccc.....13c.....c.....14+....5......5c
+cc.<.......1cccccccc....1ccccccccc....1ccc..........cc
+cccccccccccccccccccccccccccccccccccccccccccccccccccccc
+ENDMAP
+
+############################################################################
+# same loot as polearms 2, other than the bonus javelins
+# the player starts right in the middle of a fight
+NAME:   bailey_polearm_flooded_kennysheep
+ORIENT: encompass
+TAGS:   bailey_polearm no_item_gen no_monster_gen no_pool_fixup patrolling
+: orc_with_polearm(_G)
+: orc_warrior_with_polearm(_G)
+MONS:   centaur ; javelin ego:returning ident:type q:2 | \
+            javelin ego:returning ident:type q:3 . spear | trident | halberd . \
+            ring mail | scale mail | chain mail
+NSUBST: _ = 4:2 / 5:1 / *:.
+NSUBST: ; = 6:2 / 6:1 / *:.
+NSUBST: ! = 8:1 / *:.
+SUBST:  / = 12
+KITEM:  d = manual of armour / manual of fighting / manual of shields /\
+            good_item bardiche / good_item executioner's axe
+KITEM:  e = potion of experience q:1 / scroll of acquirement q:1 /\
+            scroll of enchant armour q:2 / scroll of enchant weapon q:3
+NSUBST: d = 1:e / *:d|
+: bailey_setup(_G)
+MAP
+   ccccccccccccccccccccccccccccccccccccccccccccc
+  ccwwwwwwwwwwwwwwwwwwwcccccccwwwwwwwwwwwwwwwwwcc
+ ccwwwwwwwwwwwwwwwwwwwwwccccc____________.......cc
+ccwwwwwwww;.;.;3.wwwwwwwwccc_____________........c
+cwwwwwww..wwwwwww..wwwwwwwc_______Tcccccccccc+cccc
+cwwwww..www;.;.;www..wwwwwc____ccccc!!!!!.......wc
+cwwww.www.........www.wwwwc___cc!!!!wwwwwwwww...wc
+cwwww.w.............w.wwwwc___c!T!www!!!....ww..wcc
+cwww.ww.T.........T.ww.wwwc___c!!ww!!wwwwwww....wwcc
+cwww.w...;.;.;.;.;...w.wwwc__Tc!ww!www.....www!!.wwcc
+cww.ww;.;.wwwwwww.;..ww3wwc__cc!w!ww!!wwwww..ww!!Twwc
+cww.w;..wwwWWWWWwww...ccccc__c!ww!w!www...www.ww!$wwc
+cww3w.;wwWWwwwwwWwww......+__c!w1ww!w..T.T..ww.w!.$wc
+cww....WWwwwdddWWwww......+__c!w!3!!w..<A<.....w3$$wc
+cww3w.;wwWWwwwwwWwww......+__c!w1ww!w..T.T..ww.w!.$wc
+cww.w;..wwwWWWWWwww...ccccc__c!ww!w!www...www.ww!$wwc
+cww.ww;.;.wwwwwww.;..ww3wwc__cc!w!ww!!wwwww..ww!!Twwc
+cwww.w...;.;.;.;.;...w.wwwc__Tc!ww!www.....www!!.wwcc
+cwww.ww.T.........T.ww.wwwc___c!!ww!!wwwwwww....wwcc
+cwwww.w.............w.wwwwc___c!T!www!!!....ww..wcc
+cwwww.www.........www.wwwwc___cc!!!!wwwwwwwww...wc
+cwwwww..www;.;.;www..wwwwwc____ccccc!!!!!.......wc
+cwwwwwww..wwwwwww..wwwwwwwc_______Tcccccccccc+cccc
+ccwwwwwwww;.;.;3.wwwwwwwwccc_____________........c
+ ccwwwwwwwwwwwwwwwwwwwwwccccc____________.......cc
+  ccwwwwwwwwwwwwwwwwwwwcccccccwwwwwwwwwwwwwwwwwcc
+   ccccccccccccccccccccccccccccccccccccccccccccc
+ENDMAP
+
+#6 good items and two gold piles for murdering a bunch of gnolls
+NAME:   bailey_polearm_gnolls_kennysheep
+ORIENT: encompass
+TAGS:   bailey_polearm no_item_gen no_monster_gen no_pool_fixup
+MONS:   gnoll ; spear | trident | halberd . \
+            ring mail | scale mail | chain mail . \
+            throwing net | nothing
+MONS:   gnoll sergeant ; halberd | glaive | bardiche w:1 . \
+            chain mail w:20 | plate armour | crystal plate armour w:1
+MONS:   gnoll shaman ; spear | trident | halberd . \
+            ring mail | scale mail
+MONS:   hound
+ITEM:   any good_item
+FTILE:  4't = floor_grass
+KFEAT:  ' = floor
+NSUBST: _ = 12:1 / *:.
+: bailey_setup(_G)
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xtttttttttttttttttttttttttx
+xttttwwwwwwwwwwwwwwwwwttttx
+xtttww'''''''''''''''wwtttx
+xtttw'''''''''''''''''wtttx
+xtttw''ccccc_3_ccccc''wtttx
+xtttw'cc___c___c___cc'wtttx
+xtttwcc____+___+____ccwtttx
+xtttwc_____c___c_____cwtttx
+xtttwcG____cc+cc____Gcwtttx
+xtttwc____cc_3_cc____cwtttx
+xtttwc___cc2___2cc___cwtttx
+xtttwc___c_______c___cwtttx
+xtttwccc+c__$G$__c___cwtttx
+xtttwc___c_______c___cwtttx
+xtttwc___cc_____cc___cwtttx
+xtttwc____cc___cc____cwtttx
+xtttwcG_2__cc+cc__2_Gcwtttx
+xtttwc23_32c___c23_32cwtttx
+xtttwccccc+c___c+cccccwtttx
+xtttw'cddd.c___c.dddc'wtttx
+xtttw'cccccc+++cccccc'wtttx
+xtttw''''''41.14''''''wtttx
+xtttww''''''...''''''wwtttx
+xttttwwwwwww...wwwwwwwttttx
+xttttt''''''...''''''tttttx
+xttttttt''''...''''tttttttx
+xtttttttt'''...'ttttttttttx
+xttttttttttt.A.tttttttttttx
+xtttttttttttt.ttttttttttttx
+xtttttttttttt.ttttttttttttx
+xtttttttttttt<ttttttttttttx
+xxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP
+
+# loosely based on nethack's castle
+# loot is 4 of each: weapons, armour, food, and potions/scrolls
+# 1 of each is a guaranteed good item (other than the food)
+# along with 1 guaranteed acquirement scroll and 3 gold piles in the bastions
+NAME:   bailey_axe_of_yendor_kennysheep
+ORIENT: encompass
+TAGS:   bailey_axe no_item_gen no_monster_gen no_pool_fixup
+: easy_axe_fighter(_G)
+: hard_axe_fighter(_G)
+KMONS:  3 = orc sorcerer ; war axe | broad axe w:2 | battleaxe w:1 . \
+            ring mail | scale mail  / \
+        orc high priest ; war axe | broad axe w:2 | battleaxe w:1 . \
+            ring mail | scale mail / \
+        kobold demonologist w:20 ; war axe | broad axe w:2 | battleaxe w:1 . \
+            ring mail | scale mail
+KMONS:  4 = electric eel
+KITEM:  d = any weapon
+KITEM:  D = any weapon good_item
+KITEM:  e = any armour
+KITEM:  E = any armour good_item
+KITEM:  f = potion of curing / potion of might / potion of brilliance / \
+            potion of agility / potion of mutation w:30 / potion of flight w:20 / \
+            potion of lignification  / \
+            scroll of teleportation / scroll of identify w:30 / \
+            scroll of fear / scroll of noise w:30 / scroll of magic mapping / \
+            scroll of remove curse
+KITEM:  F = scroll of enchant weapon q:2 / scroll of enchant armour q:2 /\
+            potion of heal wounds q:3 / potion of resistance q:2 /\
+            scroll of blinking q:2 / scroll of fog q:2 / potion of ambrosia q:2 /\
+            any good_item book w:30
+KITEM:  g = any food
+KITEM:  | = scroll of acquirement ident:type
+KITEM:  $ = gold
+NSUBST: | = 1:| / *:$
+KFEAT:  ^ = known zot trap
+KFEAT:  B = altar_okawaru
+NSUBST: ^ = 1:^ / *:.
+NSUBST: w = 5:4 / *:w
+NSUBST: 1 = 4:2 / *:1
+SHUFFLE: defg
+NSUBST: d = 1:D
+NSUBST: e = 1:E
+NSUBST: f = 1:F
+: bailey_setup(_G)
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwx
+xwwwwwwwwccccccWWWWWWWWWWWccccccwwwwwwwwx
+xwwwwwwwwc|+1.c.....<.....c.1+|cwwwwwwwwx
+xwwwwwwwwccc2.ccnnccnccnncc.2cccwwwwwwwwx
+xwwwwwwwwc....cdd..+.+..eec....cwwwwwwwwx
+xwwwwwwwwc....cdd..c.c..eec....cwwwwwwwwx
+xwwwwwwwwc+ccccccccc.ccccccccc+cwwwwwwwwx
+xwwwwwwwwW.c11+^^^^^<^^^^^+11c.Wwwwwwwwwx
+xwwwwwwwwW.c11cccccc.cccccc11c.Wwwwwwwwwx
+xwwwwwwwwW.c11cff..c.c..ggc11c.Wwwwwwwwwx
+xwwwwwwwwW.c11cff..+.+..ggc11c.Wwwwwwwwwx
+xwwwwwwwwW.c11ccnncccccnncc11c.Wwwwwwwwwx
+xwwwwwwwwW.cc+c...1.3.1...c+cc.Wwwwwwwwwx
+xwwwwwwwwW.+........B........+.Wwwwwwwwwx
+xwwwwwwwwW.c.G......3......G.c.Wwwwwwwwwx
+xwwwwwwwwW.c.......1.1.......c.Wwwwwwwwwx
+xwwwwwwwwW.c.G.ccccccccccc.G.c.Wwwwwwwwwx
+xwwwwwwwwW.c.....ccccccc.....c.Wwwwwwwwwx
+xwwwwwwwwW.c.G...c..1..c...G.c.Wwwwwwwwwx
+xwwwwwwwwW.c.....c.1.1.c.....c.Wwwwwwwwwx
+xwwwwwwwwc+cccc..c..T..c..cccc+cwwwwwwwwx
+xwwwwwwwwc....c..+.1.1.+..c....cwwwwwwwwx
+xwwwwwwwwc....c..+.....+..c....cwwwwwwwwx
+xwwwwwwwwccc2.ccccc+++ccccc.2cccwwwwwwwwx
+xwwwwwwwwc|+1.c...........c.1+|cwwwwwwwwx
+xwwwwwwwwccccccWWWW...WWWWccccccwwwwwwwwx
+xwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwwwwww...wwwwwwwwwwwwwwwwwwx
+xwwwwwwwwwwwwwww.........wwwwwwwwwwwwwwwx
+xxxxxxxxxxxxxxxxx.......xxxxxxxxxxxxxxxxx
+                x.......x
+                x.......x
+                x...<...x
+                x.......x
+                xxx...xxx
+                  x.A.x
+                  xxxxx
+ENDMAP
+
+# same loot as minmay_hex_keep, and a similar warlord fight
+# slightly more of the loot is outside of the warlord's room
+# the warlord fight is a little easier, and the outer fights are harder
+NAME:   bailey_axe_bossmonster_kennysheep
+ORIENT: encompass
+TAGS:   bailey_axe no_item_gen no_monster_gen no_pool_fixup
+ITEM:   potion of curing / potion of heal wounds / potion of resistance w:5 / \
+            potion of might w:5 / potion of brilliance w:5 / potion of agility w:5 / \
+            potion of magic w:5 / potion of haste w:5 / \
+            scroll of teleportation / scroll of blinking / scroll of identify / \
+            scroll of enchant weapon w:5 / scroll of enchant armour w:5
+ITEM:   potion of experience q:1 / scroll of acquirement q:1
+: easy_axe_fighter(_G)
+: kobold_axe_returning(_G)
+: hard_axe_fighter(_G)
+MONS:   orc warlord ; war axe | broad axe w:2 | battleaxe w:1 . \
+            ring mail | scale mail | chain mail | plate armour
+: bailey_setup(_G)
+MAP
+      ccccc         ccccc
+     ccd$.cc       cc.$dcc
+    ccd....cc     cc....dcc
+   cc.......ccccccc.......cc
+  ccd.G21G...........G12G.dcc
+  cd..23...............32..dc
+  c$..1.................1..$c
+  c...G......c===c......G...c
+ttcc......cnncWWWcnnc......cctt
+tttcc.....cWWWWWWWWWc.....ccttt
+ttt2cc....cW.G...G.Wc....cc2ttt
+ttt..ccc+ccc.......ccc+ccc..ttt
+tt...www.cWW.G...G.WWc.www...tt
+tt...www.cW.........Wc.www...tt
+t<.2.www.cW....<....Wc.www.2.<t
+tt...www.cc..1...1..cc.www...tt
+tt...www.cW..G...G..Wc.www...tt
+ttt..ccc+cW.........Wc+ccc..ttt
+ttt2cc...cW|eG.4.Ge|Wc...cc2ttt
+tttcc....ccWWnnnnnWWcc....ccttt
+ttcc......cccn...nccc......cctt
+ttc21.....................12ctt
+ttc..G..G.............G..G..ctt
+ttc21.....................12ctt
+ttcc.......................cctt
+ttwcc...G...cc+++cc...G...ccwtt
+ttwwcc.....cc.....cc.....ccwwtt
+ttwwwcc...cc.......cc...ccwwwtt
+tttwwwccccc.........cccccwwwttt
+ttttwwwwwww....A....wwwwwwwtttt
+tttttwwwwww.........wwwwwwttttt
+tttttttttttttt.<.tttttttttttttt
+ttttttttttttttttttttttttttttttt
+ENDMAP

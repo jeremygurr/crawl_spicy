@@ -1,0 +1,118 @@
+%%%%
+Abyssal Knight
+
+Abyssal Knights worship Lugonu, and are sent from the Abyss into the Dungeon to
+spread corruption and chaos.
+%%%%
+Air Elementalist
+
+Air Elementalists have learned the Shock spell. Later on, their book of Air
+provides them with the flexibility to survive.
+%%%%
+Arcane Marksman
+
+Arcane Marksmen carry ranged weapons, and use magic to make their foes more
+vulnerable to attacks from afar.
+%%%%
+Artificer
+
+Artificers start with a few magical devices and are competent at using such
+tools.
+%%%%
+Assassin
+
+Assassins carry a blowgun with poisoned needles, as well as a small number of
+nasty curare needles.
+%%%%
+Berserker
+
+Berserkers believe in Trog, the magic-hating god of frenzy. Not much can stop a
+raging berserker early on, apart from hubris.
+%%%%
+Chaos Knight
+
+Chaos Knights are playthings of the unpredictable Xom, and are subject to the
+god's constantly changing moods.
+%%%%
+Conjurer
+
+Conjurers confront problems with damaging spells from the book of Conjurations.
+%%%%
+Earth Elementalist
+
+Earth Elementalists know the Sandblast spell, and carry stones to fuel the
+spell. More earthen spells are in their book of Geomancy.
+%%%%
+Enchanter
+
+Enchanters use spells from the book of Maledictions to incapacitate their foes,
+and are equipped with an enchanted dagger.
+%%%%
+Fighter
+
+Fighters are equipped with armour and shield, as well as a weapon of their
+choice and a potion of might.
+%%%%
+Fire Elementalist
+
+Fire Elementalists start with the book of Flames and know the Flame Tongue
+spell. The other spells in their book focus on destruction as well.
+%%%%
+Gladiator
+
+Gladiators are ready for the arena with light armour, nets, and a weapon of
+their choice.
+%%%%
+Hunter
+
+Hunters carry a ranged weapon of their choice, and are also equipped with light
+armour and a short sword.
+%%%%
+Ice Elementalist
+
+Ice Elementalists start with the book of Frost and the Freeze spell. The book's
+other spells are quite versatile.
+%%%%
+Monk
+
+Monks start with a simple weapon of their choice, and gain additional piety
+with the first god they worship.
+%%%%
+Necromancer
+
+Necromancers are wizards specializing in the practice of death magic. They
+start out with the Pain spell.
+%%%%
+Skald
+
+Skalds are melee fighters who can boost themselves in battle with spells from
+the book of Battle.
+%%%%
+Summoner
+
+Summoners start with the book of Callings and are able to cast Summon Small
+Mammal from the start.
+%%%%
+Transmuter
+
+Transmuters start with the book of Changes. They can learn spells to shift
+their form, as well as to turn sticks into snakes.
+%%%%
+Venom Mage
+
+Venom Mages start with the Young Poisoner's Handbook and the Sting spell, and
+their poison magic is very effective against susceptible foes.
+%%%%
+Wanderer
+
+Wanderers start with random equipment and skills.
+%%%%
+Warper
+
+Warpers start with a weapon of their choice and a scroll of blinking. They can
+learn spells from the book of Spatial Translocations.
+%%%%
+Wizard
+
+Wizards start with a book of Minor Magic, containing a wide range of spells.
+%%%%

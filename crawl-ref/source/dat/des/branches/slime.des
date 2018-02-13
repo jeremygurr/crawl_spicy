@@ -1,0 +1,786 @@
+###############################################################################
+# slime.des: All maps and branch endings relating to the Slime Pits
+###############################################################################
+
+{{
+function fixup_slime_vaults(data, triggerable, triggerer, marker, ev)
+  if not dgn.persist.fix_slime_vaults then
+    return
+  end
+
+  local seen = dgn.seen_destroy_feat("clear_stone_wall")
+
+  if you.god() == "Jiyva" and you.piety_rank() >= 6 then
+    if you.silenced() then
+        crawl.mpr("You feel a strange vibration for a moment.", "god")
+    else
+        crawl.mpr("You hear the sound of toppling stones.", "god")
+    end
+  else
+    if seen then
+        crawl.mpr("The stone walls suddenly crumble and collapse.",
+                  "monster_enchant")
+    else
+        crawl.mpr("You feel a strange vibration for a moment.",
+                  "monster_enchant")
+    end
+  end
+
+  local gxm, gym = dgn.max_bounds()
+  for p in iter.rect_iterator(dgn.point(1, 1), dgn.point(gxm-1, gym-1)) do
+    if dgn.fprop_at(p.x, p.y, "no_jiyva") then
+      dgn.fprop_changed(p.x, p.y, "no_jiyva")
+    end
+  end
+
+  -- We're done.
+  dgn.persist.slime_fixup_done = true
+
+  triggerable:remove(marker)
+end
+}}
+
+##############################################################################
+# Slime Pit entry vaults
+##############################################################################
+
+# Weight balancer
+NAME:  slime_dummy
+TAGS:  slime_entry
+KFEAT: O = enter_slime_pits
+MAP
+O
+ENDMAP
+
+# Slime entries featuring an altar to Jiyva
+NAME:   slime_altar_1
+TAGS:   slime_entry
+WEIGHT: 30
+KFEAT:  Z = altar_jiyva
+KFEAT:  O = enter_slime_pits
+MAP
+....
+.OZ.
+....
+ENDMAP
+
+NAME:   slime_altar_2
+TAGS:   slime_entry
+KFEAT:  _ = altar_jiyva
+SUBST:  1 : 111223
+NSUBST: 1 = 1 / 1. , 2 = 2 / 2... , 3 = 3 / 3....
+MONS:   jelly / ooze
+MONS:   acid blob / slime creature w:5
+MONS:   azure jelly
+KFEAT:  O = enter_slime_pits
+MAP
+ccccc
+c111m.
+cO1_=@
+c111m.
+ccccc
+ENDMAP
+
+NAME:  dpeg_slime_entry_enclosed_altar
+TAGS:  slime_entry
+KFEAT: O = enter_slime_pits
+KFEAT: S = slimy_wall
+KFEAT: _ = altar_jiyva
+MAP
+  .....
+ .ccccc.
+.ccSSScc.
+.cS...Sc.
+.cS.O.cc.
+.cS.._.+@
+.ccScccc.
+.ccccccc.
+ .ccccc.
+  .....
+ENDMAP
+
+NAME:   minmay_slime_entry_eyes
+TAGS:   slime_entry ruin_lair
+WEIGHT: 2
+MONS:   eye of devastation, eye of draining
+KFEAT:  O = enter_slime_pits
+KFEAT:  S = slimy_wall
+MAP
+ ....   ....
+..xx..x..xx..
+.xxxx.x.xxxx.
+.xxx.....xxx.
+..x.S...S.x..
+ ...........
+ xxS.1O2.Sxx
+ ...........
+..x.S...S.x..
+.xxx.....xxx.
+.xxxx.x.xxxx.
+..xx..x..xx..
+ ....   ....
+ENDMAP
+
+NAME:   minmay_slime_entry_pillars
+TAGS:   slime_entry ruin_lair
+MONS:   jelly / slime creature
+KFEAT:  O = enter_slime_pits
+MAP
+...........
+.ccc...ccc.
+.ccc.1.ccc.
+.ccc...ccc.
+...........
+..1..O..1..
+...........
+.ccc...ccc.
+.ccc.1.ccc.
+.ccc...ccc.
+...........
+ENDMAP
+
+# In-game the boxes rarely stay closed due to ruination; this is intentional.
+NAME:   minmay_slime_entry_jelly_boxes
+TAGS:   slime_entry ruin_lair
+WEIGHT: 5
+MONS:   jelly / ooze w:1 / nothing w:1
+KFEAT:  O = enter_slime_pits
+MAP
+.............
+.xxxxx.xxxxx.
+.xxx1x.x11xx.
+.xx11x.xx1xx.
+.xx1x...x1xx.
+.xxxx....xxx.
+......O......
+.xxxx...xxxx.
+.xx1.x.x.1xx.
+.x11x.xx11xx.
+.xx1x.xxxxxx.
+.xxxxx.xxxxx.
+.............
+ENDMAP
+
+NAME:   minmay_slime_entry_oklob_open
+TAGS:   slime_entry
+WEIGHT: 5
+MONS:   oklob plant / nothing w:20
+KFEAT:  O = enter_slime_pits
+MAP
+ .....
+.......
+..111..
+..1O1..
+..111..
+.......
+ .....
+ENDMAP
+
+NAME:   minmay_slime_entry_oklob_enclosed
+TAGS:   slime_entry ruin_lair
+ORIENT: northeast
+WEIGHT: 5
+MONS:   oklob plant / nothing w:20
+KFEAT:  O = enter_slime_pits
+KFEAT:  S = slimy_wall
+MAP
+xxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxx......xxxxxx
+xxSSxx...........xxxx
+xxS111......xx....xxx
+xSS.11....xxxx....xxx
+xS..O11.xxxxx....xxxx
+xSS..1xxxxxx.....xxxx
+xxSSSSxxxxx.....xxxxx
+xxxxxxxxxx.....xxxxxx
+xxxxxxxx.....xxxxxxxx
+xxxxxxx.@..xxxxxxxxxx
+ENDMAP
+
+NAME:   dpeg_slime_entry_corner
+TAGS:   slime_entry ruin_lair
+ORIENT: northwest
+WEIGHT: 5
+KFEAT:  O = enter_slime_pits
+KFEAT:  S = slimy_wall
+MAP
+xxxxxxxxxxx
+xSSSxxxxxx
+xS...xxxx
+xS.O...xx
+xxxxxx.xx
+xxxx....x
+xxx...xx.
+xx..
+ENDMAP
+
+NAME: nicolae_slime_entry_slimehenge
+TAGS: slime_entry transparent
+NSUBST: A = . / A, B = . / B, C = . / C
+SHUFFLE: ABCD
+SUBST: A = x, BCD = .
+KFEAT: O = enter_slime_pits
+KMONS: 1 = ooze / jelly / nothing
+KFEAT: x = slimy_wall
+MAP
+  .........
+ ...........
+.....DAD.....
+...A.CBC.A...
+....B.1.B....
+..DC.1.1.CD..
+..AB1.O.1BA..
+..DC.1.1.CD..
+....B.1.B....
+...A.CBC.A...
+.....DAD.....
+ ...........
+  .........
+ENDMAP
+
+################################################################################
+# Slime Pit specific non-ending non-entry vaults
+################################################################################
+NAME: nicolae_slime_pool
+DEPTH: Slime, !Slime:$
+TAGS: transparent
+MONS: slime creature
+ORIENT: float
+SHUFFLE: abcd
+SUBST: ab : @, cd : .
+KPROP: f = no_tele_into
+SUBST: f = w.1
+KMASK: w = no_monster_gen
+KMASK: W = no_monster_gen
+MAP
+   cccc
+ ..........
+d.w.wwwf..w.
+d..wwfwwf....
+d.fwwfffwffbb
+d..fwwwfww.b
+ ...ffwwww.b
+  ..wffw...b
+  ..wfwfw.fw
+ ...ffffw.ww
+.ff.wwwwf.f
+ .....f..ff
+    aaaa..fw
+ENDMAP
+
+NAME: nicolae_slime_jelly_donut
+DEPTH: Slime, !Slime:$
+ORIENT: float
+SHUFFLE: abcdefgh
+SUBST: a = @, b : @., c : @.., d : @..., efgh = .
+KMONS: j = jelly
+MAP
+      aaaaa
+    hh.....bb
+   h.........b
+  h...........b
+ h....x.x.x....b
+ h...x.x.x.x...b
+g...x.x.x.x.x...c
+g....x.jjj.x....c
+g...x.xjjjx.x...c
+g....x.jjj.x....c
+g...x.x.x.x.x...c
+ f...x.x.x.x...d
+ f....x.x.x....d
+  f...........d
+   f.........d
+    ff.....dd
+      eeeee
+ENDMAP
+
+NAME: nicolae_slime_barrier
+TAGS: transparent extra
+DEPTH: Slime, !Slime:$
+SHUFFLE: abcde
+SUBST: a = @, bcde = .
+MAP
+  aaaaa
+ .........
+ c..x.....b
+c..........b
+c..xxx..x..b
+c..........b
+ c..x.......b
+ .......x....e
+  ....x.x.x...e
+   .....x......eee
+    d.......x.....d
+     d.............d
+     d..x..xxx..x..d
+     d.............d
+      d.....x.......d
+       eee......x.....
+          e...x.x.x....
+           e....x.......
+            b.......x..c
+             b..........c
+             b..x..xxx..c
+             b..........c
+              b.....x..c
+               .........
+                  aaaaa
+ENDMAP
+
+NAME: nicolae_slime_welcoming_committee
+TAGS: no_monster_gen no_item_gen no_trap_gen
+DEPTH: Slime:2-, !Slime:$
+SUBST: X = x., { = {[(
+KMONS: 1 : jelly w:20 / ooze / slime creature w:30 / \
+   acid blob w:5 / death ooze w:5 / azure jelly w:5
+MAP
+      xxx
+   xxxxxxxx
+ xxxxXXX..1@
+xxxXX.....1.@
+xxX.......1..@
+xxX.{.....1...@
+xxX.......1..@
+xxxXX.....1.@
+ xxxxXXX..1@
+   xxxxxxxx
+      xxx
+ENDMAP
+
+NAME: nicolae_slime_phagocytosis
+DEPTH: Slime, !Slime:$
+TAGS: transparent
+SUBST: a : .x, b : .x, c : .x, d : .x, e : .x, { = {[(, X = Wx, ' = ._
+NSUBST: W = 4:1 / *:W
+KMONS: 1 = slime creature
+KFEAT: 1 = W
+CLEAR: _
+MAP
+       '.......'
+      '..........'
+    '.....................'
+ '........ee...............'
+'........exxe...............'
+.......eexxxxeee.xxxxxxx.....'
+....ddxxxxxxxxxxxxxxxxxxx.....
+@..dxxxxxXXXXxxxxx.....xxx....
+@..dxxxxXWWWWXx.........xxx...
+@...ddxxXWWWW............xx...
+@.....cxXWWWW....{..x....x....
+@.....cxXWWWWXx.....xx........
+'....cxxxXXXXxxx...xxx.......'
+ ...cxxxxxxxxxxxxxxxx.......'
+ ...cxxxxabxxxxxxxxx.......
+ ....axxa..bxxxb.........'
+ .....aa....bbb.........'
+ '....................'
+  '...............'
+   ''...........''
+ENDMAP
+
+NAME: nicolae_slime_round_cave
+DEPTH: Slime:2-, !Slime:$
+TAGS: no_monster_gen
+SHUFFLE: {}/()/[]
+NSUBST: a = X / .
+SUBST: X = x., z = x_, 0 = 0009.., 9 = 9998
+CLEAR: _
+MAP
+       zzzzzzzzzzz
+     zzzXXXXXXXXXzzz
+    zzXXX.X.X.X.XXXzz
+   zzXX...........XXzz
+  zzXX...0..0..0...XXzz
+ zzXX..0............XXzz
+ zXX.....XXX.XXX..0..XXz
+zzX..0..XXxx.xxXX.....Xzz
+zXX....XXxxX.XxxXX....XXz
+zX..0.XXxxXX.XXxxXX.9..Xz
+zXX..aXxxXX...XxxxX...XXz
+zX....XxXX.............Xz
+zXX.{.......}....9..0.XXz
+zX....XxXX.............Xz
+zXX..aXxxXX...XxxxX...XXz
+zX..0.XXxxXX.XXxxXX.9..Xz
+zXX....XXxxX.XxxXX....XXz
+zzX..0..XXxx.xxXX.....Xzz
+ zXX.....XXX.XXX..0..XXz
+ zzXX..0............XXzz
+  zzXX...0..0..0...XXzz
+   zzXX...........XXzz
+    zzXXX.X.X.X.XXXzz
+     zzzXXXXXXXXXzzz
+       zzzzzzzzzzz
+ENDMAP
+
+NAME: nicolae_slime_ancient_tower_intersection
+DEPTH: Slime, !Slime:$
+WEIGHT: 2
+TAGS: extra decor transparent
+SUBST: c = ccc., X = x_, V = V..
+CLEAR: _
+MAP
+  XXXX         XXXX
+ XXxxXX       XXxxXX
+XXxxxxxx@@@@@xxxxxxXX
+Xxxxx...........xxxxX
+Xxxx.............xxxX
+XXx...............xXX
+ Xx.....ccccc.....xX
+  x....cc...cc....x
+  @...cc.....cc...@
+  @...c..V.V..c...@
+  @...c.......+...@
+  @...c..V.V..c...@
+  @...cc.....cc...@
+  x....cc...cc....x
+ Xx.....ccccc.....xX
+XXx...............xXX
+Xxxx.............xxxX
+Xxxxx...........xxxxX
+XXxxxxxx@@@@@xxxxxxXX
+ XXxxXX       XXxxXX
+  XXXX         XXXX
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_1
+DEPTH: Slime, !Slime:$
+TAGS: decor transparent ruin
+ORIENT: float
+SUBST: B = xxxW., C = W., D = VVW.
+MAP
+xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx
+xx..............@
+xx..............@
+xx..x.......x...@
+xx.....BBB......@
+xx....CCBCC....xx
+xx...BCDBDCB...xx
+xx...BBBBBBB...xx
+xx...BCDBDCB...xx
+xx....CCBCC....xx
+@......BBB.....xx
+@...x.......x..xx
+@..............xx
+@..............xx
+xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_2
+DEPTH: Slime, !Slime:$
+TAGS: decor
+ORIENT: float
+MAP
+   xxxxx
+  xxxxxxx
+ xxx...xxx
+xxx.....xxx
+xx...{...xx
+xx.G...G.xx
+xx...(...xx
+xxx.....xxx
+xxxx...xxxx
+ xxx...xxx
+  xx@@@xx
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_3
+DEPTH: Slime, !Slime:$
+TAGS: decor transparent
+ORIENT: float
+SHUFFLE: W.
+SUBST: W = WW.
+KMASK: W = no_monster_gen
+MAP
+xxxxxxxxxxxxx
+xWWWxWWWxWWWx
+xWWWxWWWxWWWx
+xx.xxx.xxx.xx
+@...........@
+@...........@
+@...........@
+xx.xxx.xxx.xx
+xWWWxWWWxWWWx
+xWWWxWWWxWWWx
+xxxxxxxxxxxxx
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_4
+DEPTH: Slime, !Slime:$
+TAGS: decor
+MAP
+.x...x.
+.......
+x..G..x
+.......
+.x...x.
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_5
+DEPTH: Slime, !Slime:$
+TAGS: decor
+SUBST: A=x, B=.
+SHUFFLE: AB
+MAP
+     ...
+    ..B..
+   A.BBB.A
+  AAA.B.AAA
+ ..A.....A..
+..B.......B..
+.BBB..{..BBB.
+..B.......B..
+ ..A.....A..
+  AAA.B.AAA
+   A.BBB.A
+    ..B..
+     ...
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_6
+DEPTH: Slime, !Slime:$
+TAGS: decor
+SUBST: } = }G..
+MAP
+.............
+.x.x.x.x.x.x.
+..x.x.x.x.x..
+.x.........x.
+..x.......x..
+.x...}.....x.
+..x.......x..
+.x.....{...x.
+..x.......x..
+.x.........x.
+..x.x.x.x.x..
+.x.x.x.x.x.x.
+.............
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_7
+DEPTH: Slime, !Slime:$
+TAGS: decor
+MAP
+  ...........
+ .............
+...............
+.......x.......
+.......0.......
+.....x0V0x.....
+.......0.......
+.......x.......
+...............
+ .............
+  ...........
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_8
+DEPTH: Slime, !Slime:$
+TAGS: decor
+ORIENT: float
+SUBST: - = xxx., " = ...x
+MAP
+@.............
+.(..----------
+.......".....-
+...".".".".".-
+.-...........-
+.-.".".".".".-
+.-.....".....-
+.-"".""xx..--x
+.-.....xV....x
+.-.".".......x
+.-........)..x
+.-.".".-.....x
+.-.....-....Vx
+.-------xxxxxx
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_9
+DEPTH: Slime, !Slime:$
+TAGS: decor transparent
+ORIENT: float
+SUBST: x = xxx., G = G..
+MAP
+.............
+.xx.xx.xx.xx.
+.xxGxxGxxGxx.
+.............
+.............
+@...........@
+.............
+.............
+.xxGxxGxxGxx.
+.xx.xx.xx.xx.
+.............
+ENDMAP
+
+NAME: cheibrodos_slime_lost_civilization_10
+DEPTH: Slime, !Slime:$
+TAGS: decor transparent
+ORIENT: float
+SUBST: x = xxxx.
+MAP
+...............
+.xxxxxxxxxxxxx.
+.x..V..x.....x.
+.x.............
+.x.....x......@
+.x.....x.......
+.xxxxxxx.....x.
+.x.....x.....x.
+.x...........x.
+.x...........x.
+.x...........x.
+.xx...xxxxxxxx.
+....@..........
+ENDMAP
+
+# inspired by a comment of spacejung on SomethingAwful (dpeg)
+NAME:   dissolution_awaits
+DEPTH:  Slime:2-, !Slime:$
+KMONS:  1 = patrolling Dissolution, azure jelly / great orb of eyes
+MAP
+ .....
+...{...
+.......
+...1...
+.[...(.
+.......
+ENDMAP
+
+################################################################################
+# Slime Pit
+################################################################################
+NAME:    slime_pit
+PLACE:   Slime:$
+ORIENT:  encompass
+TAGS:    no_rotate no_dump
+MONS:    the Royal Jelly
+MONS:    acid blob
+MONS:    great orb of eyes / nothing
+SUBST:   ' : ' .:1,  ' : ' x:1,  ' = .x
+SUBST:   " : " .:3,  " = .c
+NSUBST:  P = O / *|
+KMASK:   |O* = no_monster_gen
+KPROP:   |O* = no_jiyva
+KPROP:   |O* = no_tele_into
+KFEAT:   Z = altar_jiyva
+KITEM:   O = slimy rune of Zot
+KITEM:   * = star_item
+SHUFFLE: ([{
+
+{{
+-- Attach function to the Royal Jelly itself. This will follow it wherever
+-- it goes, even through polymorphs, and set dgn.persist.royal_jelly_dead
+-- when it dies through means other than being banished.
+local function monster_die(monster, killer_type, killer_index, silent, wizard)
+    if killer_type == "banished" then
+      crawl.mpr("You feel a great sense of loss, and a brush of the Abyss.")
+    else
+      dgn.persist.fix_slime_vaults = true
+    end
+end
+}}
+MARKER: 1 = lua: MonPropsMarker:new {monster_dies_lua_key = monster_die}
+
+{{
+local fixup_marker = TriggerableFunction:new(
+  {
+    func="fixup_slime_vaults",
+    repeated=true
+  }
+)
+
+fixup_marker:add_triggerer(DgnTriggerer:new {
+  type="monster_dies",
+  target="any"
+})
+
+fixup_marker:add_triggerer(DgnTriggerer:new {
+  type="entered_level"
+})
+
+}}
+# Doesn't matter where this marker goes, so we might as well choose
+# the altar.
+: lua_marker("Z", fixup_marker)
+
+{{
+    set_feature_name("stone_wall", "rune-carved stone wall")
+    set_feature_name("clear_stone_wall", "rune-carved clear stone wall")
+}}
+MAP
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx''''xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx''xxxx''''...''xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxx'''..'''''........'''xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxx'.....................'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx'.......................''x'xxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxx'..........................'.xxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx'............................'xxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx'.............................'''xxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx'...............................''xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxx''..(..............................''xxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxx'''....................................''xxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxx'.........................................'xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx''.........................................'xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx'...........................................'xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx''xx'..........................................'xxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx'..''................""""."""""...........]....''xxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx'x.................."cccc2ccccc".................'xxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx'.'................"cc*cc..cc*cc".................''xxxxxxxxxxxxxxx
+xxxxxxxxxxxxx'................."cc***cc4c***cc".................xxxxxxxxxxxxxxxx
+xxxxxxxxxxxxx'................"cc*|*cc..cc*|*cc"................'xxxxxxxxxxxxxxx
+xxxxxxxxxxxx''..............."cc*|P|*n4nn*|P|*cc"...............'xxxxxxxxxxxxxxx
+xxxxxxxxxxxx'................"cc**|*nn..nn*|**cc"................'''xxxxxxxxxxxx
+xxxxxxxxxxxx'................"ccc**n|nn4n|n**ccc"..................xxxxxxxxxxxxx
+xxxxxxxxxxx'................."ccccnnnn.3nnnncccc"..................'xxxxxxxxxxxx
+xxxxxxxxxxx'................."c.4.n.4.1..4.n.4.c"..................''xxxxxxxxxxx
+xxxxxxxxxxx'..................2.c.4.n..Z.n.4.c.2....................'xxxxxxxxxxx
+xxxxxxxxxx'..........)......."ccccnnnn3.nnnncccc"...................'xxxxxxxxxxx
+xxxxxxxxxx'.................."ccc**n|nn4n|n**ccc"...................'xxxxxxxxxxx
+xxxxxxxxxx'.................."cc**|*nn..nn*|**cc"..................'xxxxxxxxxxxx
+xxxxxxxxx'..................."cc*|P|*n4nn*|P|*cc"..................'xxxxxxxxxxxx
+xxxxxxxxx''..................."cc*|*cc..cc*|*cc"..................'xxxxxxxxxxxxx
+xxxxxxxxxxx'..................."cc***cc4c***cc"...................'xxxxxxxxxxxxx
+xxxxxxxxxxxx'..................."cc*cc..cc*cc"....................'xxxxxxxxxxxxx
+xxxxxxxxxxxx'...................."cccc2ccccc"....................'xxxxxxxxxxxxxx
+xxxxxxxxxxxxx'...................."""".""""".....................'xxxxxxxxxxxxxx
+xxxxxxxxxxxxx'...........................................[........'xxxxxxxxxxxxx
+xxxxxxxxxxxx''..............................................'''....'xxxxxxxxxxxx
+xxxxxxxxxxxx'.............................................''xxx''.'xxxxxxxxxxxxx
+xxxxxxxxxxxxx'..........................................''xxxxxxx.xxxxxxxxxxxxxx
+xxxxxxxxxxxxx'''.......................................'xxxxxxxxx.xxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx'......................................'xxxxxxxxx'xxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxx'.......................................'xxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxx''.....................................'xxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxx'.....................................'xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxx''....................................'xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxx'...................................'xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxx'............................}......'xxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxx''................................'xxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx'.............................''xxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxx'.............................'xxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxx'......................''...'xxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxx'''''........{.......'xx'..xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'''............'xxxx''xxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx''....'....'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx''''x...''xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx''''xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ENDMAP

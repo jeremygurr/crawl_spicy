@@ -1,0 +1,326 @@
+######################################################
+# Miscellaneous
+# -------------
+# miscname.txt: lookup miscellaneous names
+#
+# This file contains a list of names for miscellaneous things.
+######################################################
+%%%%
+# Any word other than "glowing" itself will work here.
+_glowing_adj_
+
+bright
+
+brilliant
+
+dark
+
+dull
+
+faint
+
+mottled
+
+pale
+
+pulsating
+
+shimmering
+
+shining
+%%%%
+_colour_name_
+
+aubergine
+
+azure
+
+beige
+
+black
+
+blue
+
+bronze
+
+brown
+
+charcoal
+
+chartreuse
+
+cobalt blue
+
+copper
+
+cyan
+
+dun
+
+gold
+
+green
+
+grey
+
+gridelin
+
+indigo
+
+lavender
+
+leaf green
+
+lime green
+
+magenta
+
+marigold
+
+mauve
+
+ochre
+
+orange
+
+pink
+
+purple
+
+red
+
+rubric
+
+scarlet
+
+silver
+
+umber
+
+viridian
+
+white
+
+yellow
+%%%%
+# "dust glows XXX", "eyes glow XXX", "hands glow XXX", "<actor> glows XXX".
+# If a language needs these keys split, please say so.
+glowing_colour_name
+
+@_glowing_adj_@ @_colour_name_@
+%%%%
+# random uselessness: "You smell XXX."
+smell_name
+
+baking bread
+
+burning hair
+
+coffee
+
+dragon dung
+
+fire and brimstone
+
+mustard
+
+pepper
+
+salt
+
+something weird
+
+sulphur
+
+tea
+
+the scent of fear
+
+wet wool
+%%%%
+# This doesn't necessarily have to make sense. For example, a name of a
+# fruit or an insect will work here.
+_roaring_animal_name_
+
+albino dragon
+
+dragon
+
+eggplant
+
+frog
+
+human
+
+millipede
+
+pill bug
+
+slug
+
+wumpus
+
+yak
+%%%%
+# random uselessness: "You hear XXX."
+sound_name
+
+a burbling brook
+
+a crunching sound
+
+a lullaby played backwards
+
+a very strange noise
+
+a very strange noise indeed
+
+a voice calling someone else's name
+
+roaring flames
+
+snatches of song
+
+the distant roaring of an enraged @_roaring_animal_name_@
+
+the chiming of a distant gong
+
+the sound of one hand clapping
+
+the tinkle of a tiny bell
+
+the ringing of an enormous bell
+
+whispers in an ancient language
+
+whistling wind
+%%%%
+# Used by Summon Horrible Things.
+SHT_int_loss
+
+Your mind reels, touched by the horrors through the portal.
+
+You quiver within your mortal coil, caressed by the liquid insanity through the scintillating gateway.
+
+# Bal-Sagoth
+The summoning rite seems to take a not insignificant toll on your sanity.
+
+You have a brief vision of a great black cyclopean cityscape with towering stygian walls.
+
+Your vision is obscured by outlandish glyphs which seem to writhe squamously and alter their shape.
+
+You feel inexorably dogged by some nameless and implacable gloom.
+#-----------
+
+You reel in agony as your mind is raked by horrors beyond mortal ken.
+
+Your mind is seduced by sublime insanity as you glimpse through the portal into the nether beyond.
+
+You cackle madly at the sight of the eldritch monstrosity.
+
+You are seized by madness!
+
+Attempting to comprehend the unknowable depths of infinity takes a toll on your sanity.
+
+Your thoughts are inescapably tormented by a ceaseless, buzzing drone.
+
+Your mind collapses in madness at the sight of this blasphemy against creation!
+
+Your mind briefly shatters, though you barely manage to hold yourself together.
+
+You feel your tenuous grasp on sanity beginning to erode.
+
+Penetrating whispers of deepest heresy ceaselessly assail your thoughts.
+
+Your mind aches with revulsion at the sight of the undulating horrors you have wrought.
+
+For but a moment your mind is laid bare before the towering infinitude of the unimaginable.
+
+Your skull pulses and throbs as words spoken in an unspeakable tongue drift across your psyche.
+
+A thin, monotonous whinny from outside of time grows ever louder in your ears.
+
+Shapeless horrors persist on the edge of your vision, drawing ever closer.
+
+You are overcome with an inexorable feeling of implacable gloom.
+
+Coherent, reasonable thoughts seem alien to you.
+
+Tendrils of madness seep and wend into the darkest crevices of your mind.
+
+You struggle to grasp the nature of the incomprehensible forces at work.
+
+Nightmarish fiends assault your waking thoughts!
+
+Seething terrors besiege your sanity!
+
+Lucidity slithers from your feeble grasp.
+%%%%
+welcome_spam
+
+Will you prevail where others failed? Will you find the Orb of Zot?
+
+The bosom of this dungeon contains the fabled artefact, the Orb of Zot.
+
+Will you be the one to retrieve the fabulous Orb of Zot from the depths?
+
+It is said that the Orb of Zot exists deep within this dungeon.
+%%%%
+welcome_spam Halloween
+
+@welcome_spam@ Be careful! Halloween tonight.
+
+The monsters here aren't big trick-or-treat fans. If they won't give you the Orb of Zot, you'll have to take it.
+
+A terrible geas has sent you after the Orb of Zot. What a horrible night to have a curse!
+
+As you descend in search of the Orb, ghosts and spectres flock about you. This place is haunted!
+
+You hear a witch cackle, and suddenly arrive in the dungeon. If you don't find the Orb of Zot, you'll turn into a toad!
+%%%%
+hell_effect_quiet
+
+{{
+if you.can_smell() then
+    return "You smell brimstone."
+else
+    return "Brimstone rains from above."
+end
+}}
+
+You feel lost and a long, long way from home...
+
+You shiver with fear.
+
+You feel a terrible foreboding...
+
+Something frightening happens.
+
+You sense an ancient evil watching you...
+
+You suddenly feel all small and vulnerable.
+
+You sense a hostile presence.
+
+"You will not leave this place."
+
+"Die, mortal!"
+
+"We do not forgive those who trespass against us!"
+
+"Trespassers are not welcome here!"
+
+"You do not belong in this place!"
+
+"Leave now, before it is too late!"
+
+"We have you now!"
+%%%%
+hell_effect_noisy
+
+A gut-wrenching scream fills the air!
+
+You hear words spoken in a strange and terrible language...
+
+You hear diabolical laughter!
+%%%%

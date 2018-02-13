@@ -1,0 +1,88 @@
+#!/usr/bin/env perl
+
+use warnings;
+
+# Run gather_features -a if you want "A pigsty" rather than "pigsty".
+my $art = grep /^-a$/, @ARGV;
+
+# extract(fn, start, end[, per-line)
+#
+# Gather quoted strings from the file named fn, in the region between the first
+# occurrence of the start string and the next line that contains only the end
+# string. If per_line is true, take only the first string from each line.
+sub extract($$$;$)
+{
+    my ($fn, $start, $end, $per_line) = @_;
+    open my $in, "util/cpp_version $fn|" or die "Can't read $fn: $!\n";
+    undef local $/;
+    my $data = <$in>;
+    close $in;
+
+    $data =~ s/.*\Q$start\E(.*?)\Q$end\E.*/$1/s
+        or die "Can't find \"$start\" in $fn\n";
+    $data =~ s|//.*$||mg;
+    my $consume = $per_line ? '.*' : '';
+    return grep {
+        $_ ne "" and $_ !~ /^<.*>$/
+    } ($data =~ /"([^"\n]*)"$consume/g);
+}
+
+sub articled($)
+{
+    local $_ = $_[0];
+    return $_ unless $art;
+    return $_ if /^[A-Z]/ && !/ trap$/;
+    return "\u$_" if /^(?:the |an |a |some )/i;
+    return "A $_" if /^one-/i;
+    # Handle "rough-hewn floor" but not "escape hatch in the floor"
+    return "The $_" if $_ =~ /^(\S+\s+)?floor$/;
+    return /^[aeiou]/i ? "An $_" : "A $_";
+}
+
+for (extract "directn.cc", "static string _base_feature_desc", "}")
+{
+    $features{articled($_)} = 1;
+}
+
+for (extract "feature-data.h", "feat_defs[] =", "};", "per-line")
+{
+    $features{articled($_)} = 1;
+}
+
+for (extract "describe.cc", "trap_names[] =", "};")
+{
+    $_ .= " trap" unless /^(web|shaft|passage|pressure plate)$/;
+    $_ .= " of Golubria" if /^passage$/;
+
+    $features{articled($_)} = 1;
+}
+
+
+for (grep /\.des|\.des\.disabled|\.lua$/, `git ls-files`)
+{
+    chomp;
+    open IN, "<", $_ or die "Can't read $_\n";
+    { undef local $/; $_ = <IN>; }
+    close IN;
+
+    $features{articled($_)} = 1
+        for /set_feature_name\s*\(\s*"[^"\n"]+"\s*,[ \n:]*"([^"\n]+)"\s*\)/sg;
+
+    $features{articled($_)} = 1
+        for /\bdesc\s*=\s*"([^"]*)"/g;
+}
+
+$features{articled("gleaming silver wall")} = 1;
+$features{articled("awoken tree")} = 1;
+for (qw(open closed runed sealed))
+{
+    $features{articled("large $_ door")} = 1;
+    $features{articled("$_ gate")} = 1;
+    $features{articled("huge $_ gate")} = 1;
+}
+for (qw(haloed liquefied umbraed), "disjunction haloed")
+{
+    $features{$_} = 1;
+}
+
+print join("\n", sort keys %features), "\n";

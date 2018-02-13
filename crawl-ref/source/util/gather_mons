@@ -1,0 +1,135 @@
+#!/usr/bin/env perl
+
+use warnings;
+
+# Run gather_mons -d if you want dbname: to be heeded (descs, etc).
+my $db = grep /^-d$/, @ARGV;
+
+# Used for generating the list of vault monsters for the monster tool.
+my $vault_only = grep /^-v$/, @ARGV;
+
+# Used for generating tile_info.txt for the tile lookup on CDO.
+my $find_tiles = grep /^-t$/, @ARGV;
+
+open IN, "util/cpp_version mon-data.h|" or die "Can't read mon-data.h\n";
+while (<IN>)
+{
+    $mons{$1}=1 if /^\ +MONS_[A-Z0-9_]+, +'.', +[A-Z0-9_]+, +"([^"]+)",/; #"
+}
+close IN;
+
+if ($find_tiles)
+{
+    open IN, "rltiles/dc-mon.txt" or die "Can't read dc-mon.txt\n";
+    my $sdir = "";
+    while (<IN>)
+    {
+        $sdir = $1 if /^%sdir (.*)$/;
+        if (my ($loc, $tile) = /^([a-z0-9_\-\/]+) ([A-Z0-9_]+)/)
+        {
+            $tiles{$tile} = $loc =~ /mon\// ? "$loc.png" : "$sdir/$loc.png";
+        }
+    }
+    close IN;
+}
+
+sub vault_mon()
+{
+    if ($vault_only)
+    {
+        s/\s/ /g;
+        s/ +/ /g;
+        print "\"$_\",\n" if /name:/;
+        return;
+    }
+    s/^ */ /; # easier to parse this way
+    return unless /name:/; # not interesting to us
+    s/ spells:[^ ]+//g; # can have ;
+    s/;.*//s; # items
+    my %tags;
+    $tags{$1}=$2 while (s/ (\w+):([^ ]+)//);
+    s/ generate_awake//;
+    s/ patrolling//;
+    s/ actual_spells//;
+    s/ priest_spells//;
+    s/ seen//;
+    my %flags;
+    $flags{$1}=1 while (s/ n_(\w+)//);
+    $flags{$1}=1 while (s/ name_(\w+)//);
+
+    s/^ *//;
+    s/ *$//;
+    $_="$tags{'name'} $_" if $flags{'adj'} || $flags{'adjective'};
+    $_.=" $tags{'name'}" if $flags{'suf'} || $flags{'suffix'};
+    $_=$tags{'name'} if $flags{'rpl'} || $flags{'replace'};
+    $_=$tags{'dbname'} if $db && $tags{'dbname'};
+    s/_/ /g;
+
+    if ($find_tiles and exists $tags{'tile'} and not exists $mons{$_})
+    {
+        my $tile = $tags{'tile'};
+        $tile =~ tr/a-z/A-Z/;
+        print("$_, $tiles{$tile}\n");
+    }
+    $mons{$_} = 1;
+}
+
+for (grep /\.des$/, `git ls-files`)
+{
+    chomp;
+    open IN, "<", $_ or die "Can't read $_\n";
+    { undef local $/; $_ = <IN>; }
+    close IN;
+
+    s/"\s*\.\.(?:\n:)?\s*"//g;
+
+    for (/^ *(?:MONS:|KMONS: *[^=:]+[=:]) *((?:.*\\\n)*.*)/mg)
+    {
+        s/\\\n *//g;
+        vault_mon() for split m{/|,}; #/
+    }
+    for (/(?:mons *\("|kmons *\(" *[^=:]+[=:])(.+?)\)$/smg)
+    {
+        s/"[^"]*"/LUA/g;
+        s/"$//;
+        s/"[^"]*$/LUA/;
+        vault_mon() for split m{/|,}; #/
+    }
+    for (/(?:mon_set|bs\[\d+\])\s+=\s+\{([^}]+)}/sg)
+    {
+        s/^\s*"//s;
+        s/"\s*,\s*$//sg;
+        s/"\s*\n\s*$//sg;
+        s/\\\n *//g;
+        s/--[^\n]*\n//sg;
+        s|"\s*,\s*"|/|sg;
+        vault_mon() for split m{/|,}; #/
+    }
+
+    for (/local \w+ =\s*"([^"]+)"$/smg)
+    {
+        s/\\\n\s+//g;
+        vault_mon();
+    }
+}
+
+$mons{"freed slave"} = 1;
+
+if ($db)
+{
+    # No description needed, but they still should present translated
+    # names for purposes of glyph redefinition.
+    delete $mons{$_} for (split /\n/, <<END);
+small zombie
+large zombie
+small skeleton
+large skeleton
+small simulacrum
+large simulacrum
+END
+}
+
+unless ($vault_only or $find_tiles)
+{
+    print "$_\n" for sort keys %mons;
+}

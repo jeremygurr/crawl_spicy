@@ -1,0 +1,13 @@
+#!/usr/bin/env perl
+
+use warnings;
+
+undef $/;
+open IN, "util/cpp_version job-data.h|" or die "Can't read job-data.h\n";
+$_ = <IN>;
+close IN;
+
+s|//.*$||gm;
+
+print "$_\n" for
+    /"..",\s*"([^"\n"]+)",/sgx;

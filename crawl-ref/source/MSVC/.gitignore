@@ -1,0 +1,11 @@
+bin
+obj
+build.h
+compflag.h
+*.vcproj.user
+*.ncb
+*.suo
+*.opensdf
+*.sdf
+*.vcxproj.user
+*.csproj.user

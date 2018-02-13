@@ -1,0 +1,178 @@
+#!/usr/bin/env perl
+
+use warnings;
+use Getopt::Std;
+use strict;
+
+sub HELP_MESSAGE
+{
+    my $fh = shift;
+    print $fh <<"EOF"
+Usage: $0 [options] [files]
+
+Correct indentation, bracing, and other code style in the Crawl repository.
+
+If no files are specified, defaults to files found beneath the current
+directory, modified by the following options (which have no effect if file
+arguments were provided):
+  -a          Check the whole repository, not just the current directory.
+  -m          Check only files that have been modified and added to the index.
+  -M          Check only files that have been modified.
+
+Other options are:
+  -n          Dry run: Do not actually modify files.
+  -A          Do not add missing braces around blocks.
+  -h, --help  Display this help and exit.
+
+Exit status:
+  0 if there were no style errors, or if errors were corrected.
+  1 if there are still style errors (only with the -n option).
+  2 if an unknown option was supplied.
+EOF
+}
+
+our ($opt_a, $opt_A, $opt_m, $opt_M, $opt_n, $opt_h);
+
+# Send --help to stdout, and exit (with success) when it is provided.
+$Getopt::Std::STANDARD_HELP_VERSION = 1;
+# Fail, and display help to stderr, on a bad option.
+getopts('aAmMnh')
+    or do { HELP_MESSAGE(\*STDERR); exit 2; };
+# Make -h work the same as --help.
+$opt_h and do { HELP_MESSAGE(\*STDOUT); exit 0; };
+
+my $top_level = $opt_a;
+my $add_braces = !$opt_A;
+my $modified_only = $opt_m || $opt_M;
+my $modified_cached = $opt_m && !$opt_M;
+my $dry_run = $opt_n;
+
+my $any_bad = 0;
+
+my @files = @ARGV;
+undef $/;
+unless (@files)
+{
+    my $git_cmd = "git ls-files";
+    if ($modified_only)
+    {
+        my $cached = $modified_cached ? "--cached" : "";
+        $git_cmd = "git diff-index -M --name-only $cached --relative HEAD";
+    }
+
+    if ($top_level)
+    {
+        my $tldir = `git rev-parse --show-toplevel`;
+        do { local $/ = "\n"; chomp $tldir; };
+        chdir($tldir) or die "(-a) cannot chdir to $tldir: $!";
+    }
+    @files = (grep /\.(cc|h)$/ && !/(^|\/)prebuilt\//, split /\n/, `$git_cmd`);
+}
+
+sub rebrace($$$)
+{
+    my ($condition, $indent, $body) = @_;
+    my $orig = "$condition$body";
+
+    # Don't add braces if it's only two lines.
+    return $orig unless ($orig =~ /\n.*\n.*\n/) or ($condition =~ /^ *do/);
+
+    # Don't add braces if the "body" consists of only comments.
+    return $orig unless $body =~ m&^\s++(?!//)&s;
+
+    return "$condition$indent\{\n$body$indent\}\n";
+}
+
+for my $f (@files)
+{
+    open F, "<", $f or die "Can't read $f\n";
+    my $old = $_ = <F>;
+    close F;
+
+    # Eliminate braces around one-line blocks.
+    s&^( +(?:if|while|for|else)\b[^\n]*)\n +{\n( *[^/ }][^\n]*)\n +}$&$1\n$2&msg;
+
+    # Add braces in blocks that need them.
+    s/# $1 = the keyword and condition
+      (
+        # $2 = first-line indent
+        ^(\s+)   (?:if|while|for|else)\b \s*
+                 # $3 = nested parenthesised expression, possibly multi-line
+                 (
+                   \(
+                      (?: [^()]* (?3))*
+                      [^()]*
+                   \)
+                 ) \s*\n
+      )
+      # $4 = the body
+      (
+        # Higher indent than the keyword.
+        \2 \s++
+        # Not another flow control statement or braces
+        (?! { | (?:if|while|for|do|else)\b) [^\n]*\n
+        # And possibly more lines of higher indent than the keyword
+        (?: \2 \s+ [^\n]* \n)*
+      )
+    /rebrace($1,$2,$4)/egsmx if $add_braces;
+
+    s/# $1 = the keyword
+      (
+        # $2 = first-line indent
+        ^(\s+) do\b \s*\n
+      )
+      # $3 = the body
+      (
+        # Higher indent than the keyword.
+        \2 \s++
+        # Not another flow control statement or braces
+        (?! { | (?:if|while|for|do|else)\b) [^\n]*\n
+        # And possibly more lines of higher indent than the keyword
+        (?: \2 \s+ [^\n]* \n)*
+      )
+    /rebrace($1,$2,$3)/egsmx if $add_braces;
+
+    # return is not a function, eliminate totally enclosing parentheses.
+    # This part handles parenthese-less payloads.
+    while (/^( *)return \(([^()]+)\);/sm)
+    {
+        # Done this roundabout way to properly unindent multiline blocks.
+        my $prev = "$`$1return ";
+        my $next = ";$'";
+        my $cur = $2;
+        $cur =~ s/\n /\n/sg;
+        $_ = "$prev$cur$next";
+    }
+
+    # return (x) where x contains parentheses.
+    # Looks like no one told Larry Wall properties of regular expression,
+    # including the part where they can't do arbitrarily nested parentheses.
+    while (/^(\s*)return\s+
+            \((
+             (?: [^()]*+
+                 (\( (?: [^()]++ | (?3) )* \))
+             )+
+             [^()]*+
+            )\);/sxm)
+    {
+        my $prev = "$`$1return ";
+        my $next = ";$'";
+        my $cur = "$2";
+        $cur =~ s/\n /\n/sg;
+        $_ = "$prev$cur$next";
+    }
+
+    if ($old ne $_)
+    {
+        print "$f\n";
+        $any_bad = 1;
+        if (!$dry_run)
+        {
+            open F, ">", $f or die "Can't write $f\n";
+            print F;
+            close F;
+        }
+    }
+}
+
+exit 1 if ($dry_run and $any_bad);

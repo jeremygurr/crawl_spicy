@@ -1,0 +1,421 @@
+body {
+    margin: 0px;
+}
+
+#lobby {
+    margin: 4px;
+}
+
+#left_column {
+    line-height: 1em;
+}
+
+#right_column {
+    display: inline-block;
+    vertical-align: top;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+
+.colour_black { color: black; }
+.colour_blue { color: blue; }
+.colour_green { color: green; }
+.colour_cyan { color: cyan; }
+.colour_red { color: red; }
+.colour_magenta { color: magenta; }
+.colour_brown { color: brown; }
+.colour_lightgray { color: lightgray; }
+.colour_darkgray { color: darkgray; }
+.colour_lightblue { color: lightblue; }
+.colour_lightgreen { color: lightgreen; }
+.colour_lightcyan { color: lightcyan; }
+.colour_lightred { color: #EE9090; }
+.colour_lightmagenta { color: #EE90EE; }
+.colour_yellow { color: yellow; }
+.colour_white { color: white; }
+
+#stats {
+    display: inline-block;
+    position: static;
+    color: #babdb6; /* lightgray */
+}
+
+#stats_titleline, #stats_species_god {
+    color: #fce94f; /* yellow */
+}
+#stats_piety {
+    color: #fce94f; /* yellow */
+}
+#stats_gozag_gold{
+    color: #babdb6; /* lightgray */
+}
+#stats_piety.penance {
+    color: #a40000; /* red */
+}
+#stats_piety.monk {
+    color: #555753; /* darkgray */
+}
+#stats_wizmode {
+    color: #204a87; /* blue */
+}
+.stats_caption {
+    color: #8f5902; /* brown */
+}
+
+.degenerated_stat {
+    color: #fce94f; /* yellow */
+}
+.zero_stat {
+    color: #ef2929; /* lightred */
+}
+.low_stat {
+    color: #a40000; /* red */
+}
+.boosted_stat {
+    color: #729fcf; /* lightblue */
+}
+
+.degenerated_defense {
+    color: #a40000; /* red */
+}
+.boosted_defense {
+    color: #729fcf; /* lightblue */
+}
+#game #stats_weapon .corroded_weapon {
+    color: #a40000; /* red */
+}
+
+.bar span {
+    display: inline-block;
+    height: 100%;
+}
+
+/* Some of these values are also hard coded to cell_renderer.js */
+#stats_hp_bar {
+    background-color: #555753; /* darkgray */
+}
+#stats_hp_bar_full {
+    background-color: #8ae234; /* lightgreen */
+}
+#stats_hp_bar_decrease {
+    background-color: #a40000; /* red */
+}
+#stats_hp_bar_poison {
+    background-color: yellow;
+}
+#stats_hp_bar_increase {
+    background-color: #4e9a06; /* green */
+}
+
+#stats_mp_bar {
+    background-color: #555753; /* darkgray */
+}
+#stats_mp_bar_full {
+    background-color: #729fcf; /* lightblue */
+}
+#stats_mp_bar_decrease {
+    background-color: #5c3566; /* magenta */
+}
+#stats_mp_bar_increase {
+    background-color: #204a87; /* blue */
+}
+
+#stats[data-species="Felid"] #stats_quiver_line {
+    display: none;
+}
+
+/* default color when showing "Silenced" */
+#stats_noise_status {
+    color: #FF00FF; /* magenta */
+}
+
+/* default bar background color */
+#stats_noise_bar {
+    background-color: #2F2F2F; /* dark slate gray */
+}
+
+/* default bar change color */
+#stats_noise_bar_decrease {
+    background-color: #555753; /* darkgray */
+}
+
+/* clear the bar entirely */
+#stats_noise[data-level="blank"] #stats_noise_bar,
+#stats_noise[data-level="blank"] #stats_noise_bar_full {
+    background-color: #000000; /* black */
+}
+
+/* noise number is printed here in wizmode */
+#stats_noise_num {
+    color: #D3D3D3; /* default gray */
+    width: 0;
+}
+#stats_noise[data-shownum] #stats_noise_num {
+    width: 2em;
+}
+
+/* use attribute selectors to adjust the bar and number (wizmode) color depending on `data-level`. */
+#stats_noise[data-level="quiet"] #stats_noise_bar_full {
+    background-color: #D3D3D3; /* lightgray */
+}
+#stats_noise[data-level="quiet"] #stats_noise_num {
+    color: #D3D3D3;
+}
+#stats_noise[data-level="loud"] #stats_noise_bar_full {
+    background-color: #FFD700; /* gold */
+}
+#stats_noise[data-level="loud"] #stats_noise_num {
+    color: #FFD700;
+}
+#stats_noise[data-level="veryloud"] #stats_noise_bar_full {
+    background-color: #FF0000; /* red */
+}
+#stats_noise[data-level="veryloud"] #stats_noise_num {
+    color: #FF0000;
+}
+#stats_noise[data-level="superloud"]  #stats_noise_bar_full {
+    background-color: #FF00FF; /* magenta */
+}
+#stats_noise[data-level="superloud"] #stats_noise_num {
+    color: #FF00FF;
+}
+
+/* make the bar go to eleven on superloud sounds. */
+#stats_noise_bar { width: 82%; }
+#stats_noise[data-level="superloud"] #stats_noise_bar {
+    width: 100%;
+}
+
+/* shrink the bar to the right in wizmode (if `data-shownum` is set). */
+#stats_noise_inter { width: 61%; }
+#stats_noise[data-shownum] #stats_noise_inter {
+     width: 45%;
+}
+
+#message_pane {
+    width: 100%;
+}
+#messages_container {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+#messages {
+    line-height: 1.4em;
+    width: 100%;
+}
+.prefix_glyph.command_marker {
+    color: #555753; /* darkgray */
+}
+.prefix_glyph.turn_marker {
+    color: #babdb6; /* lightgray */
+}
+.game_message {
+    white-space: pre-wrap;
+}
+
+#minimap_block {
+    display: block;
+}
+
+#minimap, #minimap_overlay {
+    position: absolute;
+}
+
+
+#tooltip {
+    position: absolute;
+    background: rgba(40, 40, 40, 0.5);
+    padding: 5px;
+    border: 1px solid lightgray;
+}
+
+
+/* monster list */
+#monster_list {
+    display: inline-block;
+    overflow-x: hidden;
+}
+
+#monster_list .group {
+    display: block;
+}
+
+#monster_list .picture {
+    display: inline;
+    vertical-align: middle;
+}
+
+#monster_list .name {
+    vertical-align: middle;
+}
+
+#monster_list .trivial {
+    color: #555753; /* darkgray */
+}
+#monster_list .easy {
+    color: #babdb6; /* lightgray */
+}
+#monster_list .tough {
+    color: #fce94f; /* yellow */
+}
+#monster_list .nasty {
+    color: #ef2929; /* lightred */
+}
+
+#monster_list .friendly {
+    color: #4e9a06; /* green */
+}
+
+#monster_list .good_neutral,
+#monster_list .neutral,
+#monster_list .strict_neutral {
+    color: #8f5902; /* brown */
+}
+
+#monster_list .health {
+    display: inline-block;
+}
+
+#monster_list .uninjured {
+    background-color: #4e9a06; /* green */
+}
+
+#monster_list .lightly_damaged {
+    background-color: #4e9a06; /* green */
+}
+
+#monster_list .moderately_damaged {
+    background-color: #8f5902; /* brown */
+}
+
+#monster_list .heavily_damaged {
+    background-color: #8f5902; /* brown */
+}
+
+#monster_list .severely_damaged {
+    background-color: #5c3566; /* magenta */
+}
+
+#monster_list .almost_dead {
+    background-color: #a40000; /* red */
+}
+
+#monster_list .ellipse {
+    float: right;
+}
+
+/* menus */
+#menu {
+    line-height: 1.2em;
+    min-width: 40em;
+}
+
+#menu_title {
+    white-space: pre;
+}
+
+#menu_more {
+    white-space: pre;
+}
+
+#menu_contents {
+    overflow: hidden;
+}
+
+#menu_contents ol {
+    list-style: none;
+    padding: 0;
+    margin: 2px;
+}
+
+#menu_contents li {
+    white-space: pre;
+}
+
+#menu_contents li.selectable:hover {
+    outline: 1px solid lightgray;
+    cursor: pointer;
+}
+
+#menu_contents li.placeholder {
+    color: darkgray;
+}
+
+#menu .pattern_select {
+    height: 1em;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    font-family: monospace;
+    font-size: 16px;
+}
+
+#input_dialog {
+    line-height: 1.2em;
+    min-width: 20em; /* can override this with a tag-specific class */
+    white-space: pre;
+}
+
+#input_dialog span {
+    display: table-cell;
+}
+
+.input_dialog_box {
+    display: table-cell;
+    width: 90%;
+}
+
+#input_dialog input {
+    width: 90%;
+}
+
+.input_skill_target input {
+    max-width: 5em;
+}
+
+#game .fg0 { color: #000000; } /* black */
+#game .fg1 { color: #204a87; } /* blue */
+#game .fg2 { color: #4e9a06; } /* green */
+#game .fg3 { color: #06989a; } /* cyan */
+#game .fg4 { color: #a40000; } /* red */
+#game .fg5 { color: #5c3566; } /* magenta */
+#game .fg6 { color: #8f5902; } /* brown */
+#game .fg7 { color: #babdb6; } /* lightgray */
+#game .fg8 { color: #555753; } /* darkgray */
+#game .fg9 { color: #729fcf; } /* lightblue */
+#game .fg10 { color: #8ae234; } /* lightgreen */
+#game .fg11 { color: #34e2e2; } /* lightcyan */
+#game .fg12 { color: #ef2929; } /* lightred */
+#game .fg13 { color: #ad7fa8; } /* lightmagenta */
+#game .fg14 { color: #fce94f; } /* yellow */
+#game .fg15 { color: #eeeeec; } /* white */
+
+#game .bg0 { background-color: #000000; } /* black */
+#game .bg1 { background-color: #204a87; } /* blue */
+#game .bg2 { background-color: #4e9a06; } /* green */
+#game .bg3 { background-color: #06989a; } /* cyan */
+#game .bg4 { background-color: #a40000; } /* red */
+#game .bg5 { background-color: #5c3566; } /* magenta */
+#game .bg6 { background-color: #8f5902; } /* brown */
+#game .bg7 { background-color: #babdb6; } /* lightgray */
+#game .bg8 { background-color: #555753; } /* darkgray */
+#game .bg9 { background-color: #729fcf; } /* lightblue */
+#game .bg10 { background-color: #8ae234; } /* lightgreen */
+#game .bg11 { background-color: #34e2e2; } /* lightcyan */
+#game .bg12 { background-color: #ef2929; } /* lightred */
+#game .bg13 { background-color: #ad7fa8; } /* lightmagenta */
+#game .bg14 { background-color: #fce94f; } /* yellow */
+#game .bg15 { background-color: #eeeeec; } /* white */
+
+/* Use crisp (nearest-neighbor) upscaling on HiDPI screens to avoid blurriness. */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    canvas {
+        image-rendering: optimizeSpeed;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+        -ms-interpolation-mode: nearest-neighbor;
+        image-rendering: crisp-edges;
+    }
+}
