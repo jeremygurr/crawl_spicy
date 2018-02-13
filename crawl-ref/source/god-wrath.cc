@@ -624,7 +624,7 @@ static bool _kikubaaqudgha_retribution()
             corpse_rot(nullptr);
     }
 
-    if (x_chance_in_y(you.experience_level, 27))
+    if (x_chance_in_y(you.experience_level, Options.max_exp_level))
     {
         // torment, or 3 necromancy miscasts
         if (!player_res_torment(false))

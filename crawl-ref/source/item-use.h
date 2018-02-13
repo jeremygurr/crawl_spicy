@@ -17,7 +17,7 @@ item_def* use_an_item(int item_type, operation_types oper, const char* prompt,
 
 bool armour_prompt(const string & mesg, int *index, operation_types oper);
 
-bool takeoff_armour(int index);
+bool takeoff_armour(int index, bool immediately=false, bool manual=false);
 
 void drink(item_def* potion = nullptr);
 
@@ -34,7 +34,7 @@ string cannot_read_item_reason(const item_def &item);
 
 bool remove_ring(int slot = -1, bool announce = false);
 
-bool wear_armour(int slot = -1);
+bool wear_armour(int slot = -1, bool immediate = false);
 
 bool can_wear_armour(const item_def &item, bool verbose, bool ignore_temporary);
 

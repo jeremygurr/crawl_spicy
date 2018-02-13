@@ -82,6 +82,7 @@
 #include "view.h"
 #include "wizard-option-type.h"
 #include "xom.h"
+#include "place.h"
 
 static void _moveto_maybe_repel_stairs()
 {
@@ -2609,7 +2610,7 @@ static void _handle_god_wrath(int exp)
     }
 }
 
-void gain_exp(unsigned int exp_gained, unsigned int* actual_gain)
+void gain_exp(unsigned int exp_gained, unsigned int *actual_gain, bool floor_exp)
 {
     if (crawl_state.game_is_arena())
         return;
@@ -2631,7 +2632,8 @@ void gain_exp(unsigned int exp_gained, unsigned int* actual_gain)
     _handle_stat_loss(skill_xp);
     _handle_temp_mutation(skill_xp);
     _recharge_xp_evokers(skill_xp);
-    _reduce_abyss_xp_timer(skill_xp);
+    if (!floor_exp)
+        _reduce_abyss_xp_timer(skill_xp);
     _handle_xp_drain(skill_xp);
 
     if (player_under_penance(GOD_HEPLIAKLQANA))
@@ -2644,10 +2646,53 @@ void gain_exp(unsigned int exp_gained, unsigned int* actual_gain)
 
     dprf("gain_exp: %d", exp_gained);
 
-    if (you.experience + exp_gained > (unsigned int)MAX_EXP_TOTAL)
+    int player_exp_gained = exp_gained;
+    if (Options.different_experience_sources) {
+        const int adjusted_level = you.experience_level + 1;
+        const int cubed_level = adjusted_level * adjusted_level * adjusted_level;
+        double exp_ratio_double = sqrt(player_exp_gained * 5.0 / cubed_level);
+        int exp_ratio = exp_ratio_double * 100;
+        if (exp_ratio > 500)
+            exp_ratio = 500;
+
+        // reduce total experience to compensate for higher exp levels resulting from more sources
+        player_exp_gained = div_rand_round(player_exp_gained * 50, 100);
+
+//        mprf("exp_total_for_next_level: %d", exp_total_for_next_level);
+        if (Options.debug_exp) {
+            mprf("exp_gained before: %d", player_exp_gained);
+        }
+
+        if (exp_ratio > 20) {
+            player_exp_gained = div_rand_round(player_exp_gained * exp_ratio, 100);
+        } else {
+            player_exp_gained = 0;
+        }
+
+        skill_xp = player_exp_gained;
+
+        if (Options.debug_exp) {
+            mprf("exp_ratio: %d", exp_ratio);
+            mprf("exp_gained after: %d", player_exp_gained);
+        }
+
+        if (exp_ratio == 500) {
+            mprf("You learned as much as you possibly could from that.");
+        } else if (exp_ratio > 250) {
+            mprf("You learned a huge amount from that.");
+        } else if (exp_ratio > 150) {
+            mprf("You learned a lot from that.");
+        } else if (player_exp_gained == 0) {
+            mprf("You didn't learn anything from that.");
+//        } else if (exp_ratio < 50) {
+//            mprf("You didn't learn much from that.");
+        }
+    }
+
+    if (you.experience + player_exp_gained > (unsigned int)MAX_EXP_TOTAL)
         you.experience = MAX_EXP_TOTAL;
     else
-        you.experience += exp_gained;
+        you.experience += player_exp_gained;
 
     you.exp_available += 10 * skill_xp;
 
@@ -2796,8 +2841,8 @@ void level_change(bool skip_attribute_increase)
             // Don't want to see the dead creature at the prompt.
             redraw_screen();
 
-            if (new_exp == 27)
-                mprf(MSGCH_INTRINSIC_GAIN, "You have reached level 27, the final one!");
+            if (new_exp == Options.max_exp_level)
+                mprf(MSGCH_INTRINSIC_GAIN, "You have reached level %d, the final one!", Options.max_exp_level);
             else if (new_exp == you.get_max_xl())
                 mprf(MSGCH_INTRINSIC_GAIN, "You have reached level %d, the highest you will ever reach!",
                         you.get_max_xl());
@@ -5235,6 +5280,7 @@ player::player()
     redraw_experience    = false;
     redraw_armour_class  = false;
     redraw_evasion       = false;
+    redraw_damage        = false;
     redraw_title         = false;
 
     flash_colour        = BLACK;
@@ -5770,7 +5816,7 @@ int player::skill(skill_type sk, int scale, bool real, bool drained, bool temp) 
     unsigned int effective_points = skill_points[sk];
     if (!real)
         effective_points += get_crosstrain_points(sk);
-    effective_points = min(effective_points, skill_exp_needed(MAX_SKILL_LEVEL, sk));
+    effective_points = min(effective_points, skill_exp_needed(Options.max_skill_level, sk));
     actual_skill = calc_skill_level_change(sk, actual_skill, effective_points);
 
     int level = actual_skill * scale
@@ -5795,7 +5841,7 @@ int player::skill(skill_type sk, int scale, bool real, bool drained, bool temp) 
             level = ash_skill_boost(sk, scale);
 
     if (temp && duration[DUR_HEROISM] && sk <= SK_LAST_MUNDANE)
-        level = min(level + 5 * scale, MAX_SKILL_LEVEL * scale);
+        level = min(level + 5 * scale, Options.max_skill_level * scale);
     return level;
 }
 
@@ -8131,6 +8177,27 @@ void player_end_berserk()
     you.redraw_quiver = true; // Can throw again.
 }
 
+const int experience_for_this_floor()
+{
+    int exp = 0;
+
+    if (!is_safe_branch(you.where_are_you)
+        && !(you.where_are_you == BRANCH_DUNGEON && you.depth == 1)
+            )
+    {
+        int how_deep = absdungeon_depth(you.where_are_you, you.depth) + 2;
+        if (Options.debug_exp) {
+            mprf("abs depth: %d", how_deep);
+        }
+
+//        exp = exp_needed(how_deep, 0);
+        exp = how_deep * how_deep;
+        exp = exp * exp / 10;
+    }
+
+    return exp;
+}
+
 /**
  * Does the player have the Sanguine Armour mutation (not suppressed by a form)
  * while being at a low enough HP (<67%) for its benefits to trigger?
@@ -8168,3 +8235,4 @@ void refresh_weapon_protection()
     you.increase_duration(DUR_SPWPN_PROTECTION, 3 + random2(2), 5);
     you.redraw_armour_class = true;
 }
+

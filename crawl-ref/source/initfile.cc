@@ -168,6 +168,23 @@ const vector<GameOption*> game_options::build_options_list()
 #endif
         new BoolGameOption(SIMPLE_NAME(regex_search), false),
         new BoolGameOption(SIMPLE_NAME(autopickup_search), false),
+
+        new BoolGameOption(SIMPLE_NAME(different_experience_sources), false),
+        new BoolGameOption(SIMPLE_NAME(extra_numbers), false),
+        new BoolGameOption(SIMPLE_NAME(heal_wounds_potion_gives_full_health), false),
+        new BoolGameOption(SIMPLE_NAME(instakill_protection), false),
+        new BoolGameOption(SIMPLE_NAME(inventory_expansion), false),
+        new BoolGameOption(SIMPLE_NAME(magic_potion_gives_full_magic), false),
+        new BoolGameOption(SIMPLE_NAME(monsters_do_not_use_stairs), false),
+        new BoolGameOption(SIMPLE_NAME(multiple_difficulty_levels), false),
+        new BoolGameOption(SIMPLE_NAME(no_exp_cap), false),
+        new BoolGameOption(SIMPLE_NAME(no_spellpower_cap), false),
+        new BoolGameOption(SIMPLE_NAME(shield_convenience), false),
+        new BoolGameOption(SIMPLE_NAME(wide_spell_list), false),
+
+        new BoolGameOption(SIMPLE_NAME(debug_exp), false),
+        new BoolGameOption(SIMPLE_NAME(debug_ouch), false),
+
         new BoolGameOption(SIMPLE_NAME(show_newturn_mark), true),
         new BoolGameOption(SIMPLE_NAME(show_game_time), true),
         new BoolGameOption(SIMPLE_NAME(equip_bar), false),
@@ -582,6 +599,23 @@ static string _weapon_to_str(weapon_type wpn_type)
     case WPN_RANDOM:
     default:
         return "random";
+    }
+}
+
+static string _difficulty_to_str(game_difficulty_level diff)
+{
+    switch (diff)
+    {
+        case DIFFICULTY_EASY:
+            return "Easy";
+        case DIFFICULTY_STANDARD:
+            return "Standard";
+        case DIFFICULTY_CHALLENGE:
+            return "Challenge";
+        case DIFFICULTY_NIGHTMARE:
+            return "Nightmare";
+        default:
+            return "Unknown";
     }
 }
 
@@ -1064,6 +1098,22 @@ void game_options::reset_options()
                    "javelin / tomahawk / stone / rock / net, "
                    "inscribed",
                    false, false);
+
+    different_experience_sources = false;
+    extra_numbers = false;
+    heal_wounds_potion_gives_full_health = false;
+    instakill_protection = false;
+    inventory_expansion = false;
+    magic_potion_gives_full_magic = false;
+    monsters_do_not_use_stairs = false;
+    multiple_difficulty_levels = false;
+    no_exp_cap = false;
+    no_spellpower_cap = false;
+    shield_convenience = false;
+    wide_spell_list = false;
+
+    debug_exp = false;
+    debug_ouch = false;
 
     // These are only used internally, and only from the commandline:
     // XXX: These need a better place.
@@ -1656,6 +1706,13 @@ void read_init_file(bool runscript)
     Options.filename     = init_file_name;
     Options.basefilename = get_base_filename(init_file_name);
     Options.line_num     = -1;
+    if (Options.no_exp_cap) {
+        Options.max_exp_level = 99;
+        Options.max_skill_level = 99;
+    } else {
+        Options.max_exp_level = 27;
+        Options.max_skill_level = 27;
+    }
 }
 
 newgame_def read_startup_prefs()

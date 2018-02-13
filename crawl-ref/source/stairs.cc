@@ -800,6 +800,17 @@ void floor_transition(dungeon_feature_type how,
     else
         maybe_update_stashes();
 
+    if (Options.different_experience_sources && crawl_state.need_floor_exp)
+    {
+        int exp = experience_for_this_floor();
+        if (exp < 0)
+            exp = 0;
+
+        unsigned int actual_gain = 0;
+        gain_exp(exp, &actual_gain, true);
+        crawl_state.need_floor_exp = false;
+    }
+
     request_autopickup();
 }
 

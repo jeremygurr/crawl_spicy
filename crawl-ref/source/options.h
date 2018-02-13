@@ -308,7 +308,7 @@ public:
     vector<pair<text_pattern, string> > autoinscriptions;
     vector<text_pattern> note_items;     // Objects to note
     // Skill levels to note
-    FixedBitVector<MAX_SKILL_LEVEL + 1> note_skill_levels;
+    FixedBitVector<99 + 1> note_skill_levels;
     vector<pair<text_pattern, string>> auto_spell_letters;
     vector<pair<text_pattern, string>> auto_item_letters;
     vector<pair<text_pattern, string>> auto_ability_letters;
@@ -456,6 +456,25 @@ public:
     bool        regex_search; // whether to default to regex search for ^F
     bool        autopickup_search; // whether to annotate stash items with
                                    // autopickup status
+
+    bool        different_experience_sources;
+    bool        extra_numbers;
+    bool        heal_wounds_potion_gives_full_health;
+    bool        instakill_protection;
+    bool        inventory_expansion;
+    bool        magic_potion_gives_full_magic;
+    bool        monsters_do_not_use_stairs;
+    bool        multiple_difficulty_levels;
+    bool        no_exp_cap;
+    bool        no_spellpower_cap;
+    bool        shield_convenience;
+    bool        wide_spell_list;
+
+    bool        debug_exp;
+    bool        debug_ouch;
+
+    int         max_exp_level;
+    int         max_skill_level;
 
     lang_t              language;         // Translation to use.
     const char*         lang_name;        // Database name of the language.

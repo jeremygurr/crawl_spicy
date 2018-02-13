@@ -343,6 +343,7 @@ double prompt_for_float(const char* prompt)
 char index_to_letter(int the_index)
 {
     ASSERT_RANGE(the_index, 0, ENDOFPACK);
+    the_index %= 52;
     return the_index + ((the_index < 26) ? 'a' : ('A' - 26));
 }
 

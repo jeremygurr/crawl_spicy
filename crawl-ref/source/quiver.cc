@@ -181,7 +181,7 @@ void choose_item_for_quiver()
     }
 
     int slot = prompt_invent_item("Quiver which item? (- for none, * to show all)",
-                                  MT_INVLIST, OSEL_THROWABLE, OPER_QUIVER,
+                                  MT_INVLIST, OSEL_THROWABLE, false, OPER_QUIVER,
                                   invprompt_flag::hide_known, '-');
 
     if (prompt_failed(slot))

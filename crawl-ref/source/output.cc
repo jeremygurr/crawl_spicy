@@ -109,6 +109,8 @@ enum touchui_states
     TOUCH_V_TITLE = 0x0101,
     TOUCH_V_TITL2 = 0x0102,
     TOUCH_V_LIGHT = 0x010B,
+    TOUCH_T_EXTRA = 0x010C,
+    TOUCH_V_EXTRA = 0x010D,
 };
 touchui_states TOUCH_UI_STATE = TOUCH_S_INIT;
 static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
@@ -176,8 +178,14 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
         case TOUCH_V_QV:
             x = 4; y = 8;
             break;
-        case TOUCH_V_LIGHT:
+        case TOUCH_T_EXTRA:
             x = 1; y = 9;
+            break;
+        case TOUCH_V_EXTRA:
+            x = 10; y = 9;
+            break;
+        case TOUCH_V_LIGHT:
+            x = 1; y = 10;
             break;
         case TOUCH_T_HP:
             x = 2; y = crawl_view.hudsz.y;
@@ -880,6 +888,16 @@ static void _print_stats_ev(int x, int y)
     CPRINTF("%2d ", you.evasion());
 }
 
+static void _print_stats_dam(int x, int y)
+{
+    CGOTOXY(x+11, y, GOTO_STAT);
+    textcolour(HUD_VALUE_COLOUR);
+    if (you.source_damage == you.turn_damage)
+        CPRINTF("%d          ", you.source_damage);
+    else
+        CPRINTF("%d/%d       ", you.source_damage, you.turn_damage);
+}
+
 /**
  * Get the appropriate colour for the UI text describing the player's weapon.
  * (Or hands/ice fists/etc, as appropriate.)
@@ -1163,6 +1181,7 @@ static bool _need_stats_printed()
            || you.redraw_magic_points
            || you.redraw_armour_class
            || you.redraw_evasion
+           || you.redraw_damage
            || you.redraw_stats[STAT_STR]
            || you.redraw_stats[STAT_INT]
            || you.redraw_stats[STAT_DEX]
@@ -1223,6 +1242,15 @@ static void _redraw_title()
         _draw_wizmode_flag("EX-WIZARD");
     else if (you.explore && !small_layout)
         _draw_wizmode_flag("EXPLORE");
+    else if (Options.multiple_difficulty_levels && crawl_state.difficulty == DIFFICULTY_EASY)
+        _draw_wizmode_flag("EASY");
+    else if (Options.multiple_difficulty_levels && crawl_state.difficulty == DIFFICULTY_STANDARD)
+        _draw_wizmode_flag("STANDARD");
+    else if (Options.multiple_difficulty_levels && crawl_state.difficulty == DIFFICULTY_CHALLENGE)
+        _draw_wizmode_flag("CHALLENGE");
+    else if (Options.multiple_difficulty_levels && crawl_state.difficulty == DIFFICULTY_NIGHTMARE)
+        _draw_wizmode_flag("NIGHTMARE");
+
 #ifdef DGL_SIMPLE_MESSAGING
     update_message_status();
 #endif
@@ -1284,6 +1312,7 @@ void print_stats()
 {
     int ac_pos = 5;
     int ev_pos = ac_pos + 1;
+    int dam_pos = 12;
 
     cursor_control coff(false);
     textcolour(LIGHTGREY);
@@ -1336,6 +1365,12 @@ void print_stats()
     {
         you.redraw_evasion = false;
         _print_stats_ev(1, ev_pos);
+    }
+
+    if (Options.extra_numbers && you.redraw_damage)
+    {
+        you.redraw_damage = false;
+        _print_stats_dam(1, dam_pos);
     }
 
     for (int i = 0; i < NUM_STATS; ++i)
@@ -1403,6 +1438,9 @@ void print_stats()
 
     you.redraw_quiver = false;
 
+    if (Options.extra_numbers)
+        yhack += 1;
+
     if (you.redraw_status_lights)
     {
         you.redraw_status_lights = false;
@@ -1465,6 +1503,7 @@ void draw_border()
     int str_pos = ac_pos;
     int int_pos = ev_pos;
     int dex_pos = sh_pos;
+    int dam_pos = 12;
 
     //CGOTOXY(1, 3, GOTO_STAT); CPRINTF("Hp:");
     CGOTOXY(1, mp_pos, GOTO_STAT);
@@ -1479,6 +1518,11 @@ void draw_border()
     CGOTOXY(19, 9, GOTO_STAT);
     CPRINTF(Options.show_game_time ? "Time:" : "Turn:");
     // Line 8 is exp pool, Level
+
+    if (Options.extra_numbers) {
+        CGOTOXY(1, dam_pos, GOTO_STAT);
+        CPRINTF("Last Ouch:");
+    }
 }
 
 void redraw_screen(bool show_updates)

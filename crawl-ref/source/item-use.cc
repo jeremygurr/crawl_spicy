@@ -360,7 +360,7 @@ bool can_wield(const item_def *weapon, bool say_reason,
     // All non-weapons only need a shield check.
     if (weapon->base_type != OBJ_WEAPONS)
     {
-        if (!ignore_temporary_disability && is_shield_incompatible(*weapon))
+        if (!ignore_temporary_disability && is_shield_incompatible(*weapon) && !Options.shield_convenience)
         {
             SAY(mpr("You can't wield that with a shield."));
             return false;
@@ -412,7 +412,7 @@ bool can_wield(const item_def *weapon, bool say_reason,
         return false;
     }
 
-    if (!ignore_temporary_disability && is_shield_incompatible(*weapon))
+    if (!ignore_temporary_disability && is_shield_incompatible(*weapon) && !Options.shield_convenience)
     {
         SAY(mpr("You can't wield that with a shield."));
         return false;
@@ -479,6 +479,7 @@ bool wield_weapon(bool auto_wield, int slot, bool show_weff_messages,
             item_slot = prompt_invent_item(
                             "Wield which item (- for none, * to show all)?",
                             MT_INVLIST, OSEL_WIELD,
+                            false,
                             OPER_WIELD, invprompt_flag::no_warning, '-');
         }
         else
@@ -590,8 +591,35 @@ bool wield_weapon(bool auto_wield, int slot, bool show_weff_messages,
 
     const unsigned int old_talents = your_talents(false).size();
 
+    // is there a shield in our way of wielding this weapon?
+    if (Options.shield_convenience
+        && is_shield_incompatible(new_wpn)) {
+        // are we already unequipping our shield?
+//        if (you.delay_queue.size() > 0)
+//            return true;
+
+        const int shield_slot = you.equip[EQ_SHIELD];
+        if (!takeoff_armour(shield_slot, true)) {
+            mpr("Failed to unequip shield.");
+            return false;
+        } else {
+            you.shield_autoequip = shield_slot;
+        }
+    }
+
     // Go ahead and wield the weapon.
     equip_item(EQ_WEAPON, item_slot, show_weff_messages);
+
+    // reequip shield if equipping a weapon it's compatible with
+    if (Options.shield_convenience
+        && you.equip[EQ_SHIELD] == -1
+        && you.shield_autoequip > -1
+        && !is_shield_incompatible(new_wpn, &you.inv[you.shield_autoequip])
+            ) {
+        if (!wear_armour(you.shield_autoequip, true)) {
+            mpr("Failed to auto equip shield.");
+        }
+    }
 
     if (show_wield_msg)
     {
@@ -644,7 +672,7 @@ bool armour_prompt(const string & mesg, int *index, operation_types oper)
         int selector = OBJ_ARMOUR;
         if (oper == OPER_TAKEOFF && !Options.equip_unequip)
             selector = OSEL_WORN_ARMOUR;
-        int slot = prompt_invent_item(mesg.c_str(), MT_INVLIST, selector, oper);
+        int slot = prompt_invent_item(mesg.c_str(), MT_INVLIST, selector, false, oper);
 
         if (!prompt_failed(slot))
         {
@@ -997,7 +1025,7 @@ static bool _can_equip_armour(const item_def &item)
 
 // Try to equip the armour in the given inventory slot (or, if slot is -1,
 // prompt for a choice of item, then try to wear it).
-bool wear_armour(int item)
+bool wear_armour(int item, bool immediate)
 {
     // Before (possibly) prompting for which item to wear, check for some
     // conditions that would make it impossible to wear any type of armour.
@@ -1024,6 +1052,7 @@ bool wear_armour(int item)
     if (item == -1)
     {
         item = prompt_invent_item("Wear which item?", MT_INVLIST, OBJ_ARMOUR,
+                                  false,
                                   OPER_WEAR, invprompt_flag::no_warning);
         if (prompt_failed(item))
             return false;
@@ -1083,17 +1112,21 @@ bool wear_armour(int item)
         swapping = true;
     }
 
-    you.turn_is_over = true;
-
     // TODO: It would be nice if we checked this before taking off the item
     // currently in the slot. But doing so is not quite trivial. Also applies
     // to jewellery.
     if (!_safe_to_remove_or_wear(invitem, false))
         return false;
 
-    const int delay = armour_equip_delay(invitem);
-    if (delay)
-        start_delay<ArmourOnDelay>(delay - (swapping ? 0 : 1), invitem);
+    if (immediate) {
+        equip_item(slot, invitem.link);
+    } else {
+        you.turn_is_over = true;
+
+        const int delay = armour_equip_delay(invitem);
+        if (delay)
+            start_delay<ArmourOnDelay>(delay - (swapping ? 0 : 1), invitem);
+    }
 
     return true;
 }
@@ -1139,7 +1172,7 @@ static bool _can_takeoff_armour(int item)
 // TODO: It would be nice if this were made consistent with wear_armour,
 // wield_weapon, puton_ring, etc. in terms of taking a default value of -1,
 // which has the effect of prompting for an item to take off.
-bool takeoff_armour(int item)
+bool takeoff_armour(int item, bool immediately, bool manual)
 {
     if (!_can_takeoff_armour(item))
         return false;
@@ -1160,6 +1193,9 @@ bool takeoff_armour(int item)
     {
     case EQ_BODY_ARMOUR:
     case EQ_SHIELD:
+        if (you.shield_autoequip > -1 && manual) {
+            you.shield_autoequip = -1;
+        }
     case EQ_CLOAK:
     case EQ_HELMET:
     case EQ_GLOVES:
@@ -1175,10 +1211,18 @@ bool takeoff_armour(int item)
         break;
     }
 
-    you.turn_is_over = true;
+    if (immediately) {
+#ifdef USE_SOUND
+        parse_sound(DEQUIP_ARMOUR_SOUND);
+#endif
+//        mprf("You take off %s.", invitem.name(DESC_YOUR).c_str());
+        unequip_item(slot);
+    } else {
+        you.turn_is_over = true;
 
-    const int delay = armour_equip_delay(invitem);
-    start_delay<ArmourOffDelay>(delay - 1, invitem);
+        const int delay = armour_equip_delay(invitem);
+        start_delay<ArmourOffDelay>(delay - 1, invitem);
+    }
 
     return true;
 }
@@ -1835,7 +1879,7 @@ bool puton_ring(int slot, bool allow_prompt)
     else
     {
         item_slot = prompt_invent_item("Put on which piece of jewellery?",
-                                       MT_INVLIST, OBJ_JEWELLERY, OPER_PUTON,
+                                       MT_INVLIST, OBJ_JEWELLERY, false, OPER_PUTON,
                                        invprompt_flag::no_warning);
     }
 
@@ -1899,6 +1943,7 @@ bool remove_ring(int slot, bool announce)
             (slot == -1)? prompt_invent_item("Remove which piece of jewellery?",
                                              MT_INVLIST,
                                              OBJ_JEWELLERY,
+                                             false,
                                              OPER_REMOVE,
                                              invprompt_flag::no_warning
                                                 | invprompt_flag::hide_known)
@@ -1998,7 +2043,7 @@ void prompt_inscribe_item()
     }
 
     int item_slot = prompt_invent_item("Inscribe which item?",
-                                       MT_INVLIST, OSEL_ANY);
+                                       MT_INVLIST, OSEL_ANY, false);
 
     if (prompt_failed(item_slot))
         return;

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# usage: hydrate {file}
+#   will replace variables in from file with values of variables defined in current shell environment
+#   will look for a file called {file}.template and output a file called {file}
+unset hydrate
+hydrate() {
+local file from to line
+file="$1"
+from="${file}.template"
+to="$file"
+local returnValue=0
+if [ -f "$to" ]; then
+	echo "File already exists: $to"
+	return 1
+fi
+while true; do
+    if [ ! -f "$from" ]; then
+        echo "Missing file: $from"
+        fail
+    fi
+    local OIFS="$IFS"
+    IFS=$'\n'
+    while read -r line; do
+        line="${line//\"/\\\"}"
+        eval "echo \"$line\"" >>$to || fail
+    done < $from
+    break
+done
+IFS="$OIFS"
+return $returnValue
+}
+
+hydrate "$@"
+

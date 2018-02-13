@@ -21,12 +21,17 @@ static void _adjust_ability();
 
 void adjust()
 {
-    mprf(MSGCH_PROMPT, "Adjust (i)tems, (s)pells, or (a)bilities? ");
+    if (Options.inventory_expansion)
+        mprf(MSGCH_PROMPT, "Adjust (i)tems, (c)onsumables, (s)pells, or (a)bilities? ");
+    else
+        mprf(MSGCH_PROMPT, "Adjust (i)tems, (s)pells, or (a)bilities? ");
 
     const int keyin = toalower(get_ch());
 
     if (keyin == 'i')
-        adjust_item();
+        adjust_item(false);
+    else if (keyin == 'c' && Options.inventory_expansion)
+        adjust_item(true);
     else if (keyin == 's')
         _adjust_spell();
     else if (keyin == 'a')
@@ -37,7 +42,7 @@ void adjust()
         canned_msg(MSG_HUH);
 }
 
-void adjust_item(int from_slot)
+void adjust_item(bool consumables, int from_slot)
 {
     if (inv_count() < 1)
     {
@@ -47,7 +52,7 @@ void adjust_item(int from_slot)
 
     if (from_slot == -1)
     {
-        from_slot = prompt_invent_item("Adjust which item?", MT_INVLIST, -1);
+        from_slot = prompt_invent_item("Adjust which item?", MT_INVLIST, -1, consumables);
         if (prompt_failed(from_slot))
             return;
 
@@ -56,7 +61,7 @@ void adjust_item(int from_slot)
 
     const int to_slot = prompt_invent_item("Adjust to which letter? ",
                                            MT_INVLIST,
-                                           -1, OPER_ANY,
+                                           -1, consumables, OPER_ANY,
                                            invprompt_flag::unthings_ok
                                             | invprompt_flag::manual_list);
     if (to_slot == PROMPT_ABORT

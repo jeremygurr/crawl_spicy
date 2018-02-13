@@ -389,7 +389,7 @@ void wizard_tweak_object()
     char specs[50];
     int keyin;
 
-    int item = prompt_invent_item("Tweak which item? ", MT_INVLIST, -1);
+    int item = prompt_invent_item("Tweak which item? ", MT_INVLIST, -1, false);
 
     if (prompt_failed(item))
         return;
@@ -518,7 +518,7 @@ static bool _make_book_randart(item_def &book)
 /// Prompt for an item in inventory & print its base shop value.
 void wizard_value_item()
 {
-    const int i = prompt_invent_item("Value of which item?", MT_INVLIST, -1);
+    const int i = prompt_invent_item("Value of which item?", MT_INVLIST, -1, false);
 
     if (prompt_failed(i))
         return;
@@ -588,7 +588,7 @@ void wizard_create_all_artefacts()
 void wizard_make_object_randart()
 {
     int i = prompt_invent_item("Make an artefact out of which item?",
-                                MT_INVLIST, -1);
+                                MT_INVLIST, -1, false);
 
     if (prompt_failed(i))
         return;
@@ -678,7 +678,7 @@ static bool _item_type_can_be_cursed(int type)
 
 void wizard_uncurse_item()
 {
-    const int i = prompt_invent_item("(Un)curse which item?", MT_INVLIST, -1);
+    const int i = prompt_invent_item("(Un)curse which item?", MT_INVLIST, -1, false);
 
     if (!prompt_failed(i))
     {
@@ -1297,7 +1297,7 @@ static void _debug_rap_stats(FILE *ostat)
 {
     const int inv_index
         = prompt_invent_item("Generate randart stats on which item?",
-                             MT_INVLIST, -1);
+                             MT_INVLIST, -1, false);
 
     if (prompt_failed(inv_index))
         return;

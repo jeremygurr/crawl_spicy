@@ -949,7 +949,7 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
         "you %s reach %d.%d in %s %d.%d XLs.",
             hypothetical ? "would" : "will",
             scaled_target / 10, scaled_target % 10,
-            (you.experience_level + (level_diff + 9) / 10) > 27
+            (you.experience_level + (level_diff + 9) / 10) > Options.max_exp_level
                                 ? "the equivalent of" : "about",
             level_diff / 10, level_diff % 10);
     if (you.wizard)
@@ -2462,7 +2462,7 @@ static bool _do_action(item_def &item, const vector<command_type>& actions, int 
     case CMD_UNWIELD_WEAPON:   wield_weapon(true, SLOT_BARE_HANDS); break;
     case CMD_QUIVER_ITEM:      quiver_item(slot);                   break;
     case CMD_WEAR_ARMOUR:      wear_armour(slot);                   break;
-    case CMD_REMOVE_ARMOUR:    takeoff_armour(slot);                break;
+    case CMD_REMOVE_ARMOUR:    takeoff_armour(slot, false, true);   break;
     case CMD_EVOKE:            evoke_item(slot);                    break;
     case CMD_EAT:              eat_food(slot);                      break;
     case CMD_READ:             read(&item);                         break;
@@ -2471,7 +2471,7 @@ static bool _do_action(item_def &item, const vector<command_type>& actions, int 
     case CMD_QUAFF:            drink(&item);                        break;
     case CMD_DROP:             drop_item(slot, item.quantity);      break;
     case CMD_INSCRIBE_ITEM:    inscribe_item(item);                 break;
-    case CMD_ADJUST_INVENTORY: adjust_item(slot);                   break;
+    case CMD_ADJUST_INVENTORY: adjust_item(is_consumable(item.base_type), slot); break;
     case CMD_SET_SKILL_TARGET: target_item(item);                   break;
     default:
         die("illegal inventory cmd %d", action);

@@ -644,7 +644,7 @@ static string _empty_deck_msg(deck_rarity_type rarity)
 static int _choose_inventory_deck(const char* prompt)
 {
     const int slot = prompt_invent_item(prompt, MT_INVLIST,
-                                        OSEL_DRAW_DECK, OPER_EVOKE);
+                                        OSEL_DRAW_DECK, false, OPER_EVOKE);
 
     if (prompt_failed(slot))
         return -1;

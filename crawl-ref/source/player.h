@@ -167,6 +167,8 @@ public:
     // Whether these are unrands that we should run the _*_world_reacts func for
     FixedBitVector<NUM_EQUIP> unrand_reacts;
 
+    int8_t shield_autoequip = -1;
+
     FixedArray<int, NUM_OBJECT_CLASSES, MAX_SUBTYPES> force_autopickup;
 
     // PC's symbol (usually @) and colour.
@@ -417,6 +419,7 @@ public:
     bool redraw_experience;
     bool redraw_armour_class;
     bool redraw_evasion;
+    bool redraw_damage;
     bool redraw_status_lights;
 
     colour_t flash_colour;
@@ -1028,7 +1031,10 @@ void display_char_status();
 void forget_map(bool rot = false);
 
 int get_exp_progress();
-void gain_exp(unsigned int exp_gained, unsigned int* actual_gain = nullptr);
+void gain_exp(unsigned int exp_gained, unsigned int *actual_gain = nullptr, bool floor_exp = false);
+
+const int potion_experience_for_this_floor();
+const int experience_for_this_floor();
 
 int xp_to_level_diff(int xp, int scale=1);
 

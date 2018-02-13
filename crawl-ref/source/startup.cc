@@ -259,6 +259,8 @@ static void _post_init(bool newc)
         food_change(true);
     shopping_list.refresh();
 
+    reset_damage_counters();
+
     run_map_local_preludes();
 
     // Abyssal Knights start out in the Abyss.
@@ -300,6 +302,7 @@ static void _post_init(bool newc)
     you.redraw_armour_class = true;
     you.redraw_evasion      = true;
     you.redraw_experience   = true;
+    you.redraw_damage       = true;
     you.redraw_quiver       = true;
     you.wield_change        = true;
 

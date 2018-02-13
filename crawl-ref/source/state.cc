@@ -53,14 +53,15 @@ game_state::game_state()
       title_screen(true),
       invisible_targeting(false),
       darken_range(nullptr), unsaved_macros(false), disables(),
-      minor_version(-1), save_rcs_version(), mon_act(nullptr)
+      minor_version(-1), save_rcs_version(), mon_act(nullptr),
+      need_floor_exp(false)
 {
     reset_cmd_repeat();
     reset_cmd_again();
 #ifdef TARGET_OS_WINDOWS
     no_gdb = "Non-UNIX Platform -> not running gdb.";
 #else
-    no_gdb = access("/usr/bin/gdb", 1) ? "/usr/bin/gdb not executable." : 0;
+    no_gdb = access("/usr/local/bin/gdb", 1) ? "/usr/local/bin/gdb not executable." : 0;
 #endif
 }
 

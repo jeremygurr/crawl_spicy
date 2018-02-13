@@ -425,6 +425,30 @@ NORETURN static void _launch_game()
                     << species_name(you.species)
                     << " " << get_job_name(you.char_class) << ".</yellow>"
                     << endl;
+
+        if (Options.multiple_difficulty_levels) {
+            msg::stream << "<white>You are playing the ";
+
+            switch (crawl_state.difficulty) {
+                case DIFFICULTY_EASY:
+                    msg::stream << "Easy";
+                    break;
+                case DIFFICULTY_STANDARD:
+                    msg::stream << "Standard";
+                    break;
+                case DIFFICULTY_CHALLENGE:
+                    msg::stream << "Challenge";
+                    break;
+                case DIFFICULTY_NIGHTMARE:
+                    msg::stream << "Nightmare";
+                    break;
+                default:
+                    break;
+            }
+
+            msg::stream << " difficulty mode</white> <yellow></yellow>"
+                        << endl;
+        }
     }
 
 #ifdef USE_TILE
@@ -731,6 +755,7 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_CHARACTER_DUMP:
     case CMD_DISPLAY_COMMANDS:
     case CMD_DISPLAY_INVENTORY:
+    case CMD_DISPLAY_CONSUMABLES:
     case CMD_DISPLAY_KNOWN_OBJECTS:
     case CMD_DISPLAY_MUTATIONS:
     case CMD_DISPLAY_SKILLS:
@@ -750,6 +775,7 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     // Multi-turn commands
     case CMD_PICKUP:
     case CMD_DROP:
+    case CMD_DROP_CONSUMABLES:
     case CMD_DROP_LAST:
     case CMD_BUTCHER:
     case CMD_GO_UPSTAIRS:
@@ -986,8 +1012,6 @@ static void _input()
     // Currently only set if Xom accidentally kills the player.
     you.reset_escaped_death();
 
-    reset_damage_counters();
-
     if (you.pending_revival)
     {
         revive();
@@ -1012,6 +1036,8 @@ static void _input()
     }
 
     _prep_input();
+
+    reset_damage_counters();
 
     update_monsters_in_view();
 
@@ -1852,7 +1878,11 @@ void process_command(command_type cmd)
     case CMD_ZAP_WAND:             zap_wand();               break;
 
     case CMD_DROP:
-        drop();
+        drop(false);
+        break;
+
+    case CMD_DROP_CONSUMABLES:
+        drop(true);
         break;
 
     case CMD_DROP_LAST:
@@ -1883,7 +1913,8 @@ void process_command(command_type cmd)
         // Informational commands.
     case CMD_DISPLAY_CHARACTER_STATUS: display_char_status();          break;
     case CMD_DISPLAY_COMMANDS:         list_commands(0, true);         break;
-    case CMD_DISPLAY_INVENTORY:        display_inventory();            break;
+    case CMD_DISPLAY_INVENTORY:        display_inventory(false);       break;
+    case CMD_DISPLAY_CONSUMABLES:      display_inventory(true);        break;
     case CMD_DISPLAY_KNOWN_OBJECTS: check_item_knowledge(); redraw_screen(); break;
     case CMD_DISPLAY_MUTATIONS: display_mutations(); redraw_screen();  break;
     case CMD_DISPLAY_RUNES: display_runes(); redraw_screen();          break;

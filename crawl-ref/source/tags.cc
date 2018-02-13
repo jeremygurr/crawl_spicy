@@ -1333,6 +1333,7 @@ static void tag_construct_char(writer &th)
     marshallByte(th, you.wizard || you.suppress_wizard);
 
     marshallByte(th, crawl_state.type);
+    marshallByte(th, crawl_state.difficulty);
     if (crawl_state.game_is_tutorial())
         marshallString2(th, crawl_state.map);
 
@@ -1668,6 +1669,7 @@ static void tag_construct_you_items(writer &th)
 
     marshallFixedBitVector<NUM_RUNE_TYPES>(th, you.runes);
     marshallByte(th, you.obtainable_runes);
+    marshallByte(th, you.shield_autoequip);
 
     // Item descrip for each type & subtype.
     // how many types?
@@ -2228,6 +2230,18 @@ void tag_read_char(reader &th, uint8_t format, uint8_t major, uint8_t minor)
     else
         crawl_state.map = "";
 
+    crawl_state.difficulty = (game_difficulty_level) unmarshallUByte(th);
+    switch(crawl_state.difficulty)
+    {
+        case DIFFICULTY_EASY:
+        case DIFFICULTY_STANDARD:
+        case DIFFICULTY_CHALLENGE:
+        case DIFFICULTY_NIGHTMARE:
+            break;
+        default:
+            crawl_state.difficulty = DIFFICULTY_STANDARD;
+    }
+
     if (major > 32 || major == 32 && minor > 26)
     {
         you.chr_species_name = unmarshallString2(th);
@@ -2272,7 +2286,7 @@ static void tag_read_you(reader &th)
 
     ASSERT_RANGE(you.species, 0, NUM_SPECIES);
     ASSERT_RANGE(you.char_class, 0, NUM_JOBS);
-    ASSERT_RANGE(you.experience_level, 1, 28);
+    ASSERT_RANGE(you.experience_level, 1, 100);
     ASSERT(you.religion < NUM_GODS);
     ASSERT_RANGE(crawl_state.type, GAME_TYPE_UNSPECIFIED + 1, NUM_GAME_TYPE);
     you.last_mid          = unmarshallInt(th);
@@ -2610,7 +2624,7 @@ static void tag_read_you(reader &th)
     for (int j = 0; j < count; ++j)
     {
         you.skills[j]          = unmarshallUByte(th);
-        ASSERT(you.skills[j] <= 27 || you.wizard);
+        ASSERT(you.skills[j] <= Options.max_skill_level || you.wizard);
 
         you.train[j]    = (training_status)unmarshallByte(th);
         you.train_alt[j]    = (training_status)unmarshallByte(th);
@@ -3733,6 +3747,7 @@ static void tag_read_you_items(reader &th)
 
     unmarshallFixedBitVector<NUM_RUNE_TYPES>(th, you.runes);
     you.obtainable_runes = unmarshallByte(th);
+    you.shield_autoequip = unmarshallByte(th);
 
     // Item descrip for each type & subtype.
     // how many types?

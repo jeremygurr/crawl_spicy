@@ -399,7 +399,7 @@ NORETURN void end_game(scorefile_entry &se, int hiscore_index)
         more();
 
     if (!crawl_state.disables[DIS_CONFIRMATIONS])
-        display_inventory();
+        display_inventory(false);
     textcolour(LIGHTGREY);
 
     clua.save_persist();

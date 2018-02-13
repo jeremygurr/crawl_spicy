@@ -106,6 +106,14 @@ pair<bool, int> item_int(item_def &item)
     return make_pair(false, item.index());
 }
 
+bool is_consumable(object_class_type type) {
+    return (type == OBJ_SCROLLS
+            || type == OBJ_POTIONS);
+}
+
+bool item_belongs_here(object_class_type type, int slot_index) {
+    return Options.inventory_expansion && is_consumable(type) ? slot_index >= UNEXPANDED_ENDOFPACK : slot_index < UNEXPANDED_ENDOFPACK;
+}
 
 /**
  * Return an item_def& requested by an item's inv slot or mitm index.
@@ -1639,15 +1647,19 @@ int find_free_slot(const item_def &i)
     if (slot == -2 || Options.assign_item_slot == SS_FORWARD)
         searchforward = true;
 
-    if (slotisfree(slot))
+    if (slotisfree(slot) && item_belongs_here(i.base_type, slot))
         return slot;
 
     // See if the item remembers where it's been. Lua code can play with
     // this field so be extra careful.
     if (isaalpha(i.slot))
+    {
         slot = letter_to_index(i.slot);
+        if (Options.inventory_expansion && is_consumable(i.base_type))
+            slot += UNEXPANDED_ENDOFPACK;
+    }
 
-    if (slotisfree(slot))
+    if (slotisfree(slot) && item_belongs_here(i.base_type, slot))
         return slot;
 
     FixedBitVector<ENDOFPACK> disliked;
@@ -1665,6 +1677,7 @@ int find_free_slot(const item_def &i)
             if (you.inv[slot].defined())
             {
                 if (slot + 1 < ENDOFPACK && !you.inv[slot + 1].defined()
+                    && item_belongs_here(i.base_type, slot)
                     && !disliked[slot + 1])
                 {
                     return slot + 1;
@@ -1673,6 +1686,7 @@ int find_free_slot(const item_def &i)
             else
             {
                 if (slot + 1 < ENDOFPACK && you.inv[slot + 1].defined()
+                    && item_belongs_here(i.base_type, slot)
                     && !disliked[slot])
                 {
                     return slot;
@@ -1687,7 +1701,9 @@ int find_free_slot(const item_def &i)
     int badslot = -1;
     // Return first free slot
     for (slot = 0; slot < ENDOFPACK; ++slot)
-        if (!you.inv[slot].defined())
+        if (!you.inv[slot].defined()
+            && item_belongs_here(i.base_type, slot)
+            )
         {
             if (disliked[slot])
                 badslot = slot;
@@ -1945,6 +1961,7 @@ static bool _merge_wand_charges(const item_def &it, int &inv_slot, bool quiet)
     for (inv_slot = 0; inv_slot < ENDOFPACK; inv_slot++)
     {
         if (you.inv[inv_slot].base_type != OBJ_WANDS
+            || !item_belongs_here(it.base_type, inv_slot)
             || you.inv[inv_slot].sub_type != it.sub_type)
         {
             continue;
@@ -2003,7 +2020,11 @@ item_def *auto_assign_item_slot(item_def& item)
                 overwrite = false;
             else if (isaalpha(i))
             {
-                const int index = letter_to_index(i);
+                int index = letter_to_index(i);
+
+                if (Options.inventory_expansion && is_consumable(item.base_type))
+                    index += UNEXPANDED_ENDOFPACK;
+
                 auto &iitem = you.inv[index];
 
                 // Slot is empty, or overwrite is on and the rule doesn't
@@ -2163,7 +2184,21 @@ static bool _merge_items_into_inv(item_def &it, int quant_got,
     }
 
     // Can't combine, check for slot space.
+    /* since _place_item_in_free_slot requires that there be a free spot, we have to take a more sophisticated approach here.
     if (inv_count() >= ENDOFPACK)
+     */
+    // Yes this is a stupid duplication of logic. I would refactor the code but since we need this fork to be easily
+    //   mergeable from upstream, I have to avoid complex sweeping changes in the code.
+    bool empty_slot_found = false;
+    for (int i = 0; i < ENDOFPACK; i++)
+    {
+        if (item_belongs_here(it.base_type, i) && !you.inv[i].defined()) {
+            empty_slot_found = true;
+            break;
+        }
+    }
+
+    if (!empty_slot_found)
         return false;
 
     inv_slot = _place_item_in_free_slot(it, quant_got, quiet);
@@ -2670,7 +2705,7 @@ static bool _drop_item_order(const SelItem &first, const SelItem &second)
 /**
  * Prompts the user for an item to drop.
  */
-void drop()
+void drop(bool consumables)
 {
     if (inv_count() < 1 && you.gold == 0)
     {
@@ -2680,7 +2715,7 @@ void drop()
 
     vector<SelItem> tmp_items;
 
-    tmp_items = prompt_drop_items(items_for_multidrop);
+    tmp_items = prompt_drop_items(items_for_multidrop, consumables);
 
     if (tmp_items.empty())
     {

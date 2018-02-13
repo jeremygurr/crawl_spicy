@@ -100,7 +100,7 @@ const item_def* top_item_at(const coord_def& where);
 // Returns whether there is more than one item in a given cell.
 bool multiple_items_at(const coord_def& where);
 
-void drop();
+void drop(bool );
 
 int inv_count();
 int runes_in_pack();
@@ -157,6 +157,8 @@ object_class_type get_random_item_mimic_type();
 
 bool maybe_identify_base_type(item_def &item);
 int count_movable_items(int obj);
+bool is_consumable(object_class_type type);
+bool item_belongs_here(object_class_type type, int slot_index);
 
 // stack_iterator guarantees validity so long as you don't manually
 // mess with item_def.link: i.e., you can kill the item you're

@@ -1,0 +1,6 @@
+#Redirect permanent / http://crawl.homedns.org/index.html
+ProxyPass /crawl http://crawl.homedns.org:8000
+ProxyPass /static/ http://crawl.homedns.org:8000/static/
+ProxyPass /gamedata/ http://crawl.homedns.org:8000/gamedata/
+
+# vim: ts=4 filetype=apache

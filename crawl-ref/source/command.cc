@@ -997,6 +997,7 @@ static void _add_formatted_keyhelp(column_composer &cols)
             "<h>Item Interaction (inventory):\n");
 
     _add_command(cols, 1, CMD_DISPLAY_INVENTORY, "show Inventory list", 2);
+    _add_command(cols, 1, CMD_DISPLAY_CONSUMABLES, "show Consumable list", 2);
     _add_command(cols, 1, CMD_INSCRIBE_ITEM, "inscribe item", 2);
     _add_command(cols, 1, CMD_FIRE, "Fire next appropriate item", 2);
     _add_command(cols, 1, CMD_THROW_ITEM_NO_QUIVER, "select an item and Fire it", 2);
@@ -1037,6 +1038,7 @@ static void _add_formatted_keyhelp(column_composer &cols)
             false);
 
     _add_command(cols, 1, CMD_DROP, "Drop an item", 2);
+    _add_command(cols, 1, CMD_DROP_CONSUMABLES, "Drop a consumable", 2);
     _add_insert_commands(cols, 1, "<w>%#</w>: Drop exact number of items",
                          { CMD_DROP });
     _add_command(cols, 1, CMD_DROP_LAST, "Drop the last item(s) you picked up", 2);
@@ -1203,8 +1205,10 @@ static void _add_formatted_hints_help(column_composer &cols)
 
     cols.add_formatted(1, " ", false);
     _add_command(cols, 1, CMD_DISPLAY_INVENTORY, "list inventory (select item to view it)", 2);
+    _add_command(cols, 1, CMD_DISPLAY_CONSUMABLES, "list consumables (select item to view it)", 2);
     _add_command(cols, 1, CMD_PICKUP, "pick up item from ground (also <w>g</w>)", 2);
     _add_command(cols, 1, CMD_DROP, "drop item", 2);
+    _add_command(cols, 1, CMD_DROP_CONSUMABLES, "drop consumable", 2);
     _add_command(cols, 1, CMD_DROP_LAST, "drop the last item(s) you picked up", 2);
 
     cols.add_formatted(

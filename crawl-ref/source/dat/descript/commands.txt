@@ -171,6 +171,14 @@ CMD_DISPLAY_INVENTORY verbose
 
 Displays the contents of your inventory.
 %%%%
+CMD_DISPLAY_CONSUMABLES
+
+Display the contents of your consumables
+%%%%
+CMD_DISPLAY_CONSUMABLES verbose
+
+Display the contents of your consumables
+%%%%
 CMD_CAST_SPELL
 
 Cast a spell
@@ -208,6 +216,14 @@ CMD_DROP
 Drop items
 %%%%
 CMD_DROP verbose
+
+Drops one or more items that you are currently holding.
+%%%%
+CMD_DROP_CONSUMABLES
+
+Drop items
+%%%%
+CMD_DROP_CONSUMABLES verbose
 
 Drops one or more items that you are currently holding.
 %%%%

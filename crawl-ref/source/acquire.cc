@@ -249,10 +249,10 @@ static int _body_acquirement_weight(armour_type armour,
 
     // highest chance when armour skill = (displayed) evp - 3
     const int evp = armour_prop(armour, PARM_EVASION);
-    const int skill = min(27, _skill_rdiv(SK_ARMOUR) + 3);
+    const int skill = min(Options.max_skill_level, _skill_rdiv(SK_ARMOUR) + 3);
     const int sk_diff = skill + evp / 10;
-    const int inv_diff = max(1, 27 - sk_diff);
-    // armour closest to ideal evp is 27^3 times as likely as the furthest away
+    const int inv_diff = max(1, Options.max_skill_level - sk_diff);
+    // armour closest to ideal evp is Options.max_skill_level^3 times as likely as the furthest away
     return base_weight * inv_diff * inv_diff * inv_diff;
 }
 
@@ -647,7 +647,7 @@ static int _acquirement_misc_subtype(bool /*divine*/, int & /*quantity*/)
     // invocations if we haven't seen one.
     int skills = _skill_rdiv(SK_EVOCATIONS)
         * max(_skill_rdiv(SK_SPELLCASTING), _skill_rdiv(SK_INVOCATIONS));
-    if (x_chance_in_y(skills, MAX_SKILL_LEVEL * MAX_SKILL_LEVEL)
+    if (x_chance_in_y(skills, Options.max_skill_level * Options.max_skill_level)
         && !you.seen_misc[MISC_CRYSTAL_BALL_OF_ENERGY])
     {
         return MISC_CRYSTAL_BALL_OF_ENERGY;

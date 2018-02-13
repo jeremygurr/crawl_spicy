@@ -337,7 +337,7 @@ void InvMenu::set_preselect(const vector<SelItem> *pre)
 
 string slot_description()
 {
-    return make_stringf("%d/%d slots", inv_count(), ENDOFPACK);
+    return make_stringf("%d/%d slots", inv_count(), Options.inventory_expansion ? ENDOFPACK : UNEXPANDED_ENDOFPACK);
 }
 
 void InvMenu::set_title(const string &s)
@@ -772,6 +772,7 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
         inv_class[mitem->base_type]++;
 
     vector<InvEntry*> items_in_class;
+    vector<int> hotkeys;
     const menu_sort_condition *cond = nullptr;
     if (sort) cond = find_menu_sort_condition();
 
@@ -812,6 +813,15 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
                 continue;
 
             InvEntry * const ie = new InvEntry(*mitem);
+
+            int count = 0;
+            while(find(hotkeys.begin(), hotkeys.end(), ie->hotkeys[0]) != hotkeys.end() && count++ < 52 && ie->hotkeys[0] != ' ')
+            {
+                ie->hotkeys[0] = ckey++;
+            }
+
+            hotkeys.push_back(ie->hotkeys[0]);
+
             if (mitem->sub_type == get_max_subtype(mitem->base_type))
                 forced_first = ie;
             else
@@ -999,6 +1009,10 @@ bool item_is_selected(const item_def &i, int selector)
         return true;
     }
 
+    if (selector == OSEL_CONSUMABLE && is_consumable(itype)
+        || selector == OSEL_NONCONSUMABLE && !is_consumable(itype))
+        return true;
+
     switch (selector)
     {
     case OBJ_ARMOUR:
@@ -1139,6 +1153,7 @@ bool any_items_of_type(int selector, int excluded_slot, bool inspect_floor)
 static unsigned char _invent_select(const char *title = nullptr,
                                     menu_type type = MT_INVLIST,
                                     int item_selector = OSEL_ANY,
+                                    bool consumables = false,
                                     int excluded_slot = -1,
                                     int flags = MF_NOSELECT,
                                     invtitle_annotator titlefn = nullptr,
@@ -1147,6 +1162,9 @@ static unsigned char _invent_select(const char *title = nullptr,
                                     Menu::selitem_tfn selitemfn = nullptr,
                                     const vector<SelItem> *pre_select = nullptr)
 {
+    if (Options.inventory_expansion && item_selector == OSEL_ANY)
+        item_selector = consumables ? OSEL_CONSUMABLE : OSEL_NONCONSUMABLE;
+
     InvMenu menu(flags | MF_ALLOW_FORMATTING);
 
     menu.set_preselect(pre_select);
@@ -1169,7 +1187,7 @@ static unsigned char _invent_select(const char *title = nullptr,
     return menu.getkey();
 }
 
-void display_inventory()
+void display_inventory(bool consumables)
 {
     int flags = MF_SINGLESELECT;
     if (you.pending_revival || crawl_state.updating_scores)
@@ -1178,11 +1196,15 @@ void display_inventory()
     while (true)
     {
         unsigned char select =
-            _invent_select(nullptr, MT_INVLIST, OSEL_ANY, -1, flags);
+            _invent_select(nullptr, MT_INVLIST, OSEL_ANY, consumables, -1, flags);
 
         if (isaalpha(select))
         {
-            const int invidx = letter_to_index(select);
+            int invidx = letter_to_index(select);
+
+            if (Options.inventory_expansion && consumables)
+                invidx += UNEXPANDED_ENDOFPACK;
+
             if (you.inv[invidx].defined())
             {
                 if (!describe_item(you.inv[invidx]))
@@ -1255,7 +1277,7 @@ static string _drop_selitem_text(const vector<MenuEntry*> *s)
  * @param   Items already selected to drop.
  * @return  The total set of items the player's chosen to drop.
  */
-vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items)
+vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items, bool consumables)
 {
     const string prompt = "Drop what? " + slot_description()
 #ifdef TOUCH_UI
@@ -1303,6 +1325,7 @@ vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items)
             const int ch = _invent_select(prompt.c_str(),
                                           MT_DROP,
                                           OSEL_ANY,
+                                          consumables,
                                           -1,
                                           MF_MULTISELECT | MF_ALLOW_FILTER,
                                           nullptr, &items,
@@ -1332,7 +1355,11 @@ vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items)
                 }
 
                 for (SelItem &sel : items)
+                {
                     sel.slot = letter_to_index(sel.slot);
+                    if (Options.inventory_expansion && consumables)
+                        sel.slot += UNEXPANDED_ENDOFPACK;
+                }
                 return items;
             }
 
@@ -1356,6 +1383,8 @@ vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items)
         else if (isaalpha(keyin))
         {
             ret = letter_to_index(keyin);
+            if (Options.inventory_expansion && consumables)
+                ret += UNEXPANDED_ENDOFPACK;
 
             if (!you.inv[ret].defined())
                 mpr("You don't have any such object.");
@@ -1798,6 +1827,7 @@ bool check_warning_inscriptions(const item_def& item,
  */
 int prompt_invent_item(const char *prompt,
                        menu_type mtype, int type_expect,
+                       bool consumables,
                        operation_types oper,
                        invent_prompt_flags flags,
                        const char other_valid_char)
@@ -1880,6 +1910,7 @@ int prompt_invent_item(const char *prompt,
                         prompt,
                         mtype,
                         current_type_expected,
+                        consumables,
                         -1,
                         MF_SINGLESELECT | MF_ANYPRINTABLE | MF_NO_SELECT_QTY
                             | MF_EASY_EXIT,
@@ -1934,6 +1965,8 @@ int prompt_invent_item(const char *prompt,
         else if (isaalpha(keyin))
         {
             ret = letter_to_index(keyin);
+            if (Options.inventory_expansion && consumables)
+                ret += UNEXPANDED_ENDOFPACK;
 
             if (must_exist && !you.inv[ret].defined())
                 mpr("You don't have any such object.");

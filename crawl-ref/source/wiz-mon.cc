@@ -709,7 +709,7 @@ void wizard_give_monster_item(monster* mon)
     }
 
     int player_slot = prompt_invent_item("Give which item to monster?",
-                                          MT_DROP, -1);
+                                          MT_DROP, -1, false);
 
     if (prompt_failed(player_slot))
         return;

@@ -1057,7 +1057,7 @@ static int l_item_inventory(lua_State *ls)
 
 static int l_item_index_to_letter(lua_State *ls)
 {
-    int index = luaL_checkint(ls, 1);
+    int index = luaL_checkint(ls, 1) % 52;
     char sletter[2] = "?";
     if (index >= 0 && index <= ENDOFPACK)
         *sletter = index_to_letter(index);

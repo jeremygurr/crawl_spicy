@@ -745,6 +745,7 @@ void reset_damage_counters()
     you.turn_damage = 0;
     you.damage_source = NON_MONSTER;
     you.source_damage = 0;
+    you.redraw_damage = true;
 }
 
 bool can_shave_damage()
@@ -825,6 +826,26 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
             dam /= 2;
         else if (you.petrifying())
             dam = dam * 10 / 15;
+
+        if (Options.multiple_difficulty_levels) {
+            switch (crawl_state.difficulty)
+            {
+                case DIFFICULTY_EASY:
+                    dam = dam * 70 / 100;
+                    break;
+                case DIFFICULTY_STANDARD:
+                    break;
+                case DIFFICULTY_CHALLENGE:
+                    dam = dam * 115 / 100;
+                    break;
+                case DIFFICULTY_NIGHTMARE:
+                    dam = dam * 130 / 100;
+                    break;
+                default:
+                    // should not be possible
+                    break;
+            }
+        }
     }
     ait_hp_loss hpl(dam, death_type);
     interrupt_activity(AI_HP_LOSS, &hpl);
@@ -914,6 +935,55 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
             return;
         }
 
+        int percentage_allowed = 100;
+
+        if (Options.instakill_protection) {
+            // increase all damage to player to somewhat balance the instakill protection buff
+
+            dam = div_rand_round(dam * 120,  100);
+
+            switch (crawl_state.difficulty)
+            {
+                case DIFFICULTY_EASY:
+                    percentage_allowed = 20;
+                    break;
+                case DIFFICULTY_STANDARD:
+                    percentage_allowed = 40;
+                    break;
+                case DIFFICULTY_CHALLENGE:
+                    percentage_allowed = 60;
+                    break;
+                case DIFFICULTY_NIGHTMARE:
+                    percentage_allowed = 80;
+                    break;
+                default:
+                    // should not be possible
+                    break;
+            }
+        }
+
+        int max_damage_allowed_per_turn = you.hp_max * percentage_allowed / 100;
+
+        if (you.species == SP_DJINNI)
+            max_damage_allowed_per_turn /= 3;
+
+        const int damage_left = max_damage_allowed_per_turn - you.turn_damage;
+
+        int new_damage = min(dam, damage_left);
+        new_damage = max(0, new_damage);
+
+        if (Options.debug_ouch) {
+            if (dam > new_damage)
+                mprf("You were prevented from receiving too much damage! (%d -> %d)", dam, new_damage);
+//            else
+//            {
+//                if (new_damage > 0)
+//                    mprf("(hp-%d)", new_damage);
+//            }
+        }
+
+        dam = new_damage;
+
         you.turn_damage += dam;
         if (you.damage_source != source)
         {
@@ -921,6 +991,8 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
             you.source_damage = 0;
         }
         you.source_damage += dam;
+        if (dam)
+            you.redraw_damage = true;
 
         dec_hp(dam, true);
 

@@ -109,22 +109,39 @@ static string _spell_base_description(spell_type spell, bool viewing)
 
     desc << "<" << colour_to_str(highlight) << ">" << left;
 
-    // spell name
     desc << chop_string(spell_title(spell), 30);
 
-    // spell schools
-    desc << spell_schools_string(spell);
+    // spell name
+    if (Options.wide_spell_list) {
+        const string failure_rate = spell_failure_rate_string(spell);
+        const int width = strwidth(formatted_string::parse_string(failure_rate).tostring());
 
-    const int so_far = strwidth(desc.str()) - (strwidth(colour_to_str(highlight))+2);
-    if (so_far < 60)
-        desc << string(60 - so_far, ' ');
-    desc << "</" << colour_to_str(highlight) <<">";
+        desc << string(4-width, ' ') << failure_rate << ' ';
+        desc << chop_string(make_stringf("%d", spell_difficulty(spell)), 4);
 
-    // spell fail rate, level
-    const string failure_rate = spell_failure_rate_string(spell);
-    const int width = strwidth(formatted_string::parse_string(failure_rate).tostring());
-    desc << failure_rate << string(12-width, ' ');
-    desc << spell_difficulty(spell);
+        const string rangestring = spell_range_string(spell);
+
+        desc << chop_string(spell_power_string(spell), 13)
+             << chop_string(rangestring, 9 + tagged_string_tag_length(rangestring))
+             << chop_string(spell_hunger_string(spell), 8)
+             << chop_string(spell_noise_string(spell, 10), 15);
+
+        desc << spell_schools_string(spell);
+    } else {
+        // spell schools
+        desc << spell_schools_string(spell);
+
+        const int so_far = strwidth(desc.str()) - (strwidth(colour_to_str(highlight))+2);
+        if (so_far < 60)
+            desc << string(60 - so_far, ' ');
+        desc << "</" << colour_to_str(highlight) <<">";
+
+        // spell fail rate, level
+        const string failure_rate = spell_failure_rate_string(spell);
+        const int width = strwidth(formatted_string::parse_string(failure_rate).tostring());
+        desc << failure_rate << string(12-width, ' ');
+        desc << spell_difficulty(spell);
+    }
 
     return desc.str();
 }
@@ -159,7 +176,7 @@ static string _spell_extra_description(spell_type spell, bool viewing)
 int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
                 const string &title, spell_selector selector)
 {
-    if (toggle_with_I && get_spell_by_letter('I') != SPELL_NO_SPELL)
+    if (Options.wide_spell_list || toggle_with_I && get_spell_by_letter('I') != SPELL_NO_SPELL)
         toggle_with_I = false;
 
 #ifdef USE_TILE_LOCAL
@@ -172,8 +189,24 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
                               | MF_ALWAYS_SHOW_MORE | MF_ALLOW_FORMATTING,
                               text_only);
     string titlestring = make_stringf("%-25.25s", title.c_str());
+    if (Options.wide_spell_list) {
+        const string header = " " + titlestring + "         Fail Lvl Power        Range    Hunger  Noise          Type";
 #ifdef USE_TILE_LOCAL
-    {
+        {
+        // [enne] - Hack. Make title an item so that it's aligned.
+        MenuEntry* me =
+            new MenuEntry(header, MEL_ITEM);
+        me->colour = BLUE;
+        spell_menu.add_entry(me);
+        }
+#else
+        spell_menu.set_title(
+            new MenuEntry(header, MEL_TITLE)
+        );
+#endif
+    } else {
+#ifdef USE_TILE_LOCAL
+        {
         // [enne] - Hack. Make title an item so that it's aligned.
         ToggleableMenuEntry* me =
             new ToggleableMenuEntry(
@@ -186,14 +219,16 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
         spell_menu.add_entry(me);
     }
 #else
-    spell_menu.set_title(
-        new ToggleableMenuEntry(
-            " " + titlestring + "         Type          "
-            "                Failure  Level",
-            " " + titlestring + "         Power        "
-            "Range    " + "Hunger  " + "Noise          ",
-            MEL_TITLE));
+        spell_menu.set_title(
+                new ToggleableMenuEntry(
+                        " " + titlestring + "         Type          "
+                                "                Failure  Level",
+                        " " + titlestring + "         Power        "
+                                "Range    " + "Hunger  " + "Noise          ",
+                        MEL_TITLE));
 #endif
+    }
+
     spell_menu.set_highlighter(nullptr);
     spell_menu.set_tag("spell");
     spell_menu.add_toggle_key('!');
@@ -254,10 +289,16 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
         bool preselect = (preselect_first
                           || allow_preselect && you.last_cast_spell == spell);
 
-        ToggleableMenuEntry* me =
-            new ToggleableMenuEntry(_spell_base_description(spell, viewing),
-                                    _spell_extra_description(spell, viewing),
-                                    MEL_ITEM, 1, letter, preselect);
+        ToggleableMenuEntry* me;
+        if (Options.wide_spell_list) {
+            me = new ToggleableMenuEntry(_spell_base_description(spell, viewing),
+                                         _spell_base_description(spell, viewing),
+                                         MEL_ITEM, 1, letter, preselect);
+        } else {
+            me = new ToggleableMenuEntry(_spell_base_description(spell, viewing),
+                                         _spell_extra_description(spell, viewing),
+                                         MEL_ITEM, 1, letter, preselect);
+        }
 
 #ifdef USE_TILE
         me->add_tile(tile_def(tileidx_spell(spell), TEX_GUI));
@@ -2146,7 +2187,7 @@ int power_to_barcount(int power)
     if (power == -1)
         return -1;
 
-    const int breakpoints[] = { 10, 15, 25, 35, 50, 75, 100, 150, 200 };
+    const int breakpoints[] = { 10, 15, 25, 35, 50, 75, 100, 150, 200, 250, 300 };
     return breakpoint_rank(power, breakpoints, ARRAYSZ(breakpoints)) + 1;
 }
 

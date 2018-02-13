@@ -105,8 +105,12 @@ item_def* newgame_make_item(object_class_type base,
         return nullptr;
 
     int slot;
+
     for (slot = 0; slot < ENDOFPACK; ++slot)
     {
+        if (!item_belongs_here(base, slot))
+            continue;
+
         if (base == OBJ_FOOD && slot == letter_to_index('e'))
             continue;
 
@@ -384,6 +388,7 @@ void setup_game(const newgame_def& ng)
 {
     crawl_state.type = ng.type;
     crawl_state.map  = ng.map;
+    crawl_state.difficulty = ng.difficulty;
 
     switch (crawl_state.type)
     {
@@ -493,6 +498,16 @@ static void _setup_generic(const newgame_def& ng)
     if (crawl_state.game_is_sprint())
         _give_bonus_items();
 
+    if (Options.heal_wounds_potion_gives_full_health
+        && you.species != SP_MUMMY
+        && you.species != SP_VINE_STALKER
+            ) {
+        newgame_make_item(OBJ_POTIONS, POT_HEAL_WOUNDS, 1);
+    }
+
+    if (crawl_state.difficulty == DIFFICULTY_EASY)
+        newgame_make_item(OBJ_POTIONS, POT_HEAL_WOUNDS, 1);
+
     // Leave the a/b slots open so if the first thing you pick up is a weapon,
     // you can use ' to swap between your items.
     if (you.char_class == JOB_EARTH_ELEMENTALIST)
@@ -507,6 +522,10 @@ static void _setup_generic(const newgame_def& ng)
     _give_basic_knowledge();
 
     initialise_item_descriptions();
+
+    // potions of experience are always identified
+    if (Options.different_experience_sources)
+        set_ident_type(OBJ_POTIONS, POT_EXPERIENCE, true);
 
     // A first pass to link the items properly.
     for (int i = 0; i < ENDOFPACK; ++i)

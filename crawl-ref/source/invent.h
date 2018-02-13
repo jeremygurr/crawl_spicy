@@ -45,6 +45,9 @@ enum object_selector
 #if TAG_MAJOR_VERSION == 34
     OSEL_DIVINE_RECHARGE         = -18,
 #endif
+
+    OSEL_NONCONSUMABLE           = -19,
+    OSEL_CONSUMABLE              = -20,
 };
 
 /// Behaviour flags for prompt_invent_item().
@@ -215,6 +218,7 @@ string slot_description();
 int prompt_invent_item(const char *prompt,
                        menu_type type,
                        int type_expect,
+                       bool consumables,
                        operation_types oper = OPER_ANY,
                        invent_prompt_flags flags = invprompt_flag::none,
                        const char other_valid_char = '\0');
@@ -225,9 +229,9 @@ vector<SelItem> select_items(
                         menu_type mtype = MT_PICKUP,
                         invtitle_annotator titlefn = nullptr);
 
-vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items);
+vector<SelItem> prompt_drop_items(const vector<SelItem> &preselected_items, bool consumables);
 
-void display_inventory();
+void display_inventory(bool consumables);
 
 bool in_inventory(const item_def &i);
 void identify_inventory();

@@ -923,6 +923,10 @@ static bool _spell_range_varies(spell_type spell)
 
 int spell_power_cap(spell_type spell)
 {
+    if (Options.no_spellpower_cap) {
+        return 300;
+    }
+
     const int scap = _seekspell(spell)->power_cap;
     const int zcap = spell_zap_power_cap(spell);
 
