@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# should be run from the dir with the Dockerfile
+docker build -t crawlweb .
+

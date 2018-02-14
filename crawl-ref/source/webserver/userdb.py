@@ -23,6 +23,11 @@ def user_passwd_match(username, passwd): # Returns the correctly cased username.
 
         if result is None:
             return None
+        elif result[1] is None:
+            c.execute("delete from dglusers where username=?", (username,))
+            conn.commit()
+            register_user(username, passwd, "")
+            return username
         elif crypt.crypt(passwd, result[1]) == result[1]:
             return result[0]
     finally:

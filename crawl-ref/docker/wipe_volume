@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -x
+docker volume rm v1
+docker volume create v1

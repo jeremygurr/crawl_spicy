@@ -1,0 +1,20 @@
+#!/bin/bash
+
+debug=true
+
+if [ ! "$(docker volume ls -q | grep ^v1$)" ]; then
+  echo "creating docker volume..."
+  docker volume create v1 >/dev/null
+fi
+
+common_parameters="--rm -v v1:/var/crawl -p 80:80 -p 8081:8081 --name crawlweb crawlweb"
+if [ "$debug" == true ]; then
+  echo "starting debug container..."
+  docker run -it $common_parameters
+else
+  echo "starting normal container..."
+  docker run -d $common_parameters
+fi
+
+echo "done."
+

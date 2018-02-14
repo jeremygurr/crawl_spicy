@@ -20,6 +20,8 @@ RUN apt-get update && apt-get install -y \
     libsqlite3-dev \
     libz-dev pkg-config \
     ttf-dejavu-core \
+    advancecomp \
+    pngcrush \
     && rm -rf /var/lib/apt/lists/*
 
 FROM os_base as build_base
@@ -43,17 +45,27 @@ RUN make -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTIL
 COPY CREDITS.txt ${crawl_ref}/
 COPY settings ${crawl_ref}/settings
 # two separate commands to make debugging the install phase much more efficient
-RUN make install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
+RUN make webserver install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
 
 FROM nginx as crawlweb
 ARG web_path
 ARG shared_dir
 ARG crawl_ref
+ARG user_data
+
 VOLUME ${user_data}
 
 LABEL maintainer="jeremy.gurr@gmail.com"
 
-RUN apt-get update && apt-get install -y \
+# load the latest packages
+RUN apt-get update 
+
+# fix locale
+ENV LANG=C.UTF-8
+#RUN apt-get install -y locales 
+#RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales 
+
+RUN apt-get install -y \
     bison \
     flex \
     libfreetype6-dev \
@@ -69,15 +81,21 @@ RUN apt-get update && apt-get install -y \
     python-tornado \
     ttf-dejavu-core \
     vim \
-    && rm -rf /var/lib/apt/lists/*
+    procps 
 
-RUN groupadd -g 1000 crawl && useradd -N -s /usr/sbin/nologin -u 1000 -g crawl crawl
+# clean up apt cache
+RUN rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p ${shared_dir}/running ${shared_dir}/ttyrecs
+RUN groupadd -g 1000 crawl \
+  && useradd -N -s /usr/sbin/nologin -u 1000 -g crawl crawl \
+  && groupadd -g 1001 crawl-dev \
+  && useradd -N -s /usr/sbin/nologin -u 1001 -g crawl-dev crawl-dev
+
+COPY --from=build_base ${crawl_ref}/source/webserver/ ${web_path}/webserver/
 COPY --from=build_base ${web_path}/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
-COPY webstuff/ ${web_path}
-COPY source/webserver/ ${web_path}/webserver/
+COPY docker/webstuff/ ${web_path}
+#COPY source/webserver/ ${web_path}/webserver/
 
 WORKDIR ${web_path}
 
@@ -90,11 +108,12 @@ ENV nginx_port 80
 EXPOSE ${crawl_port}
 EXPOSE ${nginx_port}
 
-RUN ./hydrate config.py init-player.sh nginx/conf.d/default.conf launch \
+RUN rm config.py 2>/dev/null; true \
+  && ./hydrate config.py init-player.sh nginx/conf.d/default.conf launch \
   && chmod a+x launch \
   && mv config.py webserver/ \
   && cp -a nginx/conf.d/* /etc/nginx/conf.d/ \
-  && chown -R crawl:crawl ${web_path} 
+  && chown -R crawl:crawl ${web_path} ${user_data}
 
 WORKDIR ${shared_dir}
 CMD /usr/www/launch
