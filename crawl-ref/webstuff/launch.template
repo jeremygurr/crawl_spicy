@@ -1,0 +1,4 @@
+#!/bin/bash
+nginx -g "daemon off;" &
+${web_path}/webserver/server.py
+

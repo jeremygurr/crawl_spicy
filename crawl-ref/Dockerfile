@@ -1,7 +1,8 @@
 #ARG version
 
-ARG web_path=/usr/local/apache2/htdocs
-ARG shared_dir=${web_path}/rcs
+ARG web_path=/usr/www
+ARG user_data=/var/crawl
+ARG shared_dir=${user_data}/rcs
 ARG checkout_dir=/usr/src
 ARG crawl_ref=${checkout_dir}/crawl/crawl-ref
 
@@ -28,19 +29,27 @@ ARG checkout_dir
 ARG crawl_ref
 ARG version
 
-ENV base_repo dcss_spicy
-ENV crawl_repo https://github.com/jeremygurr/$base_repo.git
+#ENV base_repo crawl_spicy
+#ENV crawl_repo https://github.com/jeremygurr/$base_repo.git
 
 WORKDIR ${checkout_dir}
-RUN git clone "$crawl_repo" -b "$version" crawl
+#RUN git clone "$crawl_repo" -b "$version" crawl
+COPY docs ${crawl_ref}/docs
+COPY source ${crawl_ref}/source
 
 WORKDIR ${crawl_ref}/source
+RUN make -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
+
+COPY CREDITS.txt ${crawl_ref}/
+COPY settings ${crawl_ref}/settings
+# two separate commands to make debugging the install phase much more efficient
 RUN make install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
 
-FROM httpd
+FROM nginx as crawlweb
 ARG web_path
 ARG shared_dir
 ARG crawl_ref
+VOLUME ${user_data}
 
 LABEL maintainer="jeremy.gurr@gmail.com"
 
@@ -55,8 +64,11 @@ RUN apt-get update && apt-get install -y \
     libsdl2-image-dev \
     libsdl2-mixer-dev \
     libsqlite3-dev \
-    libz-dev pkg-config \
+    libz-dev \
+    pkg-config \
+    python-tornado \
     ttf-dejavu-core \
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1000 crawl && useradd -N -s /usr/sbin/nologin -u 1000 -g crawl crawl
@@ -65,13 +77,25 @@ RUN mkdir -p ${shared_dir}/running ${shared_dir}/ttyrecs
 COPY --from=build_base ${web_path}/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
 COPY webstuff/ ${web_path}
+COPY source/webserver/ ${web_path}/webserver/
 
 WORKDIR ${web_path}
 
-RUN ./hydrate config.py && rm hydrate
-RUN cp -a apache2/ /etc/apache2/
-RUN chown -R crawl:crawl ${web_path}
+ENV conf_path /etc/nginx
+ENV uid 1000
+ENV gid 1000
+ENV crawl_port 8081
+ENV nginx_port 80
 
-USER crawl
+EXPOSE ${crawl_port}
+EXPOSE ${nginx_port}
 
+RUN ./hydrate config.py init-player.sh nginx/conf.d/default.conf launch \
+  && chmod a+x launch \
+  && mv config.py webserver/ \
+  && cp -a nginx/conf.d/* /etc/nginx/conf.d/ \
+  && chown -R crawl:crawl ${web_path} 
+
+WORKDIR ${shared_dir}
+CMD /usr/www/launch
 

@@ -732,12 +732,14 @@ ifndef NO_LUA_BINDINGS
 CFOTHERS_L += -DCLUA_BINDINGS
 endif
 
-ifdef USE_DGAMELAUNCH
-SRC_BRANCH    := $(shell git rev-parse --abbrev-ref HEAD || echo release)
-ifneq ($(SRC_BRANCH),$(filter master release stone_soup-%, $(SRC_BRANCH)))
-  DEFINES_L += -DEXPERIMENTAL_BRANCH="\"$(SRC_BRANCH)\""
-endif
-endif
+# we don't need this for spicy version, and we don't want to have to put the whole .git repo in the docker build file
+
+#ifdef USE_DGAMELAUNCH
+#SRC_BRANCH    := $(shell git rev-parse --abbrev-ref HEAD || echo release)
+#ifneq ($(SRC_BRANCH),$(filter master release stone_soup-%, $(SRC_BRANCH)))
+#  DEFINES_L += -DEXPERIMENTAL_BRANCH="\"$(SRC_BRANCH)\""
+#endif
+#endif
 
 #
 # Figure out the build settings for this type of build

@@ -10,7 +10,7 @@ dgl_mode = True
 
 bind_nonsecure = True # Set to false to only use SSL
 bind_address = ""
-bind_port = ${webport}
+bind_port = ${crawl_port}
 # Or listen on multiple address/port pairs (overriding the above) with:
 # bind_pairs = (
 #     ("127.0.0.1", 8080),
@@ -24,20 +24,18 @@ logging_config = {
     "format": "%(asctime)s %(levelname)s: %(message)s"
 }
 
-latest = "v1.7"
+base_shared = "${web_path}"
+user_data = "${user_data}"
 
-base_shared = "/var/crawl"
-base_v = base_shared + "/" + latest
-
-password_db = base_shared + "/passwd.db3"
-static_path = base_v + "/webserver/static"
-template_path = base_v + "/webserver/templates/"
+password_db = user_data + "/rcs/passwd.db3"
+static_path = base_shared + "/webserver/static"
+template_path = base_shared + "/webserver/templates/"
 
 # Path for server-side unix sockets (to be used to communicate with crawl)
 server_socket_path = None # Uses global temp dir
 
 # Server name, so far only used in the ttyrec metadata
-server_id = "dcss:ca"
+server_id = "dcss_spicy"
 
 # Disable caching of game data files
 game_data_no_cache = True
@@ -45,30 +43,30 @@ game_data_no_cache = True
 # Watch socket dirs for games not started by the server
 watch_socket_dirs = False
 
-global_morgue_path = base_shared + "/rcs/"
+global_morgue_path = user_data + "/rcs/"
 
 # Game configs
 # %n in paths and urls is replaced by the current username
 # morgue_url is for a publicly available URL to access morgue_path
 games = OrderedDict([
-    ("dcss-ca-" + latest, dict(
-        name = "DCSS:CA " + latest,
-        crawl_binary = base_v + "/bin/crawl",
-        rcfile_path = base_shared + "/rcs/",
-        macro_path = base_shared + "/rcs/",
-        morgue_path = base_shared + "/rcs/%n/",
-        inprogress_path = base_shared + "/rcs/running",
-        ttyrec_path = base_shared + "/rcs/ttyrecs/%n",
-        socket_path = base_shared + "/rcs",
-        client_path = base_v + "/webserver/game_data/",
+    ("dcss_spicy", dict(
+        name = "dcss_spicy",
+        crawl_binary = base_shared + "/bin/crawl",
+        rcfile_path = user_data + "/rcs/",
+        macro_path = user_data + "/rcs/",
+        morgue_path = user_data + "/rcs/%n/",
+        inprogress_path = user_data + "/rcs/running",
+        ttyrec_path = user_data + "/rcs/ttyrecs/%n",
+        socket_path = user_data + "/rcs",
+        client_path = base_shared + "/webserver/game_data/",
         morgue_url = "http://crawl.homedns.org/morgue/%n/",
         send_json_options = True)),
 ])
 
-dgl_status_file = base_shared + "/rcs/status"
+dgl_status_file = user_data + "/rcs/status"
 
 # Set to None not to read milestones
-milestone_file = base_shared + "/rcs/milestones"
+milestone_file = user_data + "/rcs/milestones"
 
 status_file_update_rate = 5
 
@@ -87,7 +85,7 @@ ssl_options = None # No SSL
 #    "keyfile": "./webserver/localhost.key"
 #}
 ssl_address = ""
-ssl_port = 8081
+ssl_port = 1
 # Or listen on multiple address/port pairs (overriding the above) with:
 # ssl_bind_pairs = (
 #     ("127.0.0.1", 8081),
@@ -103,7 +101,7 @@ http_connection_timeout = None
 
 kill_timeout = 10 # Seconds until crawl is killed after HUP is sent
 
-nick_regex = r"^[a-zA-Z0-9]{3,20}$"
+nick_regex = r"^[a-zA-Z0-9]{1,20}\$"
 max_passwd_length = 20
 
 # crypt() algorithm, e.g. "1" for MD5 or "6" for SHA-512; see crypt(3). If
