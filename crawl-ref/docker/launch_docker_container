@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# this won't work if you haven't built the container image first
+#   (run this script from the Dockerfile folder if you haven't: build_docker_crawlweb_image)
+
 debug=true
 
 if [ ! "$(docker volume ls -q | grep ^v1$)" ]; then

@@ -18,7 +18,8 @@ RUN apt-get update && apt-get install -y \
     libsdl2-image-dev \
     libsdl2-mixer-dev \
     libsqlite3-dev \
-    libz-dev pkg-config \
+    libz-dev \ 
+    pkg-config \
     ttf-dejavu-core \
     advancecomp \
     pngcrush \
@@ -78,7 +79,7 @@ RUN apt-get install -y \
     libsqlite3-dev \
     libz-dev \
     pkg-config \
-    python-tornado \
+    python-tornado=3.2.2 \
     ttf-dejavu-core \
     vim \
     procps 
@@ -87,15 +88,14 @@ RUN apt-get install -y \
 RUN rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1000 crawl \
-  && useradd -N -s /usr/sbin/nologin -u 1000 -g crawl crawl \
+  && useradd -N -s /bin/bash -u 1000 -g crawl crawl \
   && groupadd -g 1001 crawl-dev \
-  && useradd -N -s /usr/sbin/nologin -u 1001 -g crawl-dev crawl-dev
+  && useradd -N -s /bin/bash -u 1001 -g crawl-dev crawl-dev
 
 COPY --from=build_base ${crawl_ref}/source/webserver/ ${web_path}/webserver/
 COPY --from=build_base ${web_path}/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
 COPY docker/webstuff/ ${web_path}
-#COPY source/webserver/ ${web_path}/webserver/
 
 WORKDIR ${web_path}
 
