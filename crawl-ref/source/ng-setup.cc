@@ -104,6 +104,11 @@ item_def* newgame_make_item(object_class_type base,
     if (sub_type == WPN_UNARMED)
         return nullptr;
 
+    // give more ammo if unlimited_ammo mode since ammo always mulches
+    if (Options.unlimited_ammo && base == OBJ_MISSILES) {
+        qty *= 5;
+    }
+
     int slot;
 
     for (slot = 0; slot < ENDOFPACK; ++slot)
@@ -226,13 +231,22 @@ static void _give_ammo(weapon_type weapon, int plus)
         newgame_make_item(OBJ_MISSILES, MI_THROWING_NET, 2);
         break;
     case WPN_SHORTBOW:
-        newgame_make_item(OBJ_MISSILES, MI_ARROW, 20);
+        if (Options.unlimited_ammo)
+            newgame_make_item(OBJ_MISSILES, MI_ARROW, 20, 0, SPMSL_FLAME);
+        else
+            newgame_make_item(OBJ_MISSILES, MI_ARROW, 20);
         break;
     case WPN_HAND_CROSSBOW:
-        newgame_make_item(OBJ_MISSILES, MI_BOLT, 20);
+        if (Options.unlimited_ammo)
+            newgame_make_item(OBJ_MISSILES, MI_BOLT, 20, 0, SPMSL_PENETRATION);
+        else
+            newgame_make_item(OBJ_MISSILES, MI_BOLT, 20);
         break;
     case WPN_HUNTING_SLING:
-        newgame_make_item(OBJ_MISSILES, MI_SLING_BULLET, 20);
+        if (Options.unlimited_ammo)
+            newgame_make_item(OBJ_MISSILES, MI_SLING_BULLET, 20, 0, SPMSL_EXPLODING);
+        else
+            newgame_make_item(OBJ_MISSILES, MI_SLING_BULLET, 20);
         break;
     default:
         break;

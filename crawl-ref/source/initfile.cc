@@ -180,6 +180,7 @@ const vector<GameOption*> game_options::build_options_list()
         new BoolGameOption(SIMPLE_NAME(no_exp_cap), false),
         new BoolGameOption(SIMPLE_NAME(no_spellpower_cap), false),
         new BoolGameOption(SIMPLE_NAME(shield_convenience), false),
+        new BoolGameOption(SIMPLE_NAME(unlimited_ammo), false),
         new BoolGameOption(SIMPLE_NAME(wide_spell_list), false),
 
         new BoolGameOption(SIMPLE_NAME(debug_exp), false),
@@ -1110,6 +1111,7 @@ void game_options::reset_options()
     no_exp_cap = false;
     no_spellpower_cap = false;
     shield_convenience = false;
+    unlimited_ammo = false;
     wide_spell_list = false;
 
     debug_exp = false;

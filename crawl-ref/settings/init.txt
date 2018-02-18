@@ -99,5 +99,6 @@
 # no_exp_cap = true
 # no_spellpower_cap = true
 # shield_convenience = true
+# unlimited_ammo = true
 # wide_spell_list = true
 

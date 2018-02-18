@@ -516,6 +516,9 @@ static special_missile_type _determine_missile_brand(const item_def& item,
     // "Normal weight" of SPMSL_NORMAL.
     int nw = force_good ? 0 : random2(2000 - 55 * item_level);
 
+    if (Options.unlimited_ammo)
+        nw = 0;
+
     switch (item.sub_type)
     {
 #if TAG_MAJOR_VERSION == 34
@@ -668,33 +671,42 @@ static void _generate_missile_item(item_def& item, int force_type,
         item.sub_type = force_type;
     else
     {
-        item.sub_type =
-            random_choose_weighted(50, MI_STONE,
-                                   20, MI_ARROW,
-                                   12, MI_BOLT,
-                                   12, MI_SLING_BULLET,
-                                   10, MI_NEEDLE,
-                                   3,  MI_TOMAHAWK,
-                                   2,  MI_JAVELIN,
-                                   1,  MI_THROWING_NET,
-                                   1,  MI_LARGE_ROCK);
+        if (Options.unlimited_ammo) {
+            item.sub_type =
+                    random_choose_weighted(50, MI_STONE,
+                                           20, MI_ARROW,
+                                           12, MI_BOLT,
+                                           10, MI_NEEDLE,
+                                           3,  MI_TOMAHAWK,
+                                           2,  MI_JAVELIN,
+                                           1,  MI_THROWING_NET,
+                                           1,  MI_LARGE_ROCK);
+        } else {
+            item.sub_type =
+                    random_choose_weighted(50, MI_STONE,
+                                           20, MI_ARROW,
+                                           12, MI_BOLT,
+                                           12, MI_SLING_BULLET,
+                                           10, MI_NEEDLE,
+                                           3,  MI_TOMAHAWK,
+                                           2,  MI_JAVELIN,
+                                           1,  MI_THROWING_NET,
+                                           1,  MI_LARGE_ROCK);
+        }
     }
 
     // No fancy rocks -- break out before we get to special stuff.
     if (item.sub_type == MI_LARGE_ROCK)
     {
         item.quantity = 2 + random2avg(5,2);
-        return;
     }
     else if (item.sub_type == MI_STONE)
     {
         item.quantity = 1 + random2(7) + random2(10) + random2(12) + random2(10);
-        return;
     }
     else if (item.sub_type == MI_THROWING_NET) // no fancy nets, either
     {
         item.quantity = 1 + one_chance_in(4); // and only one, rarely two
-        return;
     }
 
     if (!no_brand)
@@ -714,6 +726,9 @@ static void _generate_missile_item(item_def& item, int force_type,
         item.quantity = 1 + random2(7) + random2(10) + random2(10);
     else
         item.quantity = 1 + random2(7) + random2(10) + random2(10) + random2(12);
+
+    if(Options.unlimited_ammo)
+        item.quantity *= 3;
 }
 
 static bool _armour_disallows_randart(int sub_type)
@@ -1877,6 +1892,10 @@ int items(bool allow_uniques,
         potion_weight += weight_shift;
         gold_weight -= weight_shift;
 
+        int missile_weight = 300;
+        if (Options.unlimited_ammo)
+            missile_weight = 100;
+
         item.base_type = random_choose_weighted(
                                     10, OBJ_STAVES,
                                     30, OBJ_BOOKS,
@@ -1889,7 +1908,7 @@ int items(bool allow_uniques,
                                    176, OBJ_POTIONS,
                                      */
                                    potion_weight, OBJ_POTIONS,
-                                   300, OBJ_MISSILES,
+                                   missile_weight, OBJ_MISSILES,
                                    320, OBJ_SCROLLS,
                                     /* original
                                    440, OBJ_GOLD);

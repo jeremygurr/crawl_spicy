@@ -91,15 +91,20 @@ Of course this makes the game easier in all game modes, so to somewhat balance t
 ## No experience level cap: (no_exp_cap=true)
    * experience level can now reach 99
 
-## Flying boost: (flying_boost=true)
-   * flying increases movement speed
-   * flying increases stamina drain / food consumption
-   * flying increases dodging effectiveness
+## Unlimited ammo: (unlimited_ammo=true)
+   * basic ammo never runs out
+   * 100% mulch rate
+   * branded ammo spawns in larger numbers, since they can't be recovered after firing
 
 ### To Do:
 If you have a favorite feature that you'd like implemented sooner, create an issue on github and it will probably be done faster. Of course you are always welcome to submit pull requests. The key requirement in this fork is that all changes from vanilla are activated through non-default init file options.
 
 Here's a list of a few things I'll be pulling into this fork in the future: 
+
+## Flying boost: (flying_boost=true)
+   * flying increases movement speed
+   * flying increases stamina drain / food consumption
+   * flying increases dodging effectiveness
 
 - improved message display
   * show messages in more narrow window on right side, and move info on right side to bottom, to allow more messages to show up between "more" prompts.

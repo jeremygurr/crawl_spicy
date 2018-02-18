@@ -457,6 +457,7 @@ public:
     bool        autopickup_search; // whether to annotate stash items with
                                    // autopickup status
 
+    // crawl_spicy additions
     bool        different_experience_sources;
     bool        extra_numbers;
     bool        heal_wounds_potion_gives_full_health;
@@ -468,6 +469,7 @@ public:
     bool        no_exp_cap;
     bool        no_spellpower_cap;
     bool        shield_convenience;
+    bool        unlimited_ammo;
     bool        wide_spell_list;
 
     bool        debug_exp;

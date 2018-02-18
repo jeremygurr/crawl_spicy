@@ -1326,7 +1326,10 @@ int acquirement_create_item(object_class_type class_wanted,
                                        * roll_dice(1, 8)));
         }
         else if (class_wanted == OBJ_MISSILES && !divine)
-            acq_item.quantity *= 5;
+            if (Options.unlimited_ammo)
+                acq_item.quantity *= 25;
+            else
+                acq_item.quantity *= 5;
         else if (quant > 1)
             acq_item.quantity = quant;
 
