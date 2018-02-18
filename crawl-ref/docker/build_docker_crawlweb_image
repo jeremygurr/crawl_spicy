@@ -1,5 +1,15 @@
 #!/bin/bash
 
 # should be run from the dir with the Dockerfile
-docker build -t crawlweb .
+extra=""
+if [ "$1" = clean ]; then
+  clean=true
+fi
+
+if [ "$clean" ]; then
+  extra="--no-cache"
+fi
+
+set -x
+docker build $extra -t crawlweb .
 
