@@ -2656,7 +2656,7 @@ void gain_exp(unsigned int exp_gained, unsigned int *actual_gain, bool floor_exp
             exp_ratio = 500;
 
         // reduce total experience to compensate for higher exp levels resulting from more sources
-        player_exp_gained = div_rand_round(player_exp_gained * 50, 100);
+        player_exp_gained = div_rand_round(player_exp_gained * 25, 100);
 
 //        mprf("exp_total_for_next_level: %d", exp_total_for_next_level);
         if (Options.debug_exp) {

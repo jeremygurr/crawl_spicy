@@ -38,7 +38,7 @@ Instead of only getting experience from killing monsters, this option introduces
 
 - You will gain experience from killing monsters 
 - You will gain experience for each new floor that you enter
-- You will gain experience from drinking experience potions that appear once on each floor, based on the floor you drink them on. In other words, saving the experience potion to drink on a lower floor will give greater experience. 
+- You will gain experience from drinking experience potions that have a 1/3 chance of appearing on each floor, based on the floor you drink them on. In other words, saving the experience potion to drink on a lower floor will give greater experience. 
 - You will gain experience from pacifying monsters (like before)
 
 However, experience doesn't stack up like before. The amount of experience gained from any of these things are relative to the difficulty of the challenge and level of the player. It's balanced in a way that if you only focussed on killing monsters, you'd end up with about the same experience that you would in normal crawl. On the other hand, you can get a comparable level of experience just focussing on diving as deep as you can and avoiding most monsters. But if you do both, you'll not gain any additional experience. Another example: if you collect a bunch of experience potions and drink them all one after another on a deep dungeon level, your first few will give you a bunch of experience, but each following potion will rapidly diminish in how much experience it provides. Note: skill gain is scaled in the same way, but all other experience effects (drain elimination, penance, etc) are NOT scaled. As a consequence, experience potions can be used to rapidly wash away some of those experienced based negative effects, at the expense of losing the chance to get a lot more experience by drinking them at a lower level.
@@ -90,6 +90,11 @@ Of course this makes the game easier in all game modes, so to somewhat balance t
 
 ## No experience level cap: (no_exp_cap=true)
    * experience level can now reach 99
+
+## Flying boost: (flying_boost=true)
+   * flying increases movement speed
+   * flying increases stamina drain / food consumption
+   * flying increases dodging effectiveness
 
 ### To Do:
 If you have a favorite feature that you'd like implemented sooner, create an issue on github and it will probably be done faster. Of course you are always welcome to submit pull requests. The key requirement in this fork is that all changes from vanilla are activated through non-default init file options.

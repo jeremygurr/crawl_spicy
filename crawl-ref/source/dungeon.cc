@@ -317,6 +317,7 @@ bool builder(bool enable_random_maps, dungeon_feature_type dest_stairs_type)
 
                 if (Options.different_experience_sources
                     && !is_safe_branch(you.where_are_you)
+                    && one_chance_in(3)
                         )
                 {
                     _place_experience_potions();
