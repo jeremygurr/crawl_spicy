@@ -4,6 +4,10 @@
 #   (run this script from the Dockerfile folder if you haven't: build_docker_crawlweb_image)
 
 debug=true
+if [ "$1" = clean ]; then
+  echo "destroying old data..."
+  docker volume rm crawlweb &>/dev/null
+fi
 
 if [ ! "$(docker volume ls -q | grep ^crawlweb$)" ]; then
   echo "creating docker volume..."
