@@ -55,7 +55,7 @@ Heal wounds potion always restores full health. To compensate, it is more expens
 ## Magic potions give full magic (magic_potion_gives_full_magic=true)
 
 ## Monster can't climb stairs: (monsters_do_not_use_stairs=true)
-Enemies will never use stairs. This eliminates stairdancing tactics. It also makes tomb quite a bit harder in some ways. 
+Enemies will never use stairs. This eliminates stairdancing tactics. It also makes tomb a bit harder in some ways. 
 
 ## Instakill protection expansion: (instakill_protection=true)
 The amount of damage that can be done to a player between turns is capped, so that a player can never go from full health to dead before having a turn to respond. Different difficulty levels alter this cap: (if difficulty levels aren't enabled, it's equivalent to being on standard difficulty)
@@ -93,7 +93,8 @@ Of course this makes the game easier in all game modes, so to somewhat balance t
 
 ## Unlimited ammo: (unlimited_ammo=true)
    * basic ammo never runs out
-   * 100% mulch rate
+   * even with nothing quivered, rocks can be thrown (even if the player isn't carrying any)
+   * 100% mulch rate (ammo is never retrievable after firing)
    * branded ammo spawns in larger numbers, since they can't be recovered after firing
 
 ### To Do:
@@ -106,6 +107,7 @@ Here's a list of a few things I'll be pulling into this fork in the future:
    * flying increases stamina drain / food consumption
    * flying increases dodging effectiveness
 
+## Others
 - improved message display
   * show messages in more narrow window on right side, and move info on right side to bottom, to allow more messages to show up between "more" prompts.
 - improved identification game

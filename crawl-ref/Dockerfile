@@ -21,11 +21,9 @@ RUN apt-get update && apt-get install -y \
     libz-dev \ 
     pkg-config \
     ttf-dejavu-core \
+    advancecomp \
+    pngcrush \
     && rm -rf /var/lib/apt/lists/*
-
-# for png compression, but I'm not sure this works right, seems to be breaking things
-#    advancecomp \
-#    pngcrush \
 
 FROM os_base as build_base
 ARG web_path
@@ -84,26 +82,17 @@ RUN apt-get install -y \
     libz-dev \
     pkg-config \
     vim \
-    procps 
-
-#    python-tornado \
-#    python-tornado=3.2.2 \
-
-RUN apt-get install -y \
-    python
-
-RUN apt-get install -y \
+    procps \
+    python \
     python-setuptools \
     python-dev \
-    build-essential 
-
-RUN apt-get install -y wget
+    build-essential \
+    wget
 
 RUN mkdir -p /etc/pki/tls/certs \
     && wget http://curl.haxx.se/ca/cacert.pem -O /etc/pki/tls/certs/ca-bundle.crt \
-    && easy_install pip
-
-RUN pip install tornado==3.2.2
+    && easy_install pip \
+    && pip install tornado==3.2.2
 
 # clean up apt cache
 RUN rm -rf /var/lib/apt/lists/*
