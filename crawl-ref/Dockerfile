@@ -41,6 +41,7 @@ COPY docs ${crawl_ref}/docs
 COPY source ${crawl_ref}/source
 
 WORKDIR ${crawl_ref}/source
+RUN make distclean
 RUN make -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
 
 COPY CREDITS.txt ${crawl_ref}/
@@ -69,6 +70,7 @@ ENV LANG=C.UTF-8
 RUN apt-get install -y \
     bison \
     flex \
+    fonts-dejavu-core \
     libfreetype6-dev \
     liblua5.1-0-dev \
     libncursesw5-dev \
@@ -79,10 +81,10 @@ RUN apt-get install -y \
     libsqlite3-dev \
     libz-dev \
     pkg-config \
-    python-tornado=3.2.2 \
-    ttf-dejavu-core \
+    python-tornado \
     vim \
     procps 
+#    python-tornado=3.2.2 \
 
 # clean up apt cache
 RUN rm -rf /var/lib/apt/lists/*
