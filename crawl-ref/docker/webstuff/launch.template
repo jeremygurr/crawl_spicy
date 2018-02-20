@@ -4,7 +4,7 @@ set -xv
 mkdir -p ${shared_dir}/running ${shared_dir}/ttyrecs || exit 1
 chown -R crawl:crawl ${shared_dir} || exit 1
 
-cd ${eb_path} || exit 1
+cd ${web_path} || exit 1
 nginx -g "daemon off;" &
 ${web_path}/webserver/server.py
 

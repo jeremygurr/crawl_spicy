@@ -12,7 +12,7 @@ alias maybe_break='[ $return_value == 0 ] || break'
 unset hydrate
 hydrate() {
 local file from to line
-local returnValue=0
+local return_value=0
 while [ "$1" ]; do
   file="$1"; shift
   from="${file}.template"
@@ -38,7 +38,7 @@ while [ "$1" ]; do
   chmod --reference $from $to || fail
   rm $from || fail
 done
-return $returnValue
+return $return_value
 }
 
 hydrate "$@" || exit 1

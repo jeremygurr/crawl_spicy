@@ -1,5 +1,5 @@
 **/*.DS_Store
-**/*.[oad]
+**/*.[oa]
 **/*.ann
 **/*.dSYM
 **/*.elf
@@ -20,4 +20,3 @@
 **/err.txt
 **/tags
 **/tmp/
-
