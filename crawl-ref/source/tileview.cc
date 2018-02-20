@@ -312,8 +312,7 @@ void tile_init_flavour()
     vector<unsigned int> output;
     {
         domino::DominoSet<domino::EdgeDomino> dominoes(domino::cohen_set, 8);
-        uint64_t seed[] = { static_cast<uint64_t>(you.where_are_you ^ you.game_seed),
-            static_cast<uint64_t>(you.depth) };
+        uint64_t seed[] = { get_uint64(RNG_UI), get_uint64(RNG_UI) };
         PcgRNG rng(seed, ARRAYSZ(seed));
         dominoes.Generate(X_WIDTH, Y_WIDTH, output, rng);
     }
@@ -362,13 +361,12 @@ static void _get_depths_wall_tiles_by_depth(int depth, vector<tileidx_t>& t)
         t.push_back(TILE_WALL_BRICK_DARK_6_TORCH);  // ...and on Depths:$
 }
 
-static int _find_variants(tileidx_t idx, int variant, vector<int> &out)
+static int _find_variants(tileidx_t idx, int variant, map<tileidx_t, int> &out)
 {
     const int count = tile_dngn_count(idx);
-    out.reserve(count);
     if (count == 1)
     {
-        out.push_back(1);
+        out[idx] = 1;
         return 1;
     }
 
@@ -382,18 +380,16 @@ static int _find_variants(tileidx_t idx, int variant, vector<int> &out)
         {
             int weight = curr_prob - last_prob;
             total += weight;
-            out.push_back(weight);
+            out[idx + i] = weight;
         }
-        else
-            out.push_back(0);
     }
-    if (!total)
+    if (out.empty())
     {
-        out.clear();
-        out.push_back(tile_dngn_probs(idx));
+        out[idx] = tile_dngn_probs(idx);
         for (int i = 1; i < count; ++i)
         {
-            out.push_back(tile_dngn_probs(idx + i) - tile_dngn_probs(idx + i - 1));
+            out[idx + i] = tile_dngn_probs(idx + i)
+                           - tile_dngn_probs(idx + i - 1);
         }
         return tile_dngn_probs(idx + count - 1);
     }
@@ -403,18 +399,17 @@ static int _find_variants(tileidx_t idx, int variant, vector<int> &out)
 tileidx_t pick_dngn_tile(tileidx_t idx, int value, int domino)
 {
     ASSERT_LESS(idx, TILE_DNGN_MAX);
-    static vector<int> weights;
-    weights.clear();
+    map<tileidx_t, int> choices;
+    int total = _find_variants(idx, domino, choices);
+    if (choices.size() == 1)
+        return choices.begin()->first;
+    int rand  = value % total;
 
-    int total = _find_variants(idx, domino, weights);
-    if (weights.size() == 1)
-        return idx;
-    int rand = value % total;
-
-    for (size_t i = 0; i < weights.size(); ++i)
+    for (const auto& elem : choices)
     {
-        rand -= weights[i];
-        if (rand < 0) return idx + i;
+        rand -= elem.second;
+        if (rand < 0)
+            return elem.first;
     }
 
     return idx;

@@ -18,6 +18,5 @@ public:
 
 protected:
     int m_retval;
-    virtual int _get_layout_scroll_y() const override { return 0; }
 };
 #endif
