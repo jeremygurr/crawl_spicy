@@ -1,10 +1,10 @@
 upstream crawlweb {
-  server localhost:${crawl_port};
+    server localhost:${crawl_port};
 }
 
 server {
     listen       ${nginx_port};
-    server_name  crawlweb;
+    server_name  ${web_host};
 
     #charset koi8-r;
     #access_log  /var/log/nginx/host.access.log  main;

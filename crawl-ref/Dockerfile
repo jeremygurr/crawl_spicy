@@ -1,5 +1,7 @@
 #ARG version
 
+ARG web_host=crawl.ufetubus.com
+
 ARG web_path=/usr/www
 ARG user_data=/var/crawl
 ARG shared_dir=${user_data}/rcs
@@ -50,6 +52,7 @@ COPY settings ${crawl_ref}/settings
 RUN make webserver install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
 
 FROM nginx as crawlweb
+ARG web_host
 ARG web_path
 ARG shared_dir
 ARG crawl_ref
@@ -59,16 +62,16 @@ VOLUME ${user_data}
 
 LABEL maintainer="jeremy.gurr@gmail.com"
 
-# load the latest packages
-RUN apt-get update 
-
 # fix locale
 ENV LANG=C.UTF-8
 #RUN apt-get install -y locales 
 #RUN DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales 
 
-RUN apt-get install -y \
+RUN apt-get update \
+    && apt-get install -y \
+    apt-utils \
     bison \
+    curl \
     flex \
     fonts-dejavu-core \
     libfreetype6-dev \
@@ -87,7 +90,10 @@ RUN apt-get install -y \
     python-setuptools \
     python-dev \
     build-essential \
-    wget
+    wget 
+
+# don't remove this stuff since we seem to need to install stuff later a lot
+#    && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /etc/pki/tls/certs \
     && wget http://curl.haxx.se/ca/cacert.pem -O /etc/pki/tls/certs/ca-bundle.crt \
@@ -95,7 +101,6 @@ RUN mkdir -p /etc/pki/tls/certs \
     && pip install tornado==3.2.2
 
 # clean up apt cache
-RUN rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1000 crawl \
   && useradd -N -s /bin/bash -u 1000 -g crawl crawl \
@@ -106,6 +111,7 @@ COPY --from=build_base ${crawl_ref}/source/webserver/ ${web_path}/webserver/
 COPY --from=build_base ${web_path}/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
 COPY docker/webstuff/ ${web_path}/
+COPY docker/webstuff/banner.html ${web_path}/webserver/templates
 
 WORKDIR ${web_path}
 

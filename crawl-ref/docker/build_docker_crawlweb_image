@@ -11,5 +11,5 @@ if [ "$clean" ]; then
 fi
 
 set -x
-docker build $extra -t crawlweb .
+docker build $extra -t ufetubus/crawlweb .
 
