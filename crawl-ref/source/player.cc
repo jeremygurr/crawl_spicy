@@ -2682,8 +2682,8 @@ void gain_exp(unsigned int exp_gained, unsigned int *actual_gain, bool floor_exp
             mprf("You learned a huge amount from that.");
         } else if (exp_ratio > 150) {
             mprf("You learned a lot from that.");
-        } else if (player_exp_gained == 0) {
-            mprf("You didn't learn anything from that.");
+//        } else if (player_exp_gained == 0) {
+//            mprf("You didn't learn anything from that.");
 //        } else if (exp_ratio < 50) {
 //            mprf("You didn't learn much from that.");
         }
