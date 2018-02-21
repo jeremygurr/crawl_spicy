@@ -2,13 +2,18 @@
 
 ---
 
-This fork of DCSS is intended to be a stable and playable fork to migrate many of the circus animals fork changes to, in a way that is fully configurable. In other words, with no options set, this fork should behave exactly the same as vanilla crawl. All alterations are activated through init settings. This fork will regularly pull in upstream changes to keep it up to date, so whatever new features are added to vanilla crawl will come over here as well.
+Sites which currently host this fork:
+  - http://crawl.ufetubus.com
+
+This fork of DCSS is intended to be a stable and playable fork to migrate many of the circus animals fork changes to, in a way that is fully configurable. In other words, with no options set, this fork should behave exactly the same as vanilla crawl. All alterations are activated through rc file settings. This fork will regularly pull in upstream changes to keep it up to date, so whatever new features are added to vanilla crawl will come over here as well.
 
 Feel free to create issues on github for any problems with this fork. Ideas you have that you think are in line with my goals are also welcome, or concerns you have about future plans.
 
 I'll pull over features little by little from circus animals into this fork.
 
-Current features that differ from vanilla crawl:
+---
+
+Current features:
 
 ## Multiple difficulty levels: (multiple_difficulty_levels=true)
 When starting a game, the player will be asked for what difficulty level they want to play.
