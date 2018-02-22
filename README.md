@@ -50,7 +50,7 @@ However, experience doesn't stack up like before. The amount of experience gaine
 
 You are rewarded for taking extra risks. For example, killing sigmund while your character is only level 3 will give a huge boost in experience, possibly taking you up multiple levels. That may seem a bit broken at first, but keep in mind that exp you gain after that from more ordinary creatures will now be much less, since your character is at a much higher level than before, so it balances out, and yet keeps things interesting. 
 
-You will find a potion of experience on each floor, but if you drink it on the first floor, it will give very little (if any) experience. It's far better to save them for as long as possible, because the lower the floor you drink it on, the more experience it gives. 
+You will find a potion of experience on roughly every third floor, but if you drink it on the first floor, it will give very little (if any) experience. It's far better to save them for as long as possible, because the lower the floor you drink it on, the more experience it gives. 
 
 You can set debug_exp = true if you want to see exact numbers on how exp is scaled during a game. It will show before and after scaling exp for each kill. The Exp_ratio message represents the scaling percentage. 200 for example means that you received double the normal experience. 50 would mean you received half. 
 
@@ -95,6 +95,8 @@ Of course this makes the game easier in all game modes, so to somewhat balance t
 
 ## No experience level cap: (no_exp_cap=true)
    * experience level can now reach 99
+
+If this is combined with different_experience_sources, then it will be hard to get much past level 27, since the experience monsters give is relative to the experience level of the player, rapidly diminishing the amount of experience players can get after level 27. Without different_experience_sources, a player can probably get well into the 30s. 
 
 ## Unlimited ammo: (unlimited_ammo=true)
    * basic ammo never runs out

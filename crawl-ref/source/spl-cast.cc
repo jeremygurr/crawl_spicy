@@ -192,13 +192,11 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
     if (Options.wide_spell_list) {
         const string header = " " + titlestring + "         Fail Lvl Power        Range    Hunger  Noise          Type";
 #ifdef USE_TILE_LOCAL
-        {
         // [enne] - Hack. Make title an item so that it's aligned.
         MenuEntry* me =
             new MenuEntry(header, MEL_ITEM);
         me->colour = BLUE;
         spell_menu.add_entry(me);
-        }
 #else
         spell_menu.set_title(
             new MenuEntry(header, MEL_TITLE)
@@ -206,7 +204,6 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
 #endif
     } else {
 #ifdef USE_TILE_LOCAL
-        {
         // [enne] - Hack. Make title an item so that it's aligned.
         ToggleableMenuEntry* me =
             new ToggleableMenuEntry(
@@ -217,7 +214,6 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
                 MEL_ITEM);
         me->colour = BLUE;
         spell_menu.add_entry(me);
-    }
 #else
         spell_menu.set_title(
                 new ToggleableMenuEntry(
