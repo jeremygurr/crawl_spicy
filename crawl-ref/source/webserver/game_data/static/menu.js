@@ -426,7 +426,7 @@ function ($, comm, client, enums, dungeon_renderer, cr, util, options) {
     function update_title()
     {
         $("#menu_title").html(util.formatted_string_to_html(menu.title.text));
-        $("#menu_title").css("padding-left", menu_title_indent()+"px");
+        //$("#menu_title").css("padding-left", menu_title_indent()+"px");
 
         if (menu.title.suffix)
         {

@@ -111,7 +111,8 @@ COPY --from=build_base ${crawl_ref}/source/webserver/ ${web_path}/webserver/
 COPY --from=build_base ${web_path}/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
 COPY docker/webstuff/ ${web_path}/
-COPY docker/webstuff/banner.html ${web_path}/webserver/templates
+COPY docker/webstuff/banner.html ${web_path}/webserver/templates/
+COPY docker/webstuff/index.html ${web_path}/webserver/
 
 WORKDIR ${web_path}
 

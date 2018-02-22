@@ -4,22 +4,11 @@ upstream crawlweb {
 
 server {
     listen       ${nginx_port};
-    server_name  ${web_host};
+
+    root   ${web_path}/webserver;
 
     #charset koi8-r;
     #access_log  /var/log/nginx/host.access.log  main;
-
-    location /crawl {
-	proxy_pass http://crawlweb;
-    }
-
-    location /static {
-        root   ${web_path}/static;
-    }
-
-    location /gamedata {
-        root   ${web_path}/gamedata;
-    }
 
     #error_page  404              /404.html;
 
