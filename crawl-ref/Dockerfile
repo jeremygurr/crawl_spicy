@@ -8,7 +8,9 @@ ARG shared_dir=${user_data}/rcs
 ARG checkout_dir=/usr/src
 ARG crawl_ref=${checkout_dir}/crawl/crawl-ref
 
-FROM gcc as os_base
+# this gcc can be latest, we just pin it to a version for consistency and rebuild speed
+#   so if it doesn't work, just update to the latest version and pin it to that
+FROM gcc:7.3.0 as os_base
 RUN apt-get update && apt-get install -y \
     bison \
     flex \
@@ -51,7 +53,7 @@ COPY settings ${crawl_ref}/settings
 # two separate commands to make debugging the install phase much more efficient
 RUN make webserver install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
 
-FROM nginx as crawlweb
+FROM nginx:1.13.9 as crawlweb
 ARG web_host
 ARG web_path
 ARG shared_dir

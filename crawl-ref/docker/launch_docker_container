@@ -3,24 +3,33 @@
 # this won't work if you haven't built the container image first
 #   (run this script from the Dockerfile folder if you haven't: build_docker_crawlweb_image)
 
-debug=true
-if [ "$1" = clean ]; then
-  echo "destroying old data..."
-  docker volume rm crawlweb &>/dev/null
+debug=${debug:-false}
+pretend=${pretend:-false}
+clean=${clean:-false}
+if [ "$pretend" == true ]; then
+  echo "Pretend mode on, not executing commands."
+  prefix=echo 
+else
+  unset prefix
 fi
 
-if [ ! "$(docker volume ls -q | grep ^crawlweb$)" ]; then
+if [ "$clean" == true ]; then
+  echo "destroying old data..."
+  $prefix docker volume rm crawlweb 
+fi
+
+if [ ! "$(docker volume ls -q | grep ^crawlweb$)" -o "$pretend" == true ]; then
   echo "creating docker volume..."
-  docker volume create crawlweb >/dev/null
+  $prefix docker volume create crawlweb 
 fi
 
 common_parameters="--rm -v crawlweb:/var/crawl -p 80:80 -p 8081:8081 --name crawlweb ufetubus/crawlweb"
 if [ "$debug" == true ]; then
   echo "starting debug container..."
-  docker run -it $common_parameters
+  $prefix docker run -it $common_parameters
 else
   echo "starting normal container..."
-  docker run -d $common_parameters
+  $prefix docker run -d $common_parameters
 fi
 
 echo "done."
