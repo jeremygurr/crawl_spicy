@@ -1715,6 +1715,13 @@ void read_init_file(bool runscript)
         Options.max_exp_level = 27;
         Options.max_skill_level = 27;
     }
+
+    if (Options.inventory_expansion) {
+        bind_command_to_key(CMD_DROP_CONSUMABLES, 'D');
+        bind_command_to_key(CMD_DISPLAY_CONSUMABLES, 'I');
+        bind_command_to_key(CMD_DROP_LAST, CONTROL('D'));
+        bind_command_to_key(CMD_DISPLAY_SPELLS, 's');
+    }
 }
 
 newgame_def read_startup_prefs()
