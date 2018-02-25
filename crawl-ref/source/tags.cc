@@ -85,6 +85,7 @@
 #include "transform.h"
 #include "unwind.h"
 #include "version.h"
+#include "mutation.h"
 
 vector<ghost_demon> global_ghosts; // only for reading/writing
 
@@ -97,6 +98,7 @@ extern map<level_pos, string> portal_notes;
 extern map<level_id, string> level_annotations;
 extern map<level_id, string> level_exclusions;
 extern map<level_id, string> level_uniques;
+extern map<level_id, int> level_experience;
 extern set<pair<string, level_id> > auto_unique_annotations;
 
 // defined in abyss.cc
@@ -1384,10 +1386,17 @@ static void tag_construct_you(writer &th)
         marshallByte(th, you.equip[i]);
     for (int i = EQ_FIRST_EQUIP; i < NUM_EQUIP; ++i)
         marshallBoolean(th, you.melded[i]);
+    for (int i = EQ_FIRST_EQUIP; i < NUM_EQUIP; ++i)
+        marshallInt(th, you.equip_slot_cursed_level[i]);
+
+    marshallUByte(th, you.sp);
+    marshallUByte(th, you.sp_max);
 
     ASSERT_RANGE(you.magic_points, 0, you.max_magic_points + 1);
     marshallUByte(th, you.magic_points);
     marshallByte(th, you.max_magic_points);
+
+    marshallUByte(th, you.monsters_recently_seen);
 
     COMPILE_CHECK(NUM_STATS == 3);
     for (int i = 0; i < NUM_STATS; ++i)
@@ -1398,6 +1407,7 @@ static void tag_construct_you(writer &th)
     CANARY;
 
     marshallInt(th, you.hit_points_regeneration);
+    marshallInt(th, you.stamina_points_regeneration);
     marshallInt(th, you.magic_points_regeneration);
 
     marshallInt(th, you.experience);
@@ -1414,6 +1424,7 @@ static void tag_construct_you(writer &th)
     marshallShort(th, you.hp_max_adj_temp);
     marshallShort(th, you.hp_max_adj_perm);
     marshallShort(th, you.mp_max_adj);
+    marshallShort(th, you.mp_frozen_summons);
 
     marshallShort(th, you.pos().x);
     marshallShort(th, you.pos().y);
@@ -1477,7 +1488,10 @@ static void tag_construct_you(writer &th)
     // how many durations?
     marshallUByte(th, NUM_DURATIONS);
     for (int j = 0; j < NUM_DURATIONS; ++j)
+    {
         marshallInt(th, you.duration[j]);
+        marshallInt(th, you.duration_source[j]);
+    }
 
     // how many attributes?
     marshallByte(th, NUM_ATTRIBUTES);
@@ -1537,7 +1551,7 @@ static void tag_construct_you(writer &th)
     for (god_iterator it; it; ++it)
         marshallByte(th, you.piety_max[*it]);
 
-    marshallByte(th, you.gift_timeout);
+    marshallInt(th, you.gift_timeout);
     marshallUByte(th, you.saved_good_god_piety);
     marshallByte(th, you.previous_good_god);
 
@@ -1558,6 +1572,29 @@ static void tag_construct_you(writer &th)
     marshallInt(th, you.real_time());
     marshallInt(th, you.num_turns);
     marshallInt(th, you.exploration);
+    marshallInt(th, you.amplification);
+
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+    {
+        marshallInt(th, you.rune_charges[i]);
+    }
+
+    for (int i = 0; i < NUM_BRANCHES; ++i)
+    {
+        marshallInt(th, you.branch_requires_runes[i]);
+    }
+
+    marshallFixedBitVector<NUM_RUNE_TYPES>(th, you.rune_curse_active);
+    marshallInt(th, you.peace);
+    marshallInt(th, you.max_exp);
+    marshallInt(th, you.stamina_flags);
+    marshallInt(th, you.current_form_spell);
+    marshallInt(th, you.current_form_spell_failure);
+    marshallInt(th, MAX_MINIONS);
+    for (int i = 0; i < MAX_MINIONS; ++i)
+    {
+        marshallInt(th, you.summoned[i]);
+    }
 
     marshallInt(th, you.magic_contamination);
 
@@ -1602,7 +1639,7 @@ static void tag_construct_you(writer &th)
     {
         marshallShort(th, ac.first.first);
         marshallInt(th, ac.first.second);
-        for (int k = 0; k < 27; k++)
+        for (int k = 0; k < Options.max_exp_level; k++)
             marshallInt(th, ac.second[k]);
     }
 
@@ -2286,7 +2323,7 @@ static void tag_read_you(reader &th)
 
     ASSERT_RANGE(you.species, 0, NUM_SPECIES);
     ASSERT_RANGE(you.char_class, 0, NUM_JOBS);
-    ASSERT_RANGE(you.experience_level, 1, 100);
+    ASSERT_RANGE(you.experience_level, 1, Options.max_exp_level + 1);
     ASSERT(you.religion < NUM_GODS);
     ASSERT_RANGE(crawl_state.type, GAME_TYPE_UNSPECIFIED + 1, NUM_GAME_TYPE);
     you.last_mid          = unmarshallInt(th);
@@ -2385,8 +2422,17 @@ static void tag_read_you(reader &th)
     for (int i = count; i < NUM_EQUIP; ++i)
         you.melded.set(i, false);
 
+    for (int i = 0; i < count; ++i)
+        you.equip_slot_cursed_level[i] = unmarshallInt(th);
+    for (int i = count; i < NUM_EQUIP; ++i)
+        you.equip_slot_cursed_level[i] = 0;
+
+    you.sp                        = unmarshallUByte(th);
+    you.sp_max                    = unmarshallUByte(th);
     you.magic_points              = unmarshallUByte(th);
     you.max_magic_points          = unmarshallByte(th);
+
+    you.monsters_recently_seen    = unmarshallUByte(th);
 
     for (int i = 0; i < NUM_STATS; ++i)
         you.base_stats[i] = unmarshallByte(th);
@@ -2435,6 +2481,7 @@ static void tag_read_you(reader &th)
     if (th.getMinorVersion() < TAG_MINOR_INT_REGEN)
     {
         you.hit_points_regeneration   = unmarshallByte(th);
+        you.stamina_points_regeneration = unmarshallByte(th);
         you.magic_points_regeneration = unmarshallByte(th);
         unmarshallShort(th);
     }
@@ -2442,6 +2489,7 @@ static void tag_read_you(reader &th)
     {
 #endif
     you.hit_points_regeneration   = unmarshallInt(th);
+    you.stamina_points_regeneration = unmarshallInt(th);
     you.magic_points_regeneration = unmarshallInt(th);
 #if TAG_MAJOR_VERSION == 34
     }
@@ -2472,6 +2520,7 @@ static void tag_read_you(reader &th)
     you.hp_max_adj_temp           = unmarshallShort(th);
     you.hp_max_adj_perm           = unmarshallShort(th);
     you.mp_max_adj                = unmarshallShort(th);
+    you.mp_frozen_summons         = unmarshallShort(th);
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() < TAG_MINOR_REMOVE_BASE_MP)
     {
@@ -2681,7 +2730,11 @@ static void tag_read_you(reader &th)
     count = unmarshallUByte(th);
     COMPILE_CHECK(NUM_DURATIONS < 256);
     for (int j = 0; j < count && j < NUM_DURATIONS; ++j)
+    {
         you.duration[j] = unmarshallInt(th);
+        you.duration_source[j] = (source_type) unmarshallInt(th);
+    }
+
     for (int j = NUM_DURATIONS; j < count; ++j)
         unmarshallInt(th);
 #if TAG_MAJOR_VERSION == 34
@@ -3170,7 +3223,7 @@ static void tag_read_you(reader &th)
     {
         player::demon_trait dt;
         dt.level_gained = unmarshallByte(th);
-        ASSERT_RANGE(dt.level_gained, 1, 28);
+        ASSERT_RANGE(dt.level_gained, 1, Options.max_exp_level + 1);
         dt.mutation = static_cast<mutation_type>(unmarshallShort(th));
 #if TAG_MAJOR_VERSION == 34
         if (dt.mutation == MUT_CONSERVE_POTIONS)
@@ -3298,7 +3351,7 @@ static void tag_read_you(reader &th)
     }
 #endif
 
-    you.gift_timeout   = unmarshallByte(th);
+    you.gift_timeout   = unmarshallInt(th);
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() < TAG_MINOR_SAVED_PIETY)
     {
@@ -3408,6 +3461,40 @@ static void tag_read_you(reader &th)
     you.real_time_ms = chrono::milliseconds(real_time * 1000);
     you.num_turns  = unmarshallInt(th);
     you.exploration = unmarshallInt(th);
+    you.amplification = unmarshallInt(th);
+    if(you.amplification > 100 || you.amplification == 0)
+        you.amplification = 1;
+
+    for (int i = 0; i < NUM_RUNE_TYPES; ++i)
+    {
+        you.rune_charges[i] = unmarshallInt(th);
+    }
+    for (int i = 0; i < NUM_BRANCHES; ++i)
+    {
+        // temporary repair
+        const int required = unmarshallInt(th);
+        if (i != BRANCH_ORC && i != BRANCH_ABYSS)
+        {
+            you.branch_requires_runes[i] = required;
+        }
+        else
+            you.branch_requires_runes[i] = false;
+    }
+
+    unmarshallFixedBitVector<NUM_RUNE_TYPES>(th, you.rune_curse_active);
+
+    you.peace = unmarshallInt(th);
+    you.max_exp = unmarshallInt(th);
+    you.stamina_flags = unmarshallInt(th);
+    you.current_form_spell = (spell_type) unmarshallInt(th);
+    you.current_form_spell_failure = unmarshallInt(th);
+    const int summon_count = unmarshallInt(th);
+    for (int i = 0; i < summon_count; ++i)
+    {
+        int monster_id = unmarshallInt(th);
+        if (i < you.summoned.size())
+            you.summoned[i] = monster_id;
+    }
 
 #if TAG_MAJOR_VERSION == 34
     if (th.getMinorVersion() < TAG_MINOR_CONTAM_SCALE)
@@ -3533,7 +3620,7 @@ static void tag_read_you(reader &th)
             subtype = subtype | (OBJ_MISSILES << 16);
         }
 #endif
-        for (int j = 0; j < 27; j++)
+        for (int j = 0; j < Options.max_exp_level; j++)
             you.action_count[make_pair(caction, subtype)][j] = unmarshallInt(th);
     }
 
@@ -3747,6 +3834,13 @@ static void tag_read_you_items(reader &th)
 
     unmarshallFixedBitVector<NUM_RUNE_TYPES>(th, you.runes);
     you.obtainable_runes = unmarshallByte(th);
+
+    for (int i = FIRST_RUNE; i < NUM_RUNE_TYPES; i++)
+    {
+        if (you.runes[i])
+            you.rune_curse_active.set(i, true);
+    }
+
     you.shield_autoequip = unmarshallByte(th);
 
     // Item descrip for each type & subtype.
@@ -4351,6 +4445,8 @@ void marshallItem(writer &th, const item_def &item, bool iinfo)
     marshallShort(th, item.pos.x);
     marshallShort(th, item.pos.y);
     marshallInt(th, item.flags);
+    marshallInt(th, item.curse_weight);
+    marshallInt(th, item.id_complexity);
 
     marshallShort(th, item.link);
     if (item.pos.x >= 0 && item.pos.y >= 0)
@@ -4442,6 +4538,8 @@ void unmarshallItem(reader &th, item_def &item)
     item.pos.x       = unmarshallShort(th);
     item.pos.y       = unmarshallShort(th);
     item.flags       = unmarshallInt(th);
+    item.curse_weight= unmarshallInt(th);
+    item.id_complexity=unmarshallInt(th);
     item.link        = unmarshallShort(th);
 #if TAG_MAJOR_VERSION == 34
     // ITEM_IN_SHOP was briefly NON_ITEM + NON_ITEM (1e85cf0), but that
@@ -5196,6 +5294,8 @@ void marshallMonster(writer &th, const monster& m)
     marshallShort(th, m.damage_total);
     marshallByte(th, m.went_unseen_this_turn);
     marshallCoord(th, m.unseen_pos);
+    marshallInt(th, m.mp_freeze);
+    marshallInt(th, m.summoned_by_spell);
 
     if (parts & MP_GHOST_DEMON)
     {
@@ -6134,6 +6234,8 @@ void unmarshallMonster(reader &th, monster& m)
 #endif
     m.went_unseen_this_turn = unmarshallByte(th);
     m.unseen_pos = unmarshallCoord(th);
+    m.mp_freeze = unmarshallInt(th);
+    m.summoned_by_spell = (spell_type) unmarshallInt(th);
 #if TAG_MAJOR_VERSION == 34
     }
 #endif

@@ -90,6 +90,7 @@ enum attribute_type
     ATTR_SURGE_REMOVED,        // Was surge power applied to next evocation.
     ATTR_PAKELLAS_EXTRA_MP,    // MP to be collected to get a !magic from P
 #endif
+    ATTR_INSIGHT,              // tracks experience over time to unlock unidentified items
     ATTR_DIVINE_ENERGY,        // Divine energy from Sif to cast with no MP.
     ATTR_SERPENTS_LASH,        // Remaining instant movement actions.
     ATTR_HEAVENLY_STORM,       // Strength of Heavenly Storm slaying.

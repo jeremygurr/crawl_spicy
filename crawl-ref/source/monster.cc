@@ -136,6 +136,8 @@ void monster::reset()
     number          = 0;
     damage_friendly = 0;
     damage_total    = 0;
+    mp_freeze       = 0;
+    summoned_by_spell = SPELL_NO_SPELL;
     shield_blocks   = 0;
     foe_memory      = 0;
     god             = GOD_NO_GOD;

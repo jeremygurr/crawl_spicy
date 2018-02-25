@@ -105,6 +105,8 @@ public:
 
     int damage_friendly;               // Damage taken, x2 you, x1 pets, x0 else.
     int damage_total;
+    int mp_freeze;
+    spell_type summoned_by_spell;
 
     uint32_t client_id;                // for ID of monster_info between turns
     static uint32_t last_client_id;

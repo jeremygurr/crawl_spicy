@@ -209,6 +209,7 @@ enum mutation_type
     MUT_STURDY_FRAME,
     MUT_SANGUINE_ARMOUR,
 #endif
+    MUT_INSIGHT,
     MUT_HOP,
     MUT_NO_REGENERATION,
     MUT_STRONG_NOSE,

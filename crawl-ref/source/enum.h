@@ -193,6 +193,17 @@ enum
     NUM_MAX_DOLLS = 10,
 };
 
+enum source_type
+{
+    SRC_UNDEFINED,
+    SRC_POTION,
+    SRC_SCROLL,
+    SRC_WAND,
+    SRC_SPELL,
+    SRC_ABILITY,
+    SRC_ITEM,
+};
+
 enum game_difficulty_level
 {
     DIFFICULTY_ASK = -1,

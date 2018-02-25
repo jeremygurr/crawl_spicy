@@ -31,6 +31,7 @@
 
 // Max ghosts on a level.
 const int MAX_GHOSTS = 10;
+const int MAX_MINIONS = 30;
 
 enum extra_monster_index_type
 {

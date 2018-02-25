@@ -83,6 +83,10 @@
 #include "wizard-option-type.h"
 #include "xom.h"
 #include "place.h"
+#include "decks.h"
+
+static void _fade_curses(int exp_gained);
+static void _handle_insight(int exp_gain);
 
 static void _moveto_maybe_repel_stairs()
 {
@@ -8235,4 +8239,116 @@ void refresh_weapon_protection()
     you.increase_duration(DUR_SPWPN_PROTECTION, 3 + random2(2), 5);
     you.redraw_armour_class = true;
 }
+
+bool _handle_insight_inv(bool consumable)
+ {
+     bool had_insight = false;
+     int inv_offset = 0;
+     if (consumable)
+         inv_offset = 52;
+
+     // top to bottom
+     // this give the player the option to move items to the top so that they are more likely to be identified first
+     for(int i = 0; i < 52; i++)
+     {
+         item_def &item = you.inv[i + inv_offset];
+         if (item.defined()
+             && (
+                 (item.flags & ISFLAG_IDENT_MASK) < ISFLAG_IDENT_MASK)
+             || is_deck(item) && !top_card_is_known(item)
+             )
+         {
+             string before, after;
+             string before_colored, after_colored;
+
+             if (is_deck(item) && !top_card_is_known(item))
+             {
+                 set_ident_flags(item, ISFLAG_IDENT_MASK);
+                 set_ident_type(item, true);
+                 after = menu_colour_item_name(item, DESC_A);
+                 mprf(MSGCH_INTRINSIC_GAIN, "You gain insight into: %s", after.c_str());
+                 had_insight = true;
+                 break;
+             }
+             else
+             {
+                 before = item.name(DESC_A);
+                 before_colored = menu_colour_item_name(item, DESC_A);
+                 int bitToCheck = 1 << random2(4);
+                 if((item.flags & bitToCheck) == 0) {
+                     set_ident_flags(item, bitToCheck);
+                     set_ident_type(item, true);
+                     after = item.name(DESC_A);
+                     after_colored = menu_colour_item_name(item, DESC_A);
+                     if(before != after) {
+                         mprf(MSGCH_INTRINSIC_GAIN, "You gain insight: %s -> %s", before.c_str(), after.c_str());
+                         had_insight = true;
+                         break;
+                     }
+                 }
+             }
+         }
+     }
+
+     return had_insight;
+ }
+
+ static void _handle_insight(int exp_gain)
+ {
+     const int skill_cost = calc_skill_cost(you.skill_cost_level);
+     const int insight_gained = div_rand_round(exp_gain, skill_cost);
+     you.attribute[ATTR_INSIGHT] += insight_gained * 20;
+
+     bool do_more = false;
+     while (you.attribute[ATTR_INSIGHT] > 100)
+     {
+         you.attribute[ATTR_INSIGHT] -= 100;
+
+         int lev = you.get_mutation_level(MUT_INSIGHT);
+         if (x_chance_in_y(1 << (lev * 2), 64)) {
+             if (_handle_insight_inv(false))
+                 do_more = true;
+         }
+
+         if (x_chance_in_y(1 << (lev * 2), 64)) {
+             if (_handle_insight_inv(true))
+                 do_more = true;
+         }
+     }
+     if (do_more)
+         more();
+ }
+
+ bool player_is_immune_to_curses()
+ {
+     return you.species == SP_MUMMY
+            && you.religion != GOD_ASHENZARI;
+ }
+
+ static void _fade_curses(int exp_gained)
+ {
+     for (unsigned int i = 0; i < you.equip.size(); i++)
+     {
+         int8_t slot = you.equip[i];
+         if(slot > -1)
+         {
+             item_def& item(you.inv[slot]);
+             if(item.cursed())
+             {
+                 if (you.religion != GOD_ASHENZARI)
+                 {
+                     int reduction_amount = 0;
+                     const int curseResistance = you.species == SP_DEMIGOD ? 10 : 2;
+                     const int howMuchRaw = exp_gained * curseResistance;
+                     const int divisor = calc_skill_cost(you.skill_cost_level);
+                     reduction_amount = div_rand_round(howMuchRaw, divisor);
+                     item.curse_weight = max(0, item.curse_weight - reduction_amount);
+                     if (item.curse_weight == 0)
+                         mprf("The curse on %s has been lifted!", item.name(DESC_YOUR).c_str());
+                 }
+             }
+         }
+     }
+ }
+
 

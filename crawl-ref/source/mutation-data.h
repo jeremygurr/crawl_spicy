@@ -878,6 +878,17 @@ static const mutation_def mut_data[] =
   {"", "", ""},
 },
 
+
+{ MUT_INSIGHT, 30, 3, mutflag::good, false,
+  "insightful",
+
+  {"You occasionally figure out what unidentified objects are.",
+   "You often figure out what unidentified objects are.",
+   "You quickly identify unidentified objects"},
+  {"You feel more insightful.", "You feel more insightful.", "You feel more insightful."},
+  {"You feel less insightful.", "You feel less insightful.", "You feel less insightful."},
+},
+
 { MUT_HOP, 0, 2, mutflag::good, true,
   "strong legs",
 

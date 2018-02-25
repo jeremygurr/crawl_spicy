@@ -142,9 +142,13 @@ public:
     int hp_max_adj_temp;        // temporary max HP loss (rotting)
     int hp_max_adj_perm;        // base HPs from background (and permanent loss)
 
+    int sp;
+    int sp_max;
+
     int magic_points;
     int max_magic_points;
     int mp_max_adj;             // max MP loss (ability costs, tutorial bonus)
+    int mp_frozen_summons;
 
     FixedVector<int8_t, NUM_STATS> stat_loss;
     FixedVector<int8_t, NUM_STATS> base_stats;
@@ -155,6 +159,7 @@ public:
     uint8_t max_level;
     int hit_points_regeneration;
     int magic_points_regeneration;
+    int stamina_points_regeneration;
     unsigned int experience;
     unsigned int total_experience; // 10 * amount of xp put into skills, used
                                    // only for skill_cost_level
@@ -163,6 +168,7 @@ public:
     int zigs_completed, zig_max;
 
     FixedVector<int8_t, NUM_EQUIP> equip;
+    FixedVector<int, NUM_EQUIP> equip_slot_cursed_level;
     FixedBitVector<NUM_EQUIP> melded;
     // Whether these are unrands that we should run the _*_world_reacts func for
     FixedBitVector<NUM_EQUIP> unrand_reacts;
@@ -191,6 +197,7 @@ public:
     unsigned short pet_target;
 
     durations_t duration;
+    FixedVector<source_type, NUM_DURATIONS> duration_source;
     int rotting;
     bool apply_berserk_penalty;         // Whether to apply the berserk penalty at
     // end of the turn.
@@ -254,7 +261,7 @@ public:
     string jiyva_second_name;       // Random second name of Jiyva
     uint8_t piety;
     uint8_t piety_hysteresis;       // amount of stored-up docking
-    uint8_t gift_timeout;
+    int gift_timeout;
     uint8_t saved_good_god_piety;   // for if you "switch" between E/Z/1 by abandoning one first
     god_type previous_good_god;
     FixedVector<uint8_t, NUM_GODS>  penance;
@@ -346,7 +353,7 @@ public:
     mid_t last_mid;
 
     // Count of various types of actions made.
-    map<pair<caction_type, int>, FixedVector<int, 27> > action_count;
+    map<pair<caction_type, int>, FixedVector<int, 99> > action_count;
 
     // Which branches have been noted to have been left during this game.
     FixedBitVector<NUM_BRANCHES> branches_left;
@@ -414,6 +421,7 @@ public:
 
     bool redraw_title;
     bool redraw_hit_points;
+    bool redraw_stamina_points;
     bool redraw_magic_points;
     FixedVector<bool, NUM_STATS> redraw_stats;
     bool redraw_experience;
@@ -455,11 +463,35 @@ public:
     // Number of viewport refreshes.
     unsigned int frame_no;
 
+    // normally 1000, anything else alters how the next potion or scroll works, amplifying or reversing it's effects.
+    int amplification;
+
+    FixedVector<int, NUM_RUNE_TYPES> rune_charges;
+    FixedVector<int, NUM_BRANCHES> branch_requires_runes;
+    FixedBitVector<NUM_RUNE_TYPES> rune_curse_active;
+    int first_hit_time;
+
+    int stamina_flags;
+    int peace;
+
+    // the deepest the player has been
+    int max_exp;
+
+    // mp given back to the player. Used to be used by transformations.
+    spell_type current_form_spell;
+    int current_form_spell_failure;
+
+    FixedVector<mid_t, MAX_MINIONS> summoned;
+
+    // used by scrolls of returning
+    coord_def returnPosition;
 
     // ---------------------
     // The save file itself.
     // ---------------------
     package *save;
+
+    uint8_t monsters_recently_seen;
 
 protected:
     FixedVector<PlaceInfo, NUM_BRANCHES> branch_info;
@@ -966,6 +998,7 @@ int player_prot_life(bool calc_unid = true, bool temp = true,
 
 bool regeneration_is_inhibited();
 int player_regen();
+int player_sp_regen();
 int player_mp_regen();
 void update_amulet_attunement_by_health();
 void update_mana_regen_amulet_attunement();
@@ -1053,12 +1086,15 @@ bool enough_hp(int minimum, bool suppress_msg, bool abort_macros = true);
 bool enough_mp(int minimum, bool suppress_msg, bool abort_macros = true);
 
 void calc_hp();
+void calc_sp();
 void calc_mp();
 void recalc_and_scale_hp();
 
 void dec_hp(int hp_loss, bool fatal, const char *aux = nullptr);
+void dec_sp(int sp_loss = 1);
 void dec_mp(int mp_loss, bool silent = false);
 
+void inc_sp(int sp_gain = 1);
 void inc_mp(int mp_gain, bool silent = false);
 void inc_hp(int hp_gain);
 void flush_mp();
@@ -1076,6 +1112,7 @@ void deflate_hp(int new_level, bool floor);
 void set_hp(int new_amount);
 
 int get_real_hp(bool trans, bool rotted = false);
+int get_real_sp(bool include_items = true);
 int get_real_mp(bool include_items);
 
 int get_contamination_level();
@@ -1088,8 +1125,10 @@ void activate_sanguine_armour();
 void refresh_weapon_protection();
 
 void set_mp(int new_amount);
+void set_sp(int new_amount);
 
 bool player_regenerates_hp();
+bool player_regenerates_sp();
 bool player_regenerates_mp();
 
 void print_potion_heal_message();
@@ -1146,5 +1185,8 @@ bool need_expiration_warning(dungeon_feature_type feat);
 bool need_expiration_warning(duration_type dur, coord_def p = you.pos());
 bool need_expiration_warning(coord_def p = you.pos());
 
+void attempt_instant_rest();
+
 bool player_has_orb();
 bool player_on_orb_run();
+

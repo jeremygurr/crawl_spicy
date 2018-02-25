@@ -86,19 +86,27 @@
 # include                 = 0.13_monster_glyphs.txt
 # include                 = 0.14_monster_glyphs.txt
 
+auto_butcher = hungry
+confirm_butcher = never
+default_manual_training = true
+
+#rest_wait_both = true
+#explore_auto_rest = true
+#interrupt_travel -= hungry
+
 # Here are the spicy edition expansion options (Look at the readme for details)
 
-# different_experience_sources = true
-# extra_numbers = true
-# heal_wounds_potion_gives_full_health = true
-# instakill_protection = true
-# inventory_expansion = true
-# magic_potion_gives_full_magic = true
-# monsters_do_not_use_stairs = true
-# multiple_difficulty_levels = true
-# no_exp_cap = true
-# no_spellpower_cap = true
-# shield_convenience = true
-# unlimited_ammo = true
-# wide_spell_list = true
+#different_experience_sources = true
+#extra_numbers = true
+#heal_wounds_potion_gives_full_health = true
+#instakill_protection = true
+#inventory_expansion = true
+#magic_potion_gives_full_magic = true
+#monsters_do_not_use_stairs = true
+#multiple_difficulty_levels = true
+#no_exp_cap = true
+#no_spellpower_cap = true
+#shield_convenience = true
+#unlimited_ammo = true
+#wide_spell_list = true
 
