@@ -35,7 +35,7 @@ while [ "$1" ]; do
   IFS="$OIFS"
   maybe_break
 
-  chmod --reference $from $to || fail
+  #chmod --reference $from $to || fail
   rm $from || fail
 done
 return $return_value

@@ -86,6 +86,10 @@ BASE_OBJECTS := tile_colour.o tile.o tile_page.o tile_list_processor.o main.o
 OBJECTS := $(BASE_OBJECTS:%=$(TOOLDIR)/%)
 
 all: $(TILEGEN) $(HEADERS) $(SOURCE) $(JAVASCRIPT)
+	@echo "TILEGEN=${TILEGEN}"
+	@echo "HEADERS=${HEADERS}"
+	@echo "SOURCE=${SOURCE}"
+	@echo "JAVASCRIPT=${JAVASCRIPT}"
 ifdef TILES
 all: $(IMAGES)
 endif
