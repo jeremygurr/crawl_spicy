@@ -1284,12 +1284,12 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
     case SPELL_POISONOUS_CLOUD:
     case SPELL_FREEZING_CLOUD:
     case SPELL_MEPHITIC_CLOUD:
-        if (env.level_state & LSTATE_STILL_WINDS)
+        if (temp && env.level_state & LSTATE_STILL_WINDS)
             return "the air is too still for clouds to form.";
         break;
 
     case SPELL_GOLUBRIAS_PASSAGE:
-        if (orb_limits_translocation())
+        if (orb_limits_translocation(temp))
             return "the Orb prevents this spell from working.";
 
     default:
