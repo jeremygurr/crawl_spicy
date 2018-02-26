@@ -29,7 +29,6 @@
 #include "place-info.h"
 #include "quiver.h"
 #include "religion-enum.h"
-#include "seed-type.h"
 #include "skill-menu-state.h"
 #include "species.h"
 #include "stat-type.h"
@@ -185,6 +184,8 @@ public:
     FixedBitVector<NUM_RUNE_TYPES> runes;
     int obtainable_runes; // can be != 15 in Sprint
 
+    FixedBitVector<NUM_SPELLS> spell_library;
+    FixedBitVector<NUM_SPELLS> hidden_spells;
     FixedVector<spell_type, MAX_KNOWN_SPELLS> spells;
     set<spell_type> old_vehumet_gifts, vehumet_gifts;
 
@@ -288,8 +289,6 @@ public:
 
     int magic_contamination;
 
-    FixedBitVector<NUM_FIXED_BOOKS> had_book;
-    FixedBitVector<NUM_SPELLS>      seen_spell;
     FixedVector<uint32_t, NUM_WEAPONS> seen_weapon;
     FixedVector<uint32_t, NUM_ARMOURS> seen_armour;
     FixedBitVector<NUM_MISCELLANY>     seen_misc;
@@ -368,8 +367,8 @@ public:
     // A list of allies awaiting an active recall
     vector<mid_t> recall_list;
 
-    // Hash seeds for deterministic stuff.
-    FixedVector<uint32_t, NUM_SEEDS> game_seeds;
+    // Hash seed for deterministic stuff.
+    uint32_t game_seed;
 
     // -------------------
     // Non-saved UI state:
@@ -787,7 +786,7 @@ public:
     int res_holy_energy() const override;
     int res_negative_energy(bool intrinsic_only = false) const override;
     bool res_torment() const override;
-    bool res_wind() const override;
+    bool res_tornado() const override;
     bool res_petrify(bool temp = true) const override;
     int res_constrict() const override;
     int res_magic(bool /*calc_unid*/ = true) const override;

@@ -381,10 +381,6 @@ static void _give_basic_knowledge()
 {
     identify_inventory();
 
-    for (const item_def& i : you.inv)
-        if (i.base_type == OBJ_BOOKS)
-            mark_had_book(i);
-
     // Recognisable by appearance.
     you.type_ids[OBJ_POTIONS][POT_BLOOD] = true;
 
@@ -503,6 +499,8 @@ static void _setup_generic(const newgame_def& ng)
 
     // This function depends on stats and mutations being finalised.
     _give_items_skills(ng);
+
+    add_held_books_to_library();
 
     if (you.species == SP_DEMONSPAWN)
         roll_demonspawn_mutations();

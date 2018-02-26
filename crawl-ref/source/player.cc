@@ -5126,6 +5126,7 @@ player::player()
     runes.reset();
     obtainable_runes = 15;
 
+    spell_library.reset();
     spells.init(SPELL_NO_SPELL);
     old_vehumet_gifts.clear();
     spell_no        = 0;
@@ -5203,8 +5204,6 @@ player::player()
 
     magic_contamination = 0;
 
-    had_book.reset();
-    seen_spell.reset();
     seen_weapon.init(0);
     seen_armour.init(0);
     seen_misc.reset();
@@ -5294,8 +5293,7 @@ player::player()
     shield_blocks       = 0;
 
     abyss_speed         = 0;
-    for (int i = 0; i < NUM_SEEDS; i++)
-        game_seeds[i] = get_uint32();
+    game_seed = get_uint32();
 
     old_hunger          = hunger;
 
@@ -6289,7 +6287,7 @@ bool player::res_torment() const
     return player_res_torment();
 }
 
-bool player::res_wind() const
+bool player::res_tornado() const
 {
     // Full control of the winds around you can negate a hostile tornado.
     return duration[DUR_TORNADO] ? 1 : 0;

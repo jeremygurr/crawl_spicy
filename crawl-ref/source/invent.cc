@@ -304,13 +304,13 @@ void InvEntry::set_show_glyph(bool doshow)
 }
 
 InvMenu::InvMenu(int mflags)
-    : Menu(mflags, "inventory", false), type(MT_INVLIST), pre_select(nullptr),
+    : Menu(mflags, "inventory"), type(MT_INVLIST), pre_select(nullptr),
       title_annotate(nullptr)
 {
 #ifdef USE_TILE_LOCAL
     if (Options.tile_menu_icons)
+        set_flags(mflags | MF_USE_TWO_COLUMNS);
 #endif
-        mdisplay->set_num_columns(2);
 
     InvEntry::set_show_cursor(false);
 }
@@ -424,8 +424,9 @@ string no_selectables_message(int item_selector)
     case OBJ_POTIONS:
         return "You aren't carrying any potions.";
     case OBJ_SCROLLS:
+        return "You aren't carrying any scrolls.";
     case OBJ_BOOKS:
-        return "You aren't carrying any spellbooks or scrolls.";
+        return "You don't have any books.";
     case OBJ_WANDS:
         return "You aren't carrying any wands.";
     case OBJ_JEWELLERY:
@@ -857,10 +858,6 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
         }
     }
 
-    // Don't make a menu so tall that we recycle hotkeys on the same page.
-    if (mitems.size() > 52 && (max_pagesize > 52 || max_pagesize == 0))
-        set_maxpagesize(52);
-
     return ckey;
 }
 
@@ -993,6 +990,7 @@ vector<SelItem> select_items(const vector<const item_def*> &items,
         }
 
         new_flags |= MF_SHOW_PAGENUMBERS | MF_ALLOW_FORMATTING;
+        new_flags |= menu.get_flags() & MF_USE_TWO_COLUMNS;
         menu.set_flags(new_flags);
         menu.show();
         selected = menu.get_selitems();
@@ -1029,9 +1027,6 @@ bool item_is_selected(const item_def &i, int selector)
 
     case OSEL_THROWABLE:
     {
-        if (you_worship(GOD_TROG) && item_is_spellbook(i))
-            return true;
-
         if (itype != OBJ_WEAPONS && itype != OBJ_MISSILES)
             return false;
 
@@ -1193,28 +1188,26 @@ void display_inventory(bool consumables)
     if (you.pending_revival || crawl_state.updating_scores)
         flags |= MF_EASY_EXIT;
 
-    while (true)
+    InvMenu menu(flags | MF_ALLOW_FORMATTING);
+
+    int item_selector = OSEL_ANY;
+    if (Options.inventory_expansion && item_selector == OSEL_ANY)
+        item_selector = consumables ? OSEL_CONSUMABLE : OSEL_NONCONSUMABLE;
+
+    menu.load_inv_items(item_selector, -1);
+    menu.set_type(MT_INVLIST);
+
+    menu.on_single_selection = [](const MenuEntry& item)
     {
-        unsigned char select =
-            _invent_select(nullptr, MT_INVLIST, OSEL_ANY, consumables, -1, flags);
+        unsigned char select = item.hotkeys[0];
+        int invidx = letter_to_index(select);
+        if (Options.inventory_expansion && consumables)
+            invidx += UNEXPANDED_ENDOFPACK;
+        ASSERT(you.inv[invidx].defined());
+        return describe_item(you.inv[invidx]);
+    };
 
-        if (isaalpha(select))
-        {
-            int invidx = letter_to_index(select);
-
-            if (Options.inventory_expansion && consumables)
-                invidx += UNEXPANDED_ENDOFPACK;
-
-            if (you.inv[invidx].defined())
-            {
-                if (!describe_item(you.inv[invidx]))
-                    break;
-            }
-        }
-        else
-            break;
-    }
-
+    menu.show(true);
     if (!crawl_state.doing_prev_cmd_again)
         redraw_screen();
 }
@@ -1426,7 +1419,9 @@ item_def *digit_inscription_to_item(char digit, operation_types oper)
     for (int i = 0; i < ENDOFPACK; ++i)
         if (you.inv[i].defined()
                 && item_matches_digit_inscription(you.inv[i], digit, oper))
+        {
             return &you.inv[i];
+        }
 
     for (stack_iterator si(you.pos(), true); si; ++si)
         if (item_matches_digit_inscription(*si, digit, oper))

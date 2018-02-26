@@ -2285,7 +2285,7 @@ protected:
         {
             //return the menu title to its previous text.
             set_title(temp_title);
-            update_title();
+            draw_title();
             num = -2;
 
             // Disarm ^D here, because process_key doesn't always set lastch.
@@ -2322,7 +2322,7 @@ protected:
                 lastch = CONTROL('D');
                 temp_title = title->text;
                 set_title("Select to reset item to default: ");
-                update_title();
+                draw_title();
             }
 
             return true;
@@ -2608,7 +2608,7 @@ void check_item_knowledge(bool unknown_items)
                              ' ') + prompt;
 
     menu.set_preselect(&selected_items);
-    menu.set_flags( MF_QUIET_SELECT | MF_ALLOW_FORMATTING
+    menu.set_flags( MF_QUIET_SELECT | MF_ALLOW_FORMATTING | MF_USE_TWO_COLUMNS
                     | ((unknown_items) ? MF_NOSELECT
                                        : MF_MULTISELECT | MF_ALLOW_FILTER));
     menu.set_type(MT_KNOW);
@@ -3617,7 +3617,7 @@ bool is_useless_item(const item_def &item, bool temp)
                        && you.get_mutation_level(MUT_INHIBITED_REGENERATION) > 0
                        && regeneration_is_inhibited())
                    || (temp && you.species == SP_VAMPIRE
-                      && you.hunger_state <= HS_STARVING);
+                       && you.hunger_state <= HS_STARVING);
 
         case AMU_MANA_REGENERATION:
             return you_worship(GOD_PAKELLAS);
@@ -3737,8 +3737,19 @@ bool is_useless_item(const item_def &item, bool temp)
         }
 
     case OBJ_BOOKS:
-        if (!item_type_known(item) || item.sub_type != BOOK_MANUAL)
+        if (!item_type_known(item))
             return false;
+        if (item_type_known(item) && item.sub_type != BOOK_MANUAL)
+        {
+            // Spellbooks are useless if all spells are either in the library
+            // already or are uncastable.
+            bool useless = true;
+            for (spell_type st : spells_in_book(item))
+                if (!you.spell_library[st] && you_can_memorise(st))
+                    useless = false;
+            return useless;
+        }
+        // If we're here, it's a manual.
         if (you.skills[item.plus] >= Options.max_skill_level)
             return true;
         if (is_useless_skill((skill_type)item.plus))

@@ -261,9 +261,7 @@ item_def* use_an_item(int item_type, operation_types oper, const char* prompt,
 
         // Handle inscribed item keys
         if (isadigit(keyin))
-        {
             target = digit_inscription_to_item(keyin, oper);
-        }
         // TODO: handle * key
         else if (keyin == ',')
         {
@@ -2605,7 +2603,6 @@ static void _handle_read_book(item_def& book)
 #endif
 
     set_ident_flags(book, ISFLAG_IDENT_MASK);
-    mark_had_book(book);
     read_book(book);
 }
 
@@ -3343,14 +3340,6 @@ void tile_item_use(int idx)
         case OBJ_FOOD:
             if (check_warning_inscriptions(item, OPER_EAT))
                 eat_food(idx);
-            return;
-
-        case OBJ_BOOKS:
-            if (item_is_spellbook(item)
-                && check_warning_inscriptions(item, OPER_MEMORISE))
-            {
-                learn_spell_from(item);
-            }
             return;
 
         case OBJ_SCROLLS:

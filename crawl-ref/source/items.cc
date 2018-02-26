@@ -960,7 +960,6 @@ static bool _id_floor_item(item_def &item)
         if (item_needs_autopickup(item))
             item.props["needs_autopickup"] = true;
         set_ident_flags(item, ISFLAG_IDENT_MASK);
-        mark_had_book(item);
         return true;
     }
     else if (item.base_type == OBJ_WANDS)
@@ -1844,6 +1843,51 @@ bool move_item_to_inv(int obj, int quant_got, bool quiet)
     return keep_going;
 }
 
+static void _get_book(const item_def& it, bool quiet)
+{
+    vector<string> spellnames;
+    if (!quiet)
+        mprf("You pick up %s and begin reading...", it.name(DESC_A).c_str());
+    for (spell_type st : spells_in_book(it))
+    {
+        if (!you.spell_library[st])
+        {
+            you.spell_library.set(st, true);
+            if (you_can_memorise(st))
+                spellnames.push_back(spell_title(st));
+            else
+                you.hidden_spells.set(st, true);
+        }
+    }
+    if (!quiet)
+    {
+        if (!spellnames.empty())
+        {
+            mprf("You add the spell%s %s to your library.",
+                 spellnames.size() > 1 ? "s" : "",
+                 comma_separated_line(spellnames.begin(),
+                                      spellnames.end()).c_str());
+        }
+        else
+            mpr("Unfortunately, it added no spells to the library.");
+    }
+}
+
+// Adds all books in the player's inventory to library.
+// Declared here for use by tags to load old saves.
+// Outside of loading old saves, only used at character creation.
+void add_held_books_to_library()
+{
+    for (item_def& it : you.inv)
+    {
+        if (it.base_type == OBJ_BOOKS && it.sub_type != BOOK_MANUAL)
+        {
+            _get_book(it, true);
+            destroy_item(it);
+        }
+    }
+}
+
 /**
  * Place a rune into the player's inventory.
  *
@@ -2085,10 +2129,7 @@ static int _place_item_in_free_slot(item_def &it, int quant_got,
 
     maybe_identify_base_type(item);
     if (item.base_type == OBJ_BOOKS)
-    {
         set_ident_flags(item, ISFLAG_IDENT_MASK);
-        mark_had_book(item);
-    }
 
     // Normalize ration tile in inventory
     if (item.base_type == OBJ_FOOD && item.sub_type == FOOD_RATION)
@@ -2154,7 +2195,11 @@ static bool _merge_items_into_inv(item_def &it, int quant_got,
         get_gold(it, quant_got, quiet);
         return true;
     }
-
+    if (it.base_type == OBJ_BOOKS && it.sub_type != BOOK_MANUAL)
+    {
+        _get_book(it, quiet);
+        return true;
+    }
     // Runes are also massless.
     if (it.base_type == OBJ_RUNES)
     {

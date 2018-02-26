@@ -1622,7 +1622,7 @@ static void _toggle_travel_speed()
 
 static void _do_rest()
 {
-    if (you.hunger_state <= HS_STARVING && !you_min_hunger())
+    if (apply_starvation_penalties())
     {
         mpr("You're too hungry to rest.");
         return;
@@ -1912,7 +1912,7 @@ void process_command(command_type cmd)
 
         // Informational commands.
     case CMD_DISPLAY_CHARACTER_STATUS: display_char_status();          break;
-    case CMD_DISPLAY_COMMANDS:         list_commands(0, true);         break;
+    case CMD_DISPLAY_COMMANDS:         list_commands(0); clrscr(); redraw_screen(); break;
     case CMD_DISPLAY_INVENTORY:        display_inventory(false);       break;
     case CMD_DISPLAY_CONSUMABLES:      display_inventory(true);        break;
     case CMD_DISPLAY_KNOWN_OBJECTS: check_item_knowledge(); redraw_screen(); break;
@@ -3047,7 +3047,7 @@ static void _move_player(coord_def move)
 
     if (you.digging)
     {
-        if (you.hunger_state <= HS_STARVING && you.undead_state() == US_ALIVE)
+        if (apply_starvation_penalties())
         {
             you.digging = false;
             canned_msg(MSG_TOO_HUNGRY);

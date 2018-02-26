@@ -606,9 +606,25 @@ static spell_type _choose_mem_spell(spell_list &spells,
     sort(spells.begin(), spells.end(), _sort_mem_spells);
 
 #ifdef USE_TILE_LOCAL
-    const bool text_only = false;
+        return formatted_string::parse_string(
+                    make_stringf("<w> Your Spells - [%s] (toggle with '!')",
+                        current_action == action::memorise ?
+                            "<blue>Memorise</blue><w>|Describe|Hide|Show" :
+                        current_action == action::describe ?
+                            "Memorise|<blue>Describe</blue><w>|Hide|Show" :
+                        current_action == action::hide ?
+                            "Memorise|Describe|<blue>Hide</blue><w>|Show" :
+                            "Memorise|Describe|Hide|<blue>Show</blue><w>"));
 #else
-    const bool text_only = true;
+        return formatted_string::parse_string(
+                    make_stringf("<w> Spells %s                 Type                          Failure  Level",
+                        current_action == action::memorise ?
+                            "(Memorise)" :
+                        current_action == action::describe ?
+                            "(Describe)" :
+                        current_action == action::hide ?
+                            "(Hide)    " :
+                            "(Show)    "));
 #endif
 
     ToggleableMenu spell_menu(MF_SINGLESELECT | MF_ANYPRINTABLE
@@ -625,12 +641,28 @@ static spell_type _choose_mem_spell(spell_list &spells,
             MEL_TITLE), false);
 
     {
-        MenuEntry* me =
-            new MenuEntry(" Spells                            Type          "
-                          "                Failure  Level",
-                MEL_ITEM);
-        me->colour = BLUE;
-        spell_menu.add_entry(me);
+        int hidden = 0;
+        for (spell_type& spell : spells)
+            if (you.hidden_spells.get(spell))
+                hidden++;
+
+        string hidden_str = make_stringf("   %d spell%s hidden",
+                                         hidden,
+                                         hidden > 1 ? "s" : "");
+
+        set_more(formatted_string::parse_string(more_str
+#ifndef USE_TILE_LOCAL
+                  + make_stringf("   [<w>!</w>/<w>?</w>]: %s%s",
+                        current_action == action::memorise ?
+                            "<w>Memorise</w>|Describe|Hide|Show" :
+                        current_action == action::describe ?
+                            "Memorise|<w>Describe</w>|Hide|Show" :
+                        current_action == action::hide ?
+                            "Memorise|Describe|<w>Hide</w>|Show" :
+                            "Memorise|Describe|Hide|<w>Show</w>",
+                        hidden ? hidden_str.c_str() : "")
+#endif
+                ));
     }
 #else
     spell_menu.set_title(
@@ -675,8 +707,24 @@ static spell_type _choose_mem_spell(spell_list &spells,
     if (spells.size() > 52
         && (spell_menu.maxpagesize() > 52 || spell_menu.maxpagesize() == 0))
     {
-        spell_menu.set_maxpagesize(52);
-    }
+        deleteAll(items);
+#ifdef USE_TILE_LOCAL
+        // [enne] Hack. Use a separate title, so the column headers are aligned.
+        MenuEntry* subtitle =
+            new MenuEntry(" Spells                            Type          "
+                          "                Failure  Level",
+                MEL_ITEM);
+        subtitle->colour = BLUE;
+        subtitle->add_tile(tile_def(0, TEX_GUI)); // invisible tile
+        add_entry(subtitle);
+#endif
+        const bool show_hidden = current_action == action::unhide;
+        menu_letter hotkey;
+        text_pattern pat(search_text, true);
+        for (spell_type& spell : spells)
+        {
+            if (you.hidden_spells.get(spell) != show_hidden)
+                continue;
 
     for (unsigned int i = 0; i < spells.size(); i++)
     {
@@ -734,16 +782,51 @@ static spell_type _choose_mem_spell(spell_list &spells,
         if (sel.empty())
             return SPELL_NO_SPELL;
 
-        ASSERT(sel.size() == 1);
+            switch (current_action)
+            {
+            case action::memorise:
+                return false;
+            case action::describe:
+                describe_spell(spell, nullptr);
+                break;
+            case action::hide:
+            case action::unhide:
+                you.hidden_spells.set(spell, !you.hidden_spells.get(spell));
+                update_entries();
+                draw_menu(true);
+                update_more();
+                break;
+            }
+            return true;
+        };
+    }
+};
+
+static spell_type _choose_mem_spell()
+{
+    // If we've gotten this far, we know that at least one spell here is
+    // memorisable, which is enough.
+    spell_set available_spells;
+    _list_available_spells(available_spells);
+    spell_list spells;
+    for (spell_type spell : available_spells)
+        if (!you.has_spell(spell))
+            spells.push_back(spell);
+    sort(spells.begin(), spells.end(), _sort_mem_spells);
 
         const spell_type spell = *static_cast<spell_type*>(sel[0]->data);
         ASSERT(is_valid_spell(spell));
 
-        if (spell_menu.menu_action == Menu::ACT_EXAMINE)
-            describe_spell(spell, nullptr);
-        else
-            return spell;
-    }
+    MemoriseMenu spell_menu(spells, more_str);
+
+    const vector<MenuEntry*> sel = spell_menu.show();
+    if (!crawl_state.doing_prev_cmd_again)
+        redraw_screen();
+    if (sel.empty())
+        return SPELL_NO_SPELL;
+    const spell_type spell = *static_cast<spell_type*>(sel[0]->data);
+    ASSERT(is_valid_spell(spell));
+    return spell;
 }
 
 bool can_learn_spell(bool silent)

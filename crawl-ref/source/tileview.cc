@@ -387,10 +387,7 @@ static int _find_variants(tileidx_t idx, int variant, map<tileidx_t, int> &out)
     {
         out[idx] = tile_dngn_probs(idx);
         for (int i = 1; i < count; ++i)
-        {
-            out[idx + i] = tile_dngn_probs(idx + i)
-                           - tile_dngn_probs(idx + i - 1);
-        }
+            out.push_back(tile_dngn_probs(idx + i) - tile_dngn_probs(idx + i - 1));
         return tile_dngn_probs(idx + count - 1);
     }
     return total;

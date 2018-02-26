@@ -179,15 +179,8 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
     if (Options.wide_spell_list || toggle_with_I && get_spell_by_letter('I') != SPELL_NO_SPELL)
         toggle_with_I = false;
 
-#ifdef USE_TILE_LOCAL
-    const bool text_only = false;
-#else
-    const bool text_only = true;
-#endif
-
     ToggleableMenu spell_menu(MF_SINGLESELECT | MF_ANYPRINTABLE
-                              | MF_ALWAYS_SHOW_MORE | MF_ALLOW_FORMATTING,
-                              text_only);
+                              | MF_ALWAYS_SHOW_MORE | MF_ALLOW_FORMATTING);
     string titlestring = make_stringf("%-25.25s", title.c_str());
     if (Options.wide_spell_list) {
         const string header = " " + titlestring + "         Fail Lvl Power        Range    Hunger  Noise          Type";
@@ -302,24 +295,26 @@ int list_spells(bool toggle_with_I, bool viewing, bool allow_preselect,
         spell_menu.add_entry(me);
     }
 
-    while (true)
+    int choice = 0;
+    spell_menu.on_single_selection = [&choice, &spell_menu](const MenuEntry& item)
     {
-        vector<MenuEntry*> sel = spell_menu.show();
-        if (!crawl_state.doing_prev_cmd_again)
-            redraw_screen();
-        if (sel.empty())
-            return 0;
-
-        ASSERT(sel.size() == 1);
-        ASSERT(sel[0]->hotkeys.size() == 1);
+        ASSERT(item.hotkeys.size() == 1);
         if (spell_menu.menu_action == Menu::ACT_EXAMINE)
         {
-            describe_spell(get_spell_by_letter(sel[0]->hotkeys[0]), nullptr);
-            redraw_screen();
+            describe_spell(get_spell_by_letter(item.hotkeys[0]), nullptr);
+            return true;
         }
         else
-            return sel[0]->hotkeys[0];
-    }
+        {
+            choice = item.hotkeys[0];
+            return false;
+        }
+    };
+
+    spell_menu.show();
+    if (!crawl_state.doing_prev_cmd_again)
+        redraw_screen();
+    return choice;
 }
 
 static int _apply_spellcasting_success_boosts(spell_type spell, int chance)
@@ -681,8 +676,7 @@ bool can_cast_spells(bool quiet)
         return false;
     }
 
-    if (!you.undead_state() && !you_foodless()
-        && you.hunger_state <= HS_STARVING)
+    if (apply_starvation_penalties())
     {
         if (!quiet)
             canned_msg(MSG_NO_ENERGY);

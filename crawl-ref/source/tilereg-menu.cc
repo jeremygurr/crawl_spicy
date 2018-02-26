@@ -117,8 +117,107 @@ int MenuRegion::handle_mouse(MouseEvent &event)
 
 void MenuRegion::place_entries()
 {
-    _clear_buffers();
-    _place_entries(0, 0, mx);
+    _do_layout(0, 0, mx);
+    if (vis_item_first == -1)
+        scroll_to_item(0);
+    if (m_buffer_dirty)
+    {
+        _clear_buffers();
+        _place_entries();
+        m_buffer_dirty = false;
+    }
+}
+
+static bool _has_hotkey_prefix(const string &s)
+{
+    // [enne] - Ugh, hack. Maybe MenuEntry could specify the
+    // presence and length of this substring?
+    bool let = (s[1] >= 'a' && s[1] <= 'z' || s[1] >= 'A' && s[1] <= 'Z');
+    bool plus = (s[3] == '-' || s[3] == '+');
+    return let && plus && s[0] == ' ' && s[2] == ' ' && s[4] == ' ';
+}
+
+void MenuRegion::_place_entries()
+{
+    const int tile_indent     = 20;
+    const int text_indent     = _draw_tiles() ? 58 : 20;
+    const VColour selected_colour(50, 50, 10, 255);
+
+    m_font_buf.add(m_title, sx + ox, sy + oy);
+    int more_height = (count_linebreaks(m_more)+1) * m_font_entry->char_height();
+    m_font_buf.add(m_more, sx + ox, ey - oy - more_height);
+
+    const int scroll_y = _get_layout_scroll_y();
+
+    for (int index = 0; index < (int)m_entries.size(); ++index)
+    {
+        if (index < vis_item_first) continue;
+        if (index > vis_item_last) break;
+
+        MenuRegionEntry &entry = m_entries[index];
+        if (!entry.valid)
+            continue;
+        if (entry.heading)
+        {
+            const int w = entry.ex - entry.sx, h = entry.ey - entry.sy;
+            formatted_string split = m_font_entry->split(entry.text, w, h);
+            // +5 and +8 give: top margin of 5px, line-text sep of 3px, bottom margin of 2px
+            if (index < (int)m_entries.size()-1 && m_entries[index+1].valid
+                    && !m_entries[index+1].heading)
+            {
+                m_div_line_buf.add(entry.sx, entry.sy+scroll_y+5,
+                        mx-entry.sx, entry.sy+scroll_y+5, VColour(0, 64, 255, 70));
+            }
+            m_font_buf.add(split, entry.sx, entry.sy+scroll_y+8);
+        }
+        else
+        {
+            const int entry_height = entry.ey - entry.sy;
+
+            const int ty = entry.sy + max(entry_height-32, 0)/2;
+            for (const tile_def &tile : entry.tiles)
+            {
+                // NOTE: This is not perfect. Tiles will be drawn
+                // sorted by texture first, e.g. you can never draw
+                // a dungeon tile over a monster tile.
+                TextureID tex  = tile.tex;
+                m_tile_buf[tex].add(tile.tile, entry.sx, ty+scroll_y, 0, 0, false, tile.ymax, 1, 1);
+            }
+
+            int text_sx = entry.sx + text_indent - tile_indent, text_sy = entry.sy;
+            text_sy += (entry_height - m_font_entry->char_height()) / 2;
+
+            // Split off and render any hotkey prefix first
+            formatted_string text;
+            if (_has_hotkey_prefix(entry.text.tostring()))
+            {
+                formatted_string header = entry.text.chop(5);
+                m_font_buf.add(header, text_sx, text_sy+scroll_y);
+                text_sx += m_font_entry->string_width(header);
+                text = entry.text;
+                // remove hotkeys. As Enne said above, this is a monstrosity.
+                for (int k = 0; k < 5; k++)
+                    text.del_char();
+            }
+            else
+                text += entry.text;
+
+            // Line wrap and render the remaining text
+            int w = entry.ex-text_sx;
+            int h = m_font_entry->char_height() * 2;
+            formatted_string split = m_font_entry->split(text, w, h);
+            int string_height = m_font_entry->string_height(split);
+            if (string_height == entry_height)
+                text_sy = entry.sy;
+
+            m_font_buf.add(split, text_sx, text_sy+scroll_y);
+        }
+        if (entry.selected)
+        {
+            m_shape_buf.add(entry.sx-1, entry.sy-1+scroll_y,
+                    entry.ex+1, entry.ey+1+scroll_y, selected_colour);
+        }
+    }
 }
 
 void MenuRegion::_place_entries(const int left_offset, const int top_offset,
