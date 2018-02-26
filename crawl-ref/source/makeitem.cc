@@ -1385,12 +1385,16 @@ static void _generate_potion_item(item_def& item, int force_type,
         // Currently does nothing, until we come up with a boring potion.
         do
         {
+            int heal_wounds_weight = 105;
+            if (Options.heal_wounds_potion_gives_full_health)
+                heal_wounds_weight = 30;
+
             // total weight: 1045
             stype = random_choose_weighted(192, POT_CURING,
                                            /* original
                                            105, POT_HEAL_WOUNDS,
                                             */
-                                            30, POT_HEAL_WOUNDS,
+                                            heal_wounds_weight, POT_HEAL_WOUNDS,
                                             73, POT_LIGNIFY,
                                             73, POT_FLIGHT,
                                             73, POT_HASTE,

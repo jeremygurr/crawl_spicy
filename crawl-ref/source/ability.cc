@@ -433,8 +433,6 @@ static const ability_def Ability_List[] =
       0, 0, 200, 2, {fail_basis::invo, 60, 4, 25}, abflag::none },
 
     // Trog
-    { ABIL_TROG_BURN_SPELLBOOKS, "Burn Spellbooks",
-      0, 0, 0, 0, {fail_basis::invo}, abflag::none },
     { ABIL_TROG_BERSERK, "Berserk",
       0, 0, 600, 0, {fail_basis::invo}, abflag::none },
     { ABIL_TROG_REGEN_MR, "Trog's Hand",
@@ -2450,12 +2448,6 @@ static spret_type _do_ability(const ability_def& abil, bool fail)
                           GOD_MAKHLEB, 0, !fail);
         break;
 
-    case ABIL_TROG_BURN_SPELLBOOKS:
-        fail_check();
-        if (!trog_burn_spellbooks())
-            return SPRET_ABORT;
-        break;
-
     case ABIL_TROG_BERSERK:
         fail_check();
         // Trog abilities don't use or train invocations.
@@ -3118,15 +3110,8 @@ static void _pay_ability_costs(const ability_def& abil)
 
 int choose_ability_menu(const vector<talent>& talents)
 {
-#ifdef USE_TILE_LOCAL
-    const bool text_only = false;
-#else
-    const bool text_only = true;
-#endif
-
     ToggleableMenu abil_menu(MF_SINGLESELECT | MF_ANYPRINTABLE
-                             | MF_TOGGLE_ACTION | MF_ALWAYS_SHOW_MORE,
-                             text_only);
+                             | MF_TOGGLE_ACTION | MF_ALWAYS_SHOW_MORE);
 
     abil_menu.set_highlighter(nullptr);
 #ifdef USE_TILE_LOCAL
@@ -3240,23 +3225,22 @@ int choose_ability_menu(const vector<talent>& talents)
         }
     }
 
-    while (true)
+    int ret = -1;
+    abil_menu.on_single_selection = [&abil_menu, &talents, &ret](const MenuEntry& sel)
     {
-        vector<MenuEntry*> sel = abil_menu.show(false);
-        if (!crawl_state.doing_prev_cmd_again)
-            redraw_screen();
-        if (sel.empty())
-            return -1;
-
-        ASSERT(sel.size() == 1);
-        ASSERT(sel[0]->hotkeys.size() == 1);
-        int selected = *(static_cast<int*>(sel[0]->data));
+        ASSERT(sel.hotkeys.size() == 1);
+        int selected = *(static_cast<int*>(sel.data));
 
         if (abil_menu.menu_action == Menu::ACT_EXAMINE)
             _print_talent_description(talents[selected]);
         else
-            return *(static_cast<int*>(sel[0]->data));
-    }
+            ret = *(static_cast<int*>(sel.data));
+        return abil_menu.menu_action == Menu::ACT_EXAMINE;
+    };
+    abil_menu.show(false);
+    if (!crawl_state.doing_prev_cmd_again)
+        redraw_screen();
+    return ret;
 }
 
 string describe_talent(const talent& tal)

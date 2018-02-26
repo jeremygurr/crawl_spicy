@@ -308,7 +308,7 @@ public:
     vector<pair<text_pattern, string> > autoinscriptions;
     vector<text_pattern> note_items;     // Objects to note
     // Skill levels to note
-    FixedBitVector<99 + 1> note_skill_levels;
+    FixedBitVector<MAX_SKILL_LEVEL + 1> note_skill_levels;
     vector<pair<text_pattern, string>> auto_spell_letters;
     vector<pair<text_pattern, string>> auto_item_letters;
     vector<pair<text_pattern, string>> auto_ability_letters;

@@ -313,11 +313,8 @@ static bool _mons_can_follow_player_from(const monster &mons,
     // Only non-wandering friendly monsters or those actively
     // seeking the player will follow up/down stairs.
     if (!mons.friendly()
-        /*
-          && (!mons_is_seeking(mons) || mons.foe != MHITYOU)
+          && (!mons_is_seeking(mons) || mons.foe != MHITYOU || Options.monsters_do_not_use_stairs)
         || mons.foe == MHITNOT)
-          */
-            )
     {
         return false;
     }

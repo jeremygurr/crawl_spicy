@@ -1012,6 +1012,8 @@ static void _input()
     // Currently only set if Xom accidentally kills the player.
     you.reset_escaped_death();
 
+    reset_damage_counters();
+
     if (you.pending_revival)
     {
         revive();
@@ -1036,8 +1038,6 @@ static void _input()
     }
 
     _prep_input();
-
-    reset_damage_counters();
 
     update_monsters_in_view();
 

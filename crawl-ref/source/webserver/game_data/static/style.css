@@ -316,11 +316,6 @@ body {
     white-space: pre;
 }
 
-/* A hack to align the columns in the spell menu */
-.menu_spell #menu_title {
-    padding-left: 35px;
-}
-
 #menu_more {
     white-space: pre;
 }

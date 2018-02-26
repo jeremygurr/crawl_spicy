@@ -472,7 +472,7 @@ unsigned int item_value(item_def item, bool ident)
 #endif
 
             case POT_HEAL_WOUNDS:
-                valued += 200;
+                valued += Options.heal_wounds_potion_gives_full_health ? 200 : 50;
                 break;
 
             case POT_RESISTANCE:

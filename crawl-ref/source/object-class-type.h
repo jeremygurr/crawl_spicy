@@ -25,5 +25,3 @@ enum object_class_type : uint8_t           // mitm[].base_type
     OBJ_RANDOM,      // used for blanket random sub_type .. see dungeon::items()
     OBJ_DETECTED,    // unknown item; item_info only
 };
-
-
