@@ -1,8 +1,6 @@
-#ARG version
-
 ARG web_host=crawl.ufetubus.com
 ARG crawl_repo=https://github.com/jeremygurr/crawl_spicy.git
-ARG version=0.22.1
+ARG version
 
 ARG web_path=/usr/www
 ARG user_data=/var/crawl

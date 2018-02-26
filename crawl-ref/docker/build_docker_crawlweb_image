@@ -4,12 +4,18 @@
 extra=""
 if [ "$1" = clean ]; then
   clean=true
+  shift
 fi
 
+version="$1"
+if [ ! "$version" ]; then
+  echo "USAGE: $0 [clean] {version}"
+  exit 1
+fi
 if [ "$clean" ]; then
   extra="--no-cache"
 fi
 
 set -x
-docker build $extra -t ufetubus/crawlweb .
+docker build $extra --build-arg version=$version -t ufetubus/crawlweb .
 
