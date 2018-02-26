@@ -1197,7 +1197,7 @@ void display_inventory(bool consumables)
     menu.load_inv_items(item_selector, -1);
     menu.set_type(MT_INVLIST);
 
-    menu.on_single_selection = [](const MenuEntry& item)
+    menu.on_single_selection = [consumables](const MenuEntry& item)
     {
         unsigned char select = item.hotkeys[0];
         int invidx = letter_to_index(select);
