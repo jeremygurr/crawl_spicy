@@ -1,6 +1,8 @@
 /*.png
 tiledef*.cc
 tiledef*.h
+!tiledef-unrand.h
+!tiledef_defines.h
 tool/tilegen.elf
 tile*.html
 tileinfo*.js
