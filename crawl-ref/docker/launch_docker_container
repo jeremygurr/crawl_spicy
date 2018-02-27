@@ -6,6 +6,8 @@
 debug=${debug:-false}
 pretend=${pretend:-false}
 clean=${clean:-false}
+command=${command:-}
+
 if [ "$pretend" == true ]; then
   echo "Pretend mode on, not executing commands."
   prefix=echo 
@@ -26,10 +28,10 @@ fi
 common_parameters="--rm -v crawlweb:/var/crawl -p 80:80 -p 8081:8081 --name crawlweb ufetubus/crawlweb"
 if [ "$debug" == true ]; then
   echo "starting debug container..."
-  $prefix docker run -it $common_parameters
+  $prefix docker run -it "$@" $common_parameters $command
 else
   echo "starting normal container..."
-  $prefix docker run -d $common_parameters
+  $prefix docker run -d "$@" $common_parameters $command
 fi
 
 echo "done."
