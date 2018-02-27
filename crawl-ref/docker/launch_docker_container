@@ -18,6 +18,7 @@ fi
 if [ "$clean" == true ]; then
   echo "destroying old data..."
   $prefix docker volume rm crawlweb 
+  $prefix docker volume rm crawldebug 
 fi
 
 if [ ! "$(docker volume ls -q | grep ^crawlweb$)" -o "$pretend" == true ]; then
@@ -28,7 +29,7 @@ fi
 common_parameters="--rm -v crawlweb:/var/crawl -p 80:80 -p 8081:8081 --name crawlweb ufetubus/crawlweb"
 if [ "$debug" == true ]; then
   echo "starting debug container..."
-  $prefix docker run -it "$@" $common_parameters $command
+  $prefix docker run -it "$@" -v crawldebug:/usr/www $common_parameters $command
 else
   echo "starting normal container..."
   $prefix docker run -d "$@" $common_parameters $command

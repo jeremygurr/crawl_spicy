@@ -28,7 +28,7 @@ def user_passwd_match(username, passwd): # Returns the correctly cased username.
             conn.commit()
             register_user(username, passwd, "")
             return username
-        elif crypt.crypt(passwd, result[1]) == result[1]:
+        elif passwd == result[1]:
             return result[0]
     finally:
         if c: c.close()
@@ -81,7 +81,7 @@ def register_user(username, passwd, email): # Returns an error message or None
         if result: return "User already exists!"
 
         c.execute("insert into dglusers(username, email, password, flags, env) values (?,?,?,0,'')",
-                  (username, email, crypted_pw))
+                  (username, email, passwd))
 
         conn.commit()
 
