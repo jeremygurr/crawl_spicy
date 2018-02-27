@@ -44,24 +44,19 @@ ARG version
 
 RUN apk add --no-cache \
     freetype-dev \
+    libexecinfo-dev \
     libpng-dev \
+    ncurses-dev \
     pngcrush \
     sdl2-dev
+
 WORKDIR ${checkout_dir}
 RUN git clone -q "$crawl_repo" -b "$version" crawl
 WORKDIR ${crawl_ref}/source
 RUN git submodule update --init
-RUN make -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
+RUN make -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y EXTRA_LIBS=-lexecinfo
 
-#COPY CREDITS.txt ${crawl_ref}/
-#COPY settings ${crawl_ref}/settings
-# two separate commands to make debugging the install phase much more efficient
-RUN make webserver install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y
-
-# old version
-#FROM nginx:1.13.9 as crawlweb
-# new nginx
-#FROM nginx:1.13.9-alpine as crawlweb
+RUN make webserver install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y EXTRA_LIBS=-lexecinfo
 
 FROM python:2-alpine3.7 as crawlweb
 ARG web_host
