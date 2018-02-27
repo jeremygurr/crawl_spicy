@@ -24,7 +24,7 @@ When starting a game, the player will be asked for what difficulty level they wa
     - monsters do 30% less damage.
     - monsters have 30% slower attack
     - 30% more potions are generated (a little less gold is generated to balance it out)
-    - starts with a heal wounds potion
+    - player starts with a heal wounds potion
   - standard:
     - monsters behave exactly as in vanilla crawl
   - challenge:
@@ -50,7 +50,7 @@ However, experience doesn't stack up like before. The amount of experience gaine
 
 You are rewarded for taking extra risks. For example, killing sigmund while your character is only level 3 will give a huge boost in experience, possibly taking you up multiple levels. That may seem a bit broken at first, but keep in mind that exp you gain after that from more ordinary creatures will now be much less, since your character is at a much higher level than before, so it balances out, and yet keeps things interesting. 
 
-You will find a potion of experience on roughly every third floor, but if you drink it on the first floor, it will give very little (if any) experience. It's far better to save them for as long as possible, because the lower the floor you drink it on, the more experience it gives. 
+You will find a potion of experience on roughly every third floor, but if you drink it on the first floor, it will give very little (if any) experience. It's far better to save them as long as possible, because the lower the floor you drink it on, the more experience it gives. 
 
 You can set debug_exp = true if you want to see exact numbers on how exp is scaled during a game. It will show before and after scaling exp for each kill. The Exp_ratio message represents the scaling percentage. 200 for example means that you received double the normal experience. 50 would mean you received half. 
 
@@ -58,6 +58,7 @@ You can set debug_exp = true if you want to see exact numbers on how exp is scal
 Heal wounds potion always restores full health. To compensate, it is more expensive in stores (200 instead of 80) and spawns much less frequently (1/4 of the frequency). However, currently Gozag is unchanged, which makes him a bit more powerful than before. If this is a problem for people, we'll have to adjust that too. Since heal wounds potions are much less frequent, all players start with one to make early game a little less random. 
 
 ## Magic potions give full magic (magic_potion_gives_full_magic=true)
+Same idea as above.
 
 ## Monster can't climb stairs: (monsters_do_not_use_stairs=true)
 Enemies will never use stairs. This eliminates stairdancing tactics. It also makes tomb a bit harder in some ways. 
@@ -65,7 +66,7 @@ Enemies will never use stairs. This eliminates stairdancing tactics. It also mak
 ## Instakill protection expansion: (instakill_protection=true)
 The amount of damage that can be done to a player between turns is capped, so that a player can never go from full health to dead before having a turn to respond. Different difficulty levels alter this cap: (if difficulty levels aren't enabled, it's equivalent to being on standard difficulty)
 
-   * Easy: 20% of max health damage cap per turn. This means that it will take at least 4 turns to kill a player on easy mode, if they start at full health.
+   * Easy: 20% of max health damage cap per turn. This means that it will take at least 5 turns to kill a player on easy mode, if they start at full health.
    * Standard: 40% of max health damage cap per turn. 
    * Challenge: 60% of max health damage cap per turn.
    * Nightmare: 80% of max health damage cap per turn.
@@ -94,7 +95,7 @@ Of course this makes the game easier in all game modes, so to somewhat balance t
    * spell power for all spells can now reach 300
 
 ## No experience level cap: (no_exp_cap=true)
-   * experience level can now reach 99
+   * experience level and skill levels can now reach 99
 
 If this is combined with different_experience_sources, then it will be hard to get much past level 27, since the experience monsters give is relative to the experience level of the player, rapidly diminishing the amount of experience players can get after level 27. Without different_experience_sources, a player can probably get well into the 30s. 
 
@@ -106,65 +107,3 @@ If this is combined with different_experience_sources, then it will be hard to g
 
 ### To Do:
 If you have a favorite feature that you'd like implemented sooner, create an issue on github and it will probably be done faster. Of course you are always welcome to submit pull requests. The key requirement in this fork is that all changes from vanilla are activated through non-default init file options.
-
-Here's a list of a few things I'll be pulling into this fork in the future: 
-
-## Flying boost: (flying_boost=true)
-   * flying increases movement speed
-   * flying increases stamina drain / food consumption
-   * flying increases dodging effectiveness
-
-## Others
-- improved message display
-  * show messages in more narrow window on right side, and move info on right side to bottom, to allow more messages to show up between "more" prompts.
-- improved identification game
-  * many new rare potions / scrolls introduced
-    * 1/4 of potions cursed, which negates their effects
-      * might -> weakness (str-5, lower damage)
-      * agility -> clumsiness (dex-5, lower accuracy, lower stealth)
-      * brilliance -> stupidity (int-5, -spell power, -spell success)
-      * ambrosia -> clarity, but no regen at all
-      * berserk -> anti-berserk (less damage, slower attacks, less health)
-      * cure -> gives poison, confusion, sickness or rotting, randomly
-      * experience -> lose exp
-      * flight -> very heavy, slower movement, lower evasion, can't be pushed
-      * haste -> slow
-      * boost -> degeneration
-      * heal -> lose 1/2 health
-      * invisibility -> glow: lower stealth, easier to hit
-      * lignification -> jellification: better ev, lower ac, faster movement
-      * magic -> lose 1/2 magic
-      * purify -> mutation
-      * resistance -> lower resistance
-    * new potions
-      * stamina
-      * polymorph
-    * new scrolls
-  * insight based on intelligence
-  * identification scrolls are more rare
-- option to remove identification game completely
-  * everything identified
-  * no scrolls of identity
-  * less potions / scrolls generated 
-- enhanced curses
-  * curse depth (some curses are more powerful than others)
-  * curses fade over time
-- stamina
-  * normal mode: players move at slightly slower rate than average monster speed, but don't use any stamina.
-  * power mode: players move at their full species speed + a little faster, but use up stamina. Players can also attack faster and harder, 
-    and are stealthier. Drops back to normal mode when stamina is gone.
-  * stamina potions restore stamina
-  * different species have different amounts and regen rates for stamina. 
-  * stamina pools are relatively large, but stamina normally regenerates quite slowly.
-  * mummies have unified stamina/magic
-- foodless mode
-  * spell hunger is replaced by higher mp costs
-- persistent spells
-- unlimited basic ammo mode
-- level cap extension
-- spell power cap removal
-- instant rest 
-- expanded mutation system
-- species enhancements
-- additional potions
-- new branches

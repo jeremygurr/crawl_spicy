@@ -1,5 +1,0 @@
-diff layers of crawlweb to figure out what fixed the utf8 issue
-  use dvm to screen into it
-  find the layers on disk
-  diff by id
-
