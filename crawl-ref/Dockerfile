@@ -43,8 +43,10 @@ ARG crawl_repo
 ARG version
 
 RUN apk add --no-cache \
+    freetype-dev \
     libpng-dev \
-    pngcrush
+    pngcrush \
+    sdl2-dev
 WORKDIR ${checkout_dir}
 RUN git clone -q "$crawl_repo" -b "$version" crawl
 WORKDIR ${crawl_ref}/source
