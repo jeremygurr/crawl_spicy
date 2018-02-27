@@ -71,49 +71,11 @@ LABEL maintainer="jeremy.gurr@gmail.com"
 
 ENV LANG=C.UTF-8
 
-# alpine version
 RUN apk add --no-cache \
     bash \
     nginx
 
 SHELL [ "/bin/bash", "-c" ]
-
-#RUN apk add --no-cache \
-#    build-essential libncursesw5-dev bison flex liblua5.1-0-dev \
-#    libsqlite3-dev libz-dev pkg-config libsdl2-image-dev libsdl2-mixer-dev \
-#    libsdl2-dev libfreetype6-dev libpng-dev ttf-dejavu-core
-
-#  debian version
-#RUN apt-get update \
-#    && apt-get install -y \
-#    apt-utils \
-#    bison \
-#    curl \
-#    flex \
-#    fonts-dejavu-core \
-#    libfreetype6-dev \
-#    liblua5.1-0-dev \
-#    libncursesw5-dev \
-#    libpng-dev \
-#    libsdl2-dev \
-#    libsdl2-image-dev \
-#    libsdl2-mixer-dev \
-#    libsqlite3-dev \
-#    libz-dev \
-#    pkg-config \
-#    vim \
-#    procps \
-#    python \
-#    python-setuptools \
-#    python-dev \
-#    build-essential \
-#    wget \
-#    && rm -rf /var/lib/apt/lists/*
-
-#RUN mkdir -p /etc/pki/tls/certs \
-#    && wget http://curl.haxx.se/ca/cacert.pem -O /etc/pki/tls/certs/ca-bundle.crt \
-#    && easy_install pip \
-#    && pip install tornado==3.2.2
 
 RUN mkdir -p /etc/pki/tls/certs \
     && pip install tornado==3.2.2
@@ -126,9 +88,9 @@ RUN addgroup -g 1000 crawl \
 COPY --from=build_base ${crawl_ref}/source/webserver/ ${web_path}/webserver/
 COPY --from=build_base ${web_path}/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
-COPY docker/webstuff/ ${web_path}/
-COPY docker/webstuff/banner.html ${web_path}/webserver/templates/
-COPY docker/webstuff/index.html ${web_path}/webserver/
+COPY --from=build_base ${crawl_ref}/docker/webstuff/ ${web_path}/
+COPY --from=build_base ${crawl_ref}/docker/webstuff/banner.html ${web_path}/webserver/templates/
+COPY --from=build_base ${crawl_ref}/docker/webstuff/index.html ${web_path}/webserver/
 
 WORKDIR ${web_path}
 
