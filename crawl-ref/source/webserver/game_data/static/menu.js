@@ -25,7 +25,7 @@ function ($, comm, client, enums, dungeon_renderer, cr, util, options) {
     function menu_title_indent()
     {
         if (!options.get("tile_menu_icons")
-            || !(menu.tag === "ability" || menu.tag === "spell"))
+            || !(menu.tag === "ability"))
             return 0;
         return dungeon_renderer.cell_width + 2; // menu <ol> has a 2px margin
     }
