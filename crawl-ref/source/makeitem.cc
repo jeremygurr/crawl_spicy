@@ -675,7 +675,6 @@ static void _generate_missile_item(item_def& item, int force_type,
             item.sub_type =
                     random_choose_weighted(50, MI_STONE,
                                            20, MI_ARROW,
-                                           12, MI_BOLT,
                                            10, MI_NEEDLE,
                                            3,  MI_TOMAHAWK,
                                            2,  MI_JAVELIN,
@@ -725,7 +724,10 @@ static void _generate_missile_item(item_def& item, int force_type,
     else if (get_ammo_brand(item) != SPMSL_NORMAL)
         item.quantity = 1 + random2(7) + random2(10) + random2(10);
     else
-        item.quantity = 1 + random2(7) + random2(10) + random2(10) + random2(12);
+    {
+        if(!Options.unlimited_ammo)
+            item.quantity = 1 + random2(7) + random2(10) + random2(10) + random2(12);
+    }
 
     if(Options.unlimited_ammo)
         item.quantity *= 3;

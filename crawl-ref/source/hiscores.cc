@@ -1751,7 +1751,7 @@ void scorefile_entry::init(time_t dt)
         for (int i = 0; i < maxlev; i++)
             potions_used += you.action_count[p][i];
 
-    difficulty = crawl_state.difficulty
+    difficulty = crawl_state.difficulty;
     wiz_mode = (you.wizard || you.suppress_wizard ? 1 : 0);
     explore_mode = (you.explore ? 1 : 0);
 }
@@ -1893,7 +1893,7 @@ string scorefile_entry::single_cdesc() const
     if (Options.multiple_difficulty_levels) {
         return make_stringf("%8d %s %s %s-%02d%s", points, scname.c_str(), difficulty_name().c_str(),
                             race_class_name.c_str(), lvl, (wiz_mode == 1) ? "W" : (explore_mode == 1) ? "E" : "");
-    ] else {
+    } else {
         return make_stringf("%8d %s %s-%02d%s", points, scname.c_str(),
                             race_class_name.c_str(), lvl,
                             (wiz_mode == 1) ? "W" : (explore_mode == 1) ? "E" : "");

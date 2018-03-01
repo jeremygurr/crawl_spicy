@@ -297,8 +297,10 @@ void player_quiver::on_inv_quantity_changed(int slot, int amt)
     if (m_last_used_of_type[m_last_used_type].base_type == OBJ_UNASSIGNED)
     {
         // Empty quiver. Maybe we can fill it now?
-        _maybe_fill_empty_slot();
-        you.redraw_quiver = true;
+        if (!Options.unlimited_ammo) {
+            _maybe_fill_empty_slot();
+            you.redraw_quiver = true;
+        }
     }
     else
     {

@@ -2136,7 +2136,7 @@ bool ammo_always_destroyed(const item_def &missile)
     return brand == SPMSL_CHAOS
            || brand == SPMSL_DISPERSAL
            || brand == SPMSL_EXPLODING
-           || Options.unlimited_ammo
+           || Options.unlimited_ammo && missile.sub_type != MI_THROWING_NET
            ;
 }
 
