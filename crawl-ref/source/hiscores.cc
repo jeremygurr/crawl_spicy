@@ -1169,6 +1169,7 @@ void scorefile_entry::set_base_xlog_fields() const
         fields->add_field("zigdeepest", "%d", zigmax);
     fields->add_field("scrollsused", "%d", scrolls_used);
     fields->add_field("potionsused", "%d", potions_used);
+    fields->add_field("difficulty", "%d", difficulty);
 }
 
 void scorefile_entry::set_score_fields() const
