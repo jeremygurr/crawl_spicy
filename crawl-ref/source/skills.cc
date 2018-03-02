@@ -929,8 +929,10 @@ void train_skills(bool simu)
                 // Amount of experience points needed to reach the next skill cost level
                 const int next_level = skill_cost_needed(you.skill_cost_level + 1)
                                        - you.total_experience;
-                ASSERT(next_level > 0);
-                _train_skills(min(exp, next_level + cost - 1), cost, simu);
+                if (next_level > 0)
+                    _train_skills(min(exp, next_level + cost - 1), cost, simu);
+                else
+                    _train_skills(exp, cost, simu);
             }
         }
         while (you.exp_available >= cost && exp != you.exp_available);
