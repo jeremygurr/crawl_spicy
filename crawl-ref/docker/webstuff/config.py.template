@@ -59,7 +59,7 @@ games = OrderedDict([
         ttyrec_path = user_data + "/rcs/ttyrecs/%n",
         socket_path = user_data + "/rcs",
         client_path = base_shared + "/webserver/game_data/",
-        morgue_url = "http://crawl.homedns.org/morgue/%n/",
+        morgue_url = "http://crawl.ufetubus.com/morgue/%n/",
         send_json_options = True)),
 ])
 
