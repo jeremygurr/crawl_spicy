@@ -50,7 +50,7 @@ global_morgue_path = user_data + "/rcs/"
 # morgue_url is for a publicly available URL to access morgue_path
 games = OrderedDict([
     ("dcss_spicy-0.22-a1", dict(
-        name = "dcss_spicy",
+        name = "dcss_spicy-0.22-a1",
         crawl_binary = base_shared + "/bin/crawl",
         rcfile_path = user_data + "/rcs/",
         macro_path = user_data + "/rcs/",

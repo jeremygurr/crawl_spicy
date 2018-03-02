@@ -96,6 +96,8 @@ default_manual_training = true
 
 # Here are the spicy edition expansion options (Look at the readme for details)
 
+#all_spicy_features = true
+
 #different_experience_sources = true
 #extra_numbers = true
 #heal_wounds_potion_gives_full_health = true

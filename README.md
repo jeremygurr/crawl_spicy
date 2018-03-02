@@ -15,6 +15,9 @@ I'll pull over features little by little from circus animals into this fork.
 
 Current features:
 
+## All features on: (all_spicy_features=true)
+Turns on all of the below features. You can then turn off individual features by setting them to false AFTER this in the rc file. By default, all spicy feautres are off, and can either be turned on individually, or all at once with this option.
+
 ## Multiple difficulty levels: (multiple_difficulty_levels=true)
 When starting a game, the player will be asked for what difficulty level they want to play.
 

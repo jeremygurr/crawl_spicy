@@ -1100,19 +1100,9 @@ void game_options::reset_options()
                    "inscribed",
                    false, false);
 
-    different_experience_sources = false;
-    extra_numbers = false;
-    heal_wounds_potion_gives_full_health = false;
-    instakill_protection = false;
-    inventory_expansion = false;
-    magic_potion_gives_full_magic = false;
-    monsters_do_not_use_stairs = false;
-    multiple_difficulty_levels = false;
-    no_exp_cap = false;
-    no_spellpower_cap = false;
-    shield_convenience = false;
-    unlimited_ammo = false;
-    wide_spell_list = false;
+    bool new_value = false;
+
+    set_all_spicy_options(new_value);
 
     debug_exp = false;
     debug_ouch = false;
@@ -1244,6 +1234,22 @@ void game_options::reset_options()
     aliases.clear();
     variables.clear();
     constants.clear();
+}
+
+void game_options::set_all_spicy_options(bool new_value) {
+    different_experience_sources = new_value;
+    extra_numbers = new_value;
+    heal_wounds_potion_gives_full_health = new_value;
+    instakill_protection = new_value;
+    inventory_expansion = new_value;
+    magic_potion_gives_full_magic = new_value;
+    monsters_do_not_use_stairs = new_value;
+    multiple_difficulty_levels = new_value;
+    no_exp_cap = new_value;
+    no_spellpower_cap = new_value;
+    shield_convenience = new_value;
+    unlimited_ammo = new_value;
+    wide_spell_list = new_value;
 }
 
 void game_options::clear_cset_overrides()
@@ -2622,6 +2628,13 @@ void game_options::read_option_line(const string &str, bool runscript)
         const string error = (*option)->loadFromString(field, line_type);
         if (!error.empty())
             report_error("%s", error.c_str());
+    }
+    else if (key == "all_spicy_features")
+    {
+        if (read_bool(field, true))
+            set_all_spicy_options(true);
+        else
+            set_all_spicy_options(false);
     }
     else if (key == "include")
         include(field, true, runscript);

@@ -662,6 +662,8 @@ private:
     map<string, GameOption*> options_by_name;
     const vector<GameOption*> build_options_list();
     map<string, GameOption*> build_options_map(const vector<GameOption*> &opts);
+
+    void set_all_spicy_options(bool new_value);
 };
 
 char32_t get_glyph_override(int c);
