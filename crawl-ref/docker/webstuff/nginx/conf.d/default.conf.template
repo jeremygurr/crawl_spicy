@@ -8,7 +8,7 @@ server {
     location /morgue {
         root   /var/crawl/rcs;
         rewrite_log on;
-        rewrite /morgue/(.*) /$1;
+        rewrite /morgue/(.*) /\$1;
         break;
     }
 
@@ -24,10 +24,6 @@ server {
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
         root   /usr/share/nginx/html;
-    }
-
-    location = /morgue {
-        root   /var/crawl/rcs;
     }
 
     # proxy the PHP scripts to Apache listening on 127.0.0.1:80

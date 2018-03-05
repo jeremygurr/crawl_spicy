@@ -87,6 +87,8 @@ struct player_info
     uint8_t unarmed_attack_colour;
     bool quiver_available;
     int diff;
+    int source_damage;
+    int turn_damage;
 };
 
 class TilesFramework
