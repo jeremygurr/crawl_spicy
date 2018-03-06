@@ -57,8 +57,8 @@ RUN git submodule update --init
 
 #ARG EXTRA_LIBS="-static -static-libgcc -static-libstdc++ -lexecinfo"
 ARG EXTRA_LIBS="-lexecinfo"
-RUN make -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y "EXTRA_LIBS=$EXTRA_LIBS"
-RUN make webserver install -j6 SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y "EXTRA_LIBS=$EXTRA_LIBS"
+RUN make -j6 NOASSERTS=True SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y "EXTRA_LIBS=$EXTRA_LIBS"
+RUN make webserver install -j6 NOASSERTS=True SHAREDDIR=${shared_dir} prefix=${web_path} USE_DGAMELAUNCH=y WEBTILES=y "EXTRA_LIBS=$EXTRA_LIBS"
 
 FROM python:2-alpine3.7 as crawlweb
 ARG web_host
