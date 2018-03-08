@@ -972,7 +972,14 @@ string attack::debug_damage_number()
 #ifdef DEBUG_DIAGNOSTICS
     return make_stringf(" for %d", damage_done);
 #else
-    return "";
+    if (Options.debug_monster_hp)
+    {
+        return make_stringf(" for %d", damage_done);
+    }
+    else
+    {
+        return "";
+    }
 #endif
 }
 

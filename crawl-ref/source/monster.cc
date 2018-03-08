@@ -3503,6 +3503,11 @@ bool monster::heal(int amount)
 
     hit_points += amount;
 
+    if (Options.debug_monster_hp)
+    {
+        mprf("%s is healed (%d + %d -> %d)", name(DESC_PLAIN), hit_points-amount, amount, hit_points);
+    }
+
     bool success = true;
 
     if (hit_points > max_hit_points)
@@ -4465,6 +4470,11 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
 
         amount = min(amount, hit_points);
         hit_points -= amount;
+
+        if (Options.debug_monster_hp)
+        {
+            mprf("%s is damaged (%d - %d -> %d)", name(DESC_PLAIN), hit_points+amount, amount, hit_points);
+        }
 
         if (hit_points > max_hit_points)
         {

@@ -474,6 +474,7 @@ public:
 
     bool        debug_exp;
     bool        debug_ouch;
+    bool        debug_monster_hp;
 
     int         max_exp_level;
     int         max_skill_level;

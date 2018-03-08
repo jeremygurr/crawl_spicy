@@ -108,5 +108,13 @@ If this is combined with different_experience_sources, then it will be hard to g
    * 100% mulch rate (ammo is never retrievable after firing)
    * branded ammo spawns in larger numbers, since they can't be recovered after firing
 
+### Some Debugging features:
+
+## Show monster health changes: (debug_monster_hp=true)
+
+## Show damage to player: (debug_ouch=true)
+
+## Show experience gains: (debug_exp=true)
+
 ### To Do:
 If you have a favorite feature that you'd like implemented sooner, create an issue on github and it will probably be done faster. Of course you are always welcome to submit pull requests. The key requirement in this fork is that all changes from vanilla are activated through non-default init file options.

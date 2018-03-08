@@ -185,6 +185,7 @@ const vector<GameOption*> game_options::build_options_list()
 
         new BoolGameOption(SIMPLE_NAME(debug_exp), false),
         new BoolGameOption(SIMPLE_NAME(debug_ouch), false),
+        new BoolGameOption(SIMPLE_NAME(debug_monster_hp), false),
 
         new BoolGameOption(SIMPLE_NAME(show_newturn_mark), true),
         new BoolGameOption(SIMPLE_NAME(show_game_time), true),
@@ -1106,6 +1107,7 @@ void game_options::reset_options()
 
     debug_exp = false;
     debug_ouch = false;
+    debug_monster_hp = false;
 
     // These are only used internally, and only from the commandline:
     // XXX: These need a better place.
