@@ -97,6 +97,7 @@ COPY --from=build_base ${crawl_ref}/settings/init.txt ${web_path}
 COPY --from=build_base ${crawl_ref}/docker/webstuff/ ${web_path}/
 COPY --from=build_base ${crawl_ref}/docker/webstuff/banner.html ${web_path}/webserver/templates/
 COPY --from=build_base ${crawl_ref}/docker/webstuff/index.html ${web_path}/webserver/
+COPY --from=build_base ${crawl_ref}/docker/scripts/ ${user_data}/scripts/
 
 WORKDIR ${web_path}
 

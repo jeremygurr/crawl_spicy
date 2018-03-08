@@ -5,8 +5,9 @@ upstream crawlweb {
 server {
     listen       ${nginx_port};
 
-    location /morgue {
+    location ~ /morgue/.+ {
         root   /var/crawl/rcs;
+        autoindex on;
         rewrite_log on;
         rewrite /morgue/(.*) /\$1;
         break;
