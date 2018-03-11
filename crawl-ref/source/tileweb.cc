@@ -770,6 +770,7 @@ void TilesFramework::_send_player(bool force_full)
     _update_int(force_full, c.diff, (int)crawl_state.difficulty, "diff");
     _update_int(force_full, c.source_damage, (int)you.source_damage, "source_damage");
     _update_int(force_full, c.turn_damage, (int)you.turn_damage, "turn_damage");
+    _update_int(force_full, c.option_extra_numbers, (int)Options.extra_numbers, "option_extra_numbers");
     _update_int(force_full, c.experience_level, you.experience_level, "xl");
     _update_int(force_full, c.exp_progress, (int8_t) get_exp_progress(), "progress");
     _update_int(force_full, c.gold, you.gold, "gold");

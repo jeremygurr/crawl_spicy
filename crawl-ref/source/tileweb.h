@@ -89,6 +89,7 @@ struct player_info
     int diff;
     int source_damage;
     int turn_damage;
+    bool option_extra_numbers;
 };
 
 class TilesFramework
