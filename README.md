@@ -18,6 +18,10 @@ Current features:
 ## All features on: (all_spicy_features=true)
 Turns on all of the below features. You can then turn off individual features by setting them to false AFTER this in the rc file. By default, all spicy feautres are off, and can either be turned on individually, or all at once with this option.
 
+## Unlimited summons: (unlimited_summons=true)
+   - summoned creature cap increased to 20
+   - most summoning spells cost more mp to cast: level 1 costs 1 (like before), level 2 costs 4, level 3 costs 9, level 4 costs 16, etc.
+
 ## Multiple difficulty levels: (multiple_difficulty_levels=true)
 When starting a game, the player will be asked for what difficulty level they want to play.
 
@@ -69,44 +73,44 @@ Enemies will never use stairs. This eliminates stairdancing tactics. It also mak
 ## Instakill protection expansion: (instakill_protection=true)
 The amount of damage that can be done to a player between turns is capped, so that a player can never go from full health to dead before having a turn to respond. Different difficulty levels alter this cap: (if difficulty levels aren't enabled, it's equivalent to being on standard difficulty)
 
-   * Easy: 20% of max health damage cap per turn. This means that it will take at least 5 turns to kill a player on easy mode, if they start at full health.
-   * Standard: 40% of max health damage cap per turn. 
-   * Challenge: 60% of max health damage cap per turn.
-   * Nightmare: 80% of max health damage cap per turn.
+   - Easy: 20% of max health damage cap per turn. This means that it will take at least 5 turns to kill a player on easy mode, if they start at full health.
+   - Standard: 40% of max health damage cap per turn. 
+   - Challenge: 60% of max health damage cap per turn.
+   - Nightmare: 80% of max health damage cap per turn.
 
 Of course this makes the game easier in all game modes, so to somewhat balance this, all damage to the player is boosted 10%. 
 
 ## Inventory expansion: (inventory_expansion=true)
-   * The inventory has been divided into two groups: consumables (potions and scrolls), and everything else. The 'i' command shows the weapons, armour, evokables, etc. The 'I' command shows the consumables. Each can have 52 items.
-   * The drop command has been split into two also: 'd' to drop inventory items, 'D' to drop consumable items.
-   * The adjust command '=' can now also be applied to the (c)onsumables.
-   * Viewing spells now is mapped to 's' because of the conflict with 'I'
-   * Drop last command has been moved from 'D' to 'control-D'.
+   - The inventory has been divided into two groups: consumables (potions and scrolls), and everything else. The 'i' command shows the weapons, armour, evokables, etc. The 'I' command shows the consumables. Each can have 52 items.
+   - The drop command has been split into two also: 'd' to drop inventory items, 'D' to drop consumable items.
+   - The adjust command '=' can now also be applied to the (c)onsumables.
+   - Viewing spells now is mapped to 's' because of the conflict with 'I'
+   - Drop last command has been moved from 'D' to 'control-D'.
 
 ## Improved shield handling: (shield_convenience=true)
-   * auto unequip shields when wielding an incompatible weapon
-   * swapping equipment swaps shield also (swapping between ranged attack and weapon/shield melee is easier)
+   - auto unequip shields when wielding an incompatible weapon
+   - swapping equipment swaps shield also (swapping between ranged attack and weapon/shield melee is easier)
 
 ## Wide spell list: (wide_spell_list=true)
-   * combine both spell info screens into one detailed view that's a little wider
+   - combine both spell info screens into one detailed view that's a little wider
 
 ## Extra numbers: (extra_numbers=true)
-   * adds exact numbers to a few keys areas of the game, to provide greater transparency for seasoned players. 
-   * shows previous damage done by source and turn in stats region
+   - adds exact numbers to a few keys areas of the game, to provide greater transparency for seasoned players. 
+   - shows previous damage done by source and turn in stats region
 
 ## No spellpower cap: (no_spellpower_cap=true)
-   * spell power for all spells can now reach 300
+   - spell power for all spells can now reach 300
 
 ## No experience level cap: (no_exp_cap=true)
-   * experience level and skill levels can now reach 99
+   - experience level and skill levels can now reach 99
 
 If this is combined with different_experience_sources, then it will be hard to get much past level 27, since the experience monsters give is relative to the experience level of the player, rapidly diminishing the amount of experience players can get after level 27. Without different_experience_sources, a player can probably get well into the 30s. 
 
 ## Unlimited ammo: (unlimited_ammo=true)
-   * basic ammo never runs out
-   * even with nothing quivered, rocks can be thrown (even if the player isn't carrying any)
-   * 100% mulch rate (ammo is never retrievable after firing)
-   * branded ammo spawns in larger numbers, since they can't be recovered after firing
+   - basic ammo never runs out
+   - even with nothing quivered, rocks can be thrown (even if the player isn't carrying any)
+   - 100% mulch rate (ammo is never retrievable after firing)
+   - branded ammo spawns in larger numbers, since they can't be recovered after firing
 
 ### Some Debugging features:
 

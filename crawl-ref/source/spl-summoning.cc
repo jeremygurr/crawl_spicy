@@ -3369,6 +3369,11 @@ void summoned_monster(const monster *mons, const actor *caster,
                                                               : max_this_time * 1 / 4);
     }
 
+    if (Options.unlimited_summons)
+    {
+        max_this_time = 20;
+    }
+
     monster* oldest_summon = 0;
     int oldest_duration = 0;
 
@@ -3439,3 +3444,36 @@ int count_summons(const actor *summoner, spell_type spell)
 
     return count;
 }
+
+bool spell_produces_summoned_minion(spell_type spell)
+{
+    bool result;
+    switch(spell)
+    {
+        case SPELL_SUMMON_BUTTERFLIES:
+        case SPELL_SUMMON_SMALL_MAMMAL:
+        case SPELL_CALL_CANINE_FAMILIAR:
+        case SPELL_SUMMON_ICE_BEAST:
+        case SPELL_MONSTROUS_MENAGERIE:
+        case SPELL_SUMMON_DRAGON:
+        case SPELL_DRAGON_CALL:
+        case SPELL_SUMMON_HYDRA:
+        case SPELL_SUMMON_MANA_VIPER:
+        case SPELL_SUMMON_LIGHTNING_SPIRE:
+        case SPELL_SUMMON_GUARDIAN_GOLEM:
+        case SPELL_CALL_IMP:
+        case SPELL_SUMMON_DEMON:
+        case SPELL_SUMMON_GREATER_DEMON:
+        case SPELL_SHADOW_CREATURES:
+        case SPELL_SUMMON_HORRIBLE_THINGS:
+        case SPELL_MALIGN_GATEWAY:
+        case SPELL_SUMMON_FOREST:
+        case SPELL_BATTLESPHERE:
+            result = true;
+            break;
+        default:
+            result = false;
+    }
+    return result;
+}
+

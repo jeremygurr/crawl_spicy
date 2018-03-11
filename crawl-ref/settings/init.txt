@@ -110,5 +110,11 @@ default_manual_training = true
 #no_spellpower_cap = true
 #shield_convenience = true
 #unlimited_ammo = true
+#unlimited_summons = true
 #wide_spell_list = true
 
+
+# some debugging settings (not intended to be part of most games, but helpful for tracking down problems)
+#debug_exp = true
+#debug_ouch = true
+#debug_monster_hp = true

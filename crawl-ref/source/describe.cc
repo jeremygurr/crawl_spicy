@@ -2609,7 +2609,12 @@ void inscribe_item(item_def &item)
 static string _player_spell_stats(const spell_type spell)
 {
     string description;
-    description += make_stringf("\nLevel: %d", spell_difficulty(spell));
+    string cost_string = "";
+    int spell_cost = spell_mana(spell);
+    if (spell_cost != spell_difficulty(spell)) {
+        cost_string = " (cost: " + to_string(spell_cost) + " mp)";
+    }
+    description += make_stringf("\nLevel: %d%s", spell_difficulty(spell), cost_string.c_str());
 
     const string schools = spell_schools_string(spell);
     description +=

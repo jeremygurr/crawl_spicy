@@ -470,6 +470,7 @@ public:
     bool        no_spellpower_cap;
     bool        shield_convenience;
     bool        unlimited_ammo;
+    bool        unlimited_summons;
     bool        wide_spell_list;
 
     bool        debug_exp;

@@ -462,7 +462,12 @@ bool spell_harms_area(spell_type spell)
 // for Xom acting (more power = more likely to grab his attention) {dlb}
 int spell_mana(spell_type which_spell)
 {
-    return _seekspell(which_spell)->level;
+    const spell_desc *spell = _seekspell(which_spell);
+    int mana_cost = spell->level;
+    if (Options.unlimited_summons && spell_produces_summoned_minion(spell->id)) {
+        mana_cost *= mana_cost;
+    }
+    return mana_cost;
 }
 
 // applied in naughties (more difficult = higher level knowledge = worse)
