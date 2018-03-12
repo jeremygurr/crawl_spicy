@@ -388,10 +388,10 @@ function ($, comm, enums, map_knowledge, messages, options) {
             $("#stats_player_damage").text(player.source_damage);
         else
             $("#stats_player_damage").text(player.source_damage + "/" + player.turn_damage);
-        if (player.option_extra_numbers)
-            $("#stats_player_damage").show();
+        if (options.get("extra_numbers") === true)
+            $("#stats_damage_area").show();
         else
-            $("#stats_player_damage").hide();
+            $("#stats_damage_area").hide();
 
         $("#stats_hpline > .stats_caption").text(
             (player.real_hp_max != player.hp_max) ? "HP:" : "Health:");
@@ -431,9 +431,6 @@ function ($, comm, enums, map_knowledge, messages, options) {
         var place_desc = player.place;
         if (player.depth) place_desc += ":" + player.depth;
         $("#stats_place").text(place_desc);
-
-        $("#stats_source_damage").text(player.source_damage);
-        $("#stats_turn_damage").text(player.turn_damage);
 
         var status = "";
         for (var i = 0; i < player.status.length; ++i)
