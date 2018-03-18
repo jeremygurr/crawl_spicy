@@ -35,12 +35,6 @@ RUN apk add --no-cache \
 #    && rm -rf /var/lib/apt/lists/*
 
 FROM os_base as build_base
-ARG web_path
-ARG shared_dir
-ARG checkout_dir
-ARG crawl_ref
-ARG crawl_repo
-ARG version
 
 RUN apk add --no-cache \
     freetype-dev \
@@ -49,6 +43,13 @@ RUN apk add --no-cache \
     ncurses-dev \
     pngcrush \
     sdl2-dev
+
+ARG web_path
+ARG shared_dir
+ARG checkout_dir
+ARG crawl_ref
+ARG crawl_repo
+ARG version
 
 WORKDIR ${checkout_dir}
 RUN git clone -q "$crawl_repo" -b "$version" crawl
