@@ -3594,7 +3594,7 @@ unsigned int exp_needed(int lev, int exp_apt)
             level = 16675 + 5985 * lev + 4235 * lev * lev;
             if (Options.no_exp_cap)
             {
-                level = (16675 + 5985 * 12 + 4235 * 12 * 12) * pow(1.33, lev-12);
+                level = (16675 + 5985 * 12 + 4235 * 12 * 12) * pow(1.33, lev);
             }
         }
         break;
