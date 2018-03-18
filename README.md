@@ -103,6 +103,7 @@ Of course this makes the game easier in all game modes, so to somewhat balance t
 
 ## No experience level cap: (no_exp_cap=true)
    - experience level and skill levels can now reach 99
+   - experience beyond level 13 changes to a pure power curve, each level being 1.33x the exp requirement of the previous level. This makes level 27 require as much exp as before, but lower levels are a little easier to reach, and levels past 27 are much harder. 
 
 If this is combined with different_experience_sources, then it will be hard to get much past level 27, since the experience monsters give is relative to the experience level of the player, rapidly diminishing the amount of experience players can get after level 27. Without different_experience_sources, a player can probably get well into the 30s. 
 
