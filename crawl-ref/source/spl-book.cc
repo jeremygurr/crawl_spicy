@@ -211,9 +211,37 @@ void init_spell_rarities()
         if (is_rare_book(book))
             continue;
 
+        vector<spell_type> &book_vector = spellbook_templates[book];
+        bool changed = true;
+        while (changed)
+        {
+            spell_type previous = SPELL_NO_SPELL;
+            spell_type temp = SPELL_NO_SPELL;
+            changed = false;
+            for (int si = 0; si < book_vector.size(); si++)
+            {
+                spell_type current = book_vector[si];
+                if (previous != SPELL_NO_SPELL)
+                {
+                    if (spell_difficulty(previous) > spell_difficulty(current))
+                    {
+                        temp = book_vector[si];
+                        book_vector[si] = book_vector[si-1];
+                        book_vector[si-1] = temp;
+                        current = previous;
+                        changed = true;
+                    }
+                }
+
+                previous = current;
+            }
+
+        }
+
 #ifdef DEBUG
         spell_type last = SPELL_NO_SPELL;
 #endif
+
         for (spell_type spell : spellbook_template(book))
         {
 #ifdef DEBUG

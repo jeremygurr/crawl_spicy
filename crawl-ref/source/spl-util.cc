@@ -13,6 +13,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
 
 #include "areas.h"
 #include "coordit.h"
@@ -463,9 +464,10 @@ bool spell_harms_area(spell_type spell)
 int spell_mana(spell_type which_spell)
 {
     const spell_desc *spell = _seekspell(which_spell);
-    int mana_cost = spell->level;
+    int mana_cost = spell_difficulty(which_spell);
     if (Options.unlimited_summons && spell_produces_summoned_minion(spell->id)) {
         mana_cost *= mana_cost;
+        mana_cost = ceil(mana_cost / 2.0);
     }
     return mana_cost;
 }
@@ -474,7 +476,22 @@ int spell_mana(spell_type which_spell)
 // and triggers for Sif acting (same reasoning as above, just good) {dlb}
 int spell_difficulty(spell_type which_spell)
 {
+    /*
     return _seekspell(which_spell)->level;
+     */
+    int level = _seekspell(which_spell)->level;
+
+    if (Options.unlimited_summons) {
+        switch(which_spell) {
+            case SPELL_SUMMON_LIGHTNING_SPIRE:
+                level++;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return level;
 }
 
 int spell_levels_required(spell_type which_spell)
