@@ -20,7 +20,17 @@ Turns on all of the below features. You can then turn off individual features by
 
 ## Unlimited summons: (unlimited_summons=true)
    - summoned creature cap increased to 20
-   - most summoning spells cost more mp to cast: level 1 costs 1 (like before), level 2 costs 4, level 3 costs 9, level 4 costs 16, etc.
+   - most summoning spells cost more mp to cast: (2^level / 2)
+     - level 1 costs 1
+     - level 2 costs 2
+     - level 3 costs 5
+     - level 4 costs 8
+     - level 5 costs 13
+     - level 6 costs 18
+     - level 7 costs 25
+     - level 8 costs 32
+     - level 9 costs 41
+   - summon lightning spire is level 5 instead of 4.
 
 ## Multiple difficulty levels: (multiple_difficulty_levels=true)
 When starting a game, the player will be asked for what difficulty level they want to play.
