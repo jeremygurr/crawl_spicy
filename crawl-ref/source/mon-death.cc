@@ -1909,6 +1909,9 @@ item_def* monster_die(monster& mons, killer_type killer,
 {
     ASSERT(!invalid_monster(&mons));
 
+    if (mons.is_player_summon())
+        summoned_monster_died(mons.mid, true);
+
     const bool was_visible = you.can_see(mons);
 
     // If a monster was banished to the Abyss and then killed there,
