@@ -1,6 +1,6 @@
 #!/bin/bash
 
 docker pull ufetubus/crawlweb
-docker stop
+docker stop crawlweb
 docker run -d --rm -v crawlweb:/var/crawl -p 80:80 -p 8081:8081 --name crawlweb ufetubus/crawlweb
 
