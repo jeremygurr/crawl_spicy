@@ -828,7 +828,11 @@ bool cast_a_spell(bool check_range, spell_type spell)
         }
         else
         {
-            mpr("You don't have enough magic to cast that spell.");
+            if (Options.extra_numbers)
+                mprf("That spell costs %d to cast. You don't have enough.", cost);
+            else
+                mpr("You don't have enough magic to cast that spell.");
+
             crawl_state.zero_turns_taken();
             return false;
         }
