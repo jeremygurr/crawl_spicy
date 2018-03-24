@@ -3496,7 +3496,13 @@ static void tag_read_you(reader &th)
     {
         int monster_id = unmarshallInt(th);
         if (i < you.summoned.size())
-            you.summoned[i] = monster_id;
+            you.summoned[i] = MID_NOBODY;
+            if (monster_id <= you.last_mid && monster_id >= 0)
+            {
+                monster *m = monster_by_mid(monster_id, true);
+                if (m != nullptr && m->summoner == MID_PLAYER)
+                    you.summoned[i] = monster_id;
+            }
     }
 
 #if TAG_MAJOR_VERSION == 34

@@ -1186,6 +1186,11 @@ bool need_expiration_warning(coord_def p = you.pos());
 
 void attempt_instant_rest();
 
+int player_summon_count();
+void remove_from_summoned(mid_t mid);
+void summoned_monster_died(mid_t mons, bool natural_death);
+bool player_summoned_monster(spell_type spell, monster *mons);
+
 bool player_has_orb();
 bool player_on_orb_run();
 

@@ -427,7 +427,7 @@ bool invalid_monster_index(int i);
 
 void mons_load_spells(monster& mon);
 
-void mons_remove_from_grid(const monster& mon);
+void mons_remove_from_grid(monster& mon);
 
 bool monster_shover(const monster& m);
 

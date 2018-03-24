@@ -4215,7 +4215,7 @@ bool mons_can_traverse(const monster& mon, const coord_def& p,
     return true;
 }
 
-void mons_remove_from_grid(const monster& mon)
+void mons_remove_from_grid(monster& mon)
 {
     const coord_def pos = mon.pos();
     if (map_bounds(pos) && mgrd(pos) == mon.mindex())

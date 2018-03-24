@@ -4194,6 +4194,63 @@ void contaminate_player(int change, bool controlled, bool msg)
     }
 }
 
+
+void summoned_monster_died(mid_t mons, bool natural_death)
+{
+    remove_from_summoned(mons);
+}
+
+void remove_from_summoned(mid_t mid)
+{
+    for (unsigned int i = 0; i < you.summoned.size(); i++)
+    {
+        if (you.summoned[i] == mid)
+        {
+            you.summoned[i] = MID_NOBODY;
+            break;
+        }
+    }
+}
+
+int player_summon_count()
+{
+    int count = 0;
+    for (unsigned int i = 0; i < you.summoned.size(); i++)
+    {
+        if (you.summoned[i] != MID_NOBODY)
+            count++;
+    }
+
+    return count;
+}
+
+bool player_summoned_monster(spell_type spell, monster *mons)
+{
+    bool success = true;
+
+    int open_slot = -1;
+    for (unsigned int i = 0; i < you.summoned.size(); i++)
+    {
+        if (you.summoned[i] == MID_NOBODY)
+        {
+            open_slot = i;
+            break;
+        }
+    }
+
+    if (open_slot == -1)
+    {
+        mpr("Your mind can't handle so many minions at once.");
+        success = false;
+    }
+    else
+    {
+        you.summoned[open_slot] = mons->mid;
+    }
+
+    return success;
+}
+
 /**
  * Increase the player's confusion duration.
  *
@@ -5312,6 +5369,8 @@ player::player()
     on_current_level    = true;
     seen_portals        = 0;
     frame_no            = 0;
+
+    summoned.init(MID_NOBODY);
 
     save                = nullptr;
     prev_save_version.clear();
