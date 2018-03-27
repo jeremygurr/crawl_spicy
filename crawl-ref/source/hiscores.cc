@@ -1630,10 +1630,10 @@ void scorefile_entry::init(time_t dt)
 
         if(crawl_state.difficulty == DIFFICULTY_NIGHTMARE)
             pt <<= 2;
-        if(crawl_state.difficulty == DIFFICULTY_STANDARD)
-            pt >>= 2;
+        if(crawl_state.difficulty == DIFFICULTY_CHALLENGE)
+            pt <<= 1;
         if(crawl_state.difficulty == DIFFICULTY_EASY)
-            pt >>= 4;
+            pt >>= 1;
 
         points = pt;
     }
