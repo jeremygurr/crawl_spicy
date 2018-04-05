@@ -51,6 +51,7 @@ Instead of only getting experience from killing monsters, this option introduces
 
 - You will gain experience from killing monsters 
 - You will gain experience for each new floor that you enter
+  - except zigs and abyss
 - You will gain experience from drinking experience potions that have a 1/3 chance of appearing on each floor, based on the floor you drink them on. In other words, saving the experience potion to drink on a lower floor will give greater experience. 
 - You will gain experience from pacifying monsters (like before)
 

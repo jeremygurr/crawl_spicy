@@ -149,7 +149,7 @@ unsigned int skill_cost_needed(int level)
     return exp_needed(level, 1) * 13;
 }
 
-static const int MAX_SKILL_COST_LEVEL = 27;
+static const int MAX_SKILL_COST_LEVEL = 99;
 
 // skill_cost_level makes skills more expensive for more experienced characters
 int calc_skill_cost(int skill_cost_level)
@@ -176,6 +176,10 @@ int calc_skill_cost(int skill_cost_level)
                          265, 265, 265, 265        // 96-99
     };
     COMPILE_CHECK(ARRAYSZ(cost) == 99);
+
+    if (Options.no_exp_cap && skill_cost_level > 26) {
+        return 265*pow(1.3, skill_cost_level-26);
+    }
 
     ASSERT_RANGE(skill_cost_level, 1, Options.max_skill_level + 1);
     return cost[skill_cost_level - 1];
