@@ -1245,6 +1245,22 @@ static vector<equipment_type> _current_ring_types()
                 ret.push_back(slot);
         }
     }
+    else if(Options.spicy_species && you.species == SP_FELID)
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            const equipment_type slot = (equipment_type)(EQ_RING_ONE + i);
+
+            if (you.get_mutation_level(MUT_MISSING_HAND)
+                && slot == EQ_RING_EIGHT)
+            {
+                continue;
+            }
+
+            if (get_form()->slot_available(slot))
+                ret.push_back(slot);
+        }
+    }
     else
     {
         if (you.get_mutation_level(MUT_MISSING_HAND) == 0)

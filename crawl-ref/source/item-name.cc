@@ -278,7 +278,15 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
                 case EQ_LEFT_RING:
                 case EQ_RIGHT_RING:
                 case EQ_RING_ONE:
+                    if (Options.spicy_species && you.species == SP_FELID) {
+                        buff << " (1st paw)";
+                        break;
+                    }
                 case EQ_RING_TWO:
+                    if (Options.spicy_species && you.species == SP_FELID) {
+                        buff << " (2nd paw)";
+                        break;
+                    }
                     buff << " (";
                     buff << ((eq == EQ_LEFT_RING || eq == EQ_RING_ONE)
                              ? "left" : "right");
@@ -293,12 +301,21 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
                         buff << " (around neck)";
                     break;
                 case EQ_RING_THREE:
+                    if (Options.spicy_species && you.species == SP_FELID) {
+                        buff << " (3rd paw)";
+                        break;
+                    }
                 case EQ_RING_FOUR:
+                    if (Options.spicy_species && you.species == SP_FELID) {
+                        buff << " (4th paw)";
+                        break;
+                    }
                 case EQ_RING_FIVE:
                 case EQ_RING_SIX:
                 case EQ_RING_SEVEN:
                 case EQ_RING_EIGHT:
-                    buff << " (on tentacle)";
+                    if (you.species == SP_OCTOPODE)
+                        buff << " (on tentacle)";
                     break;
                 case EQ_RING_AMULET:
                     buff << " (on amulet)";
