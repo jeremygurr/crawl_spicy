@@ -469,6 +469,7 @@ public:
     bool        no_exp_cap;
     bool        no_spellpower_cap;
     bool        shield_convenience;
+    bool        spicy_species;
     bool        unlimited_ammo;
     bool        unlimited_summons;
     bool        wide_spell_list;

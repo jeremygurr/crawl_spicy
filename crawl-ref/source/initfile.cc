@@ -180,6 +180,7 @@ const vector<GameOption*> game_options::build_options_list()
         new BoolGameOption(SIMPLE_NAME(no_exp_cap), false),
         new BoolGameOption(SIMPLE_NAME(no_spellpower_cap), false),
         new BoolGameOption(SIMPLE_NAME(shield_convenience), false),
+        new BoolGameOption(SIMPLE_NAME(spicy_species), false),
         new BoolGameOption(SIMPLE_NAME(unlimited_ammo), false),
         new BoolGameOption(SIMPLE_NAME(unlimited_summons), false),
         new BoolGameOption(SIMPLE_NAME(wide_spell_list), false),
@@ -1251,6 +1252,7 @@ void game_options::set_all_spicy_options(bool new_value) {
     no_exp_cap = new_value;
     no_spellpower_cap = new_value;
     shield_convenience = new_value;
+    spicy_species = new_value;
     unlimited_ammo = new_value;
     unlimited_summons = new_value;
     wide_spell_list = new_value;

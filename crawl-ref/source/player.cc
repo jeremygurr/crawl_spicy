@@ -661,7 +661,7 @@ maybe_bool you_can_wear(equipment_type eq, bool temp)
             return MB_FALSE;
         // intentional fallthrough
     case EQ_RIGHT_RING:
-        return you.species != SP_OCTOPODE ? MB_TRUE : MB_FALSE;
+        return you.species != SP_OCTOPODE && (!Options.spicy_species || you.species != SP_FELID) ? MB_TRUE : MB_FALSE;
 
     case EQ_RING_EIGHT:
         if (you.get_mutation_level(MUT_MISSING_HAND))
@@ -671,6 +671,7 @@ maybe_bool you_can_wear(equipment_type eq, bool temp)
     case EQ_RING_TWO:
     case EQ_RING_THREE:
     case EQ_RING_FOUR:
+        return you.species == SP_OCTOPODE || (Options.spicy_species && you.species == SP_FELID) ? MB_TRUE : MB_FALSE;
     case EQ_RING_FIVE:
     case EQ_RING_SIX:
     case EQ_RING_SEVEN:
@@ -2715,7 +2716,7 @@ void gain_exp(unsigned int exp_gained, unsigned int *actual_gain, bool floor_exp
 
 bool will_gain_life(int lev)
 {
-    if (lev < you.attribute[ATTR_LIFE_GAINED] - 2)
+    if (Options.spicy_species || lev < you.attribute[ATTR_LIFE_GAINED] - 2)
         return false;
 
     return you.lives + you.deaths < (lev - 1) / 3;

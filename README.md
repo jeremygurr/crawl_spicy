@@ -18,10 +18,17 @@ Current features:
 ## All features on: (all_spicy_features=true)
 Turns on all of the below features. You can then turn off individual features by setting them to false AFTER this in the rc file. By default, all spicy feautres are off, and can either be turned on individually, or all at once with this option.
 
+## Alternate species definitions: (spicy_species=true)
+Increases the differences and unique features between species in a wide variety of ways. This is being incrementally ported from the original circus animals fork. Here is what is currently moved over:
+  - felid
+    - lives start at 9 and never increase.
+    - can wear up to 4 rings.
+    - no loss of experience on death.
+
 ## Unlimited summons: (unlimited_summons=true)
-   - summoned creature cap increased to 20
-   - summoning spells cost more based on how many total summons you have.
-   - summon lightning spire is level 5 instead of 4.
+  - summoned creature cap increased to 20
+  - summoning spells cost more based on how many total summons you have.
+  - summon lightning spire is level 5 instead of 4.
 
 ## Multiple difficulty levels: (multiple_difficulty_levels=true)
 When starting a game, the player will be asked for what difficulty level they want to play.

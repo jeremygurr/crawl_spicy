@@ -415,7 +415,9 @@ void bring_to_safety()
 // This includes ALL afflictions, unlike wizard/Xom revive.
 void revive()
 {
-    adjust_level(-1);
+    if (!Options.spicy_species)
+        adjust_level(-1);
+
     // Allow a spare after two levels (we just lost one); the exact value
     // doesn't matter here.
     you.attribute[ATTR_LIFE_GAINED] = 0;
