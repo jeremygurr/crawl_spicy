@@ -729,7 +729,7 @@ bool can_wear_armour(const item_def &item, bool verbose, bool ignore_temporary)
         return false;
     }
 
-    if (you.species == SP_FELID && !(sub_type == ARM_SCARF || sub_type == ARM_HAT))
+    if (you.species == SP_FELID && (!Options.spicy_species || !(sub_type == ARM_SCARF || sub_type == ARM_HAT)))
     {
         if (verbose)
             mpr("You can't wear that!");
@@ -1036,7 +1036,7 @@ bool wear_armour(int item, bool immediate)
     // conditions that would make it impossible to wear any type of armour.
     // TODO: perhaps also worth checking here whether all available armour slots
     // are cursed. Same with jewellery.
-    if (you.species == SP_FELID)
+    if (you.species == SP_FELID && !Options.spicy_species)
     {
         mpr("You can't wear anything.");
         return false;
