@@ -24,6 +24,7 @@ Increases the differences and unique features between species in a wide variety 
     - lives start at 9 and never increase.
     - can wear up to 4 rings.
     - no loss of experience on death.
+    - can wear scarves and hats, but not any other armour.
 
 ## Unlimited summons: (unlimited_summons=true)
   - summoned creature cap increased to 20
