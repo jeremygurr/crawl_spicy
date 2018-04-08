@@ -664,7 +664,7 @@ maybe_bool you_can_wear(equipment_type eq, bool temp)
         return you.species != SP_OCTOPODE && (!Options.spicy_species || you.species != SP_FELID) ? MB_TRUE : MB_FALSE;
 
     case EQ_RING_EIGHT:
-        if (you.get_mutation_level(MUT_MISSING_HAND))
+        if (you.get_mutation_level(MUT_MISSING_HAND) || (Options.spicy_species && you.species == SP_FELID))
             return MB_FALSE;
         // intentional fallthrough
     case EQ_RING_ONE:
